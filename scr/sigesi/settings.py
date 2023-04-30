@@ -11,8 +11,13 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-#from django.urls import reverse_lazy
+import environ
+# from django.urls import reverse_lazy
 import os
+
+# Inicializamos la variable de entorno
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,12 +26,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-qal&0orody@@ppj^8jo0aduv!@^lm8yq!w6q7o=p4ud4+6%9^9'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.66.133', 'localhost']
+ALLOWED_HOSTS = [env('ALLOWED_HOSTS_1'), 'localhost']
 
 # Application definition
 
@@ -72,9 +77,9 @@ WSGI_APPLICATION = 'sigesi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sigesi',
-        'USER': 'sigesi',
-        'PASSWORD': 's1g3s1',
+        'NAME': env('DATABASE_NAME'),
+        'USER': env('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASS'),
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'OPTIONS': {
@@ -123,18 +128,20 @@ USE_TZ = True
 
 # Configuracion de los Archivos Media
 MEDIA_URL = '/media/'
-MEDIA_DIRS = os.path.join(BASE_DIR, 'static', 'media')
-#MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
+MEDIA_DIRS = BASE_DIR / 'static/media'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
 
 # Configuracion de los estaticos (bootstrap, CSS, JavaScript)
 STATIC_URL = 'static/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
-#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
 
 # Login y Logout
-#LOGIN_URL = reverse_lazy('usuario:login')
-#LOGIN_REDIRECT_URL = reverse_lazy('home')
-#LOGOUT_URL = reverse_lazy('home')
+# LOGIN_URL = reverse_lazy('usuario:login')
+# LOGIN_REDIRECT_URL = reverse_lazy('home')
+# LOGOUT_URL = reverse_lazy('home')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
