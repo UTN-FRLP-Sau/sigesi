@@ -1,4 +1,4 @@
-from apps.core.models import Escuela
+from apps.inscripcion.models import Escuela
 
 Values_escuelas =(
     (20000100,'Privado','Urbano',False,'INS. PRIVADO ESC. EVANGELICA WILLIAM C. MORRIS','SUÁREZ 684 BOCA',0,0,2104001),
@@ -16736,8 +16736,13 @@ def run():
     Escuela.objects.all().delete()
 
     for x in Values_escuelas:
+        if len(str(x[0]))==8:
+            cue='0'+str(x[0])
+        elif len(str(x[0]))==9:
+            cue=str(x[0])
+
         pais = Escuela(
-            x[0],
+            cue,
             x[1],
             x[2],
             x[3],
