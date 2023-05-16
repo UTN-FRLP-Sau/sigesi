@@ -454,7 +454,7 @@ class Comision(models.Model):
     nombre = models.CharField(max_length=4, db_column='nombre')
     modalidad = models.ForeignKey(ModalidadCursado, on_delete=models.DO_NOTHING, db_column='modalidadcursada')
     ingreso_anio = models.IntegerField(db_column='ingresoanio')
-    #estudiante = models.ManyToManyField(Estudiante, null=True, blank=True)
+    estudiante = models.ManyToManyField(Estudiante)
 
     def save(self):
         self.nombre = self.nombre.lower()
@@ -469,26 +469,36 @@ class Comision(models.Model):
     def __str__(self):
         return '{}-{}'.format(self.nombre.upper(), self.ingreso_anio)
 
-
+'''
 class Matricula(models.Model):
     estudiante = models.ForeignKey(Estudiante, on_delete=models.DO_NOTHING, db_column='estudiante', primary_key=True)
     comision = models.ForeignKey(Comision, on_delete=models.DO_NOTHING, db_column='comision', primary_key=True)
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['estudiante', 'comision'],
+                name='unique_combination_estudiante_comision'
+                )]
         db_table = 'matricula'
         verbose_name = 'Matricula'
         verbose_name_plural = 'Matriculas'
 
     def __str__(self):
         return '{}, {} ({})'.format(self.estudiante.persona.apellidos.upper(), self.estudiante.persona.nombres.title(), self.comision.nombre.upper())
-
+'''
 
 class EquipoDocente(models.Model):
-    comision = models.ForeignKey(Comision, on_delete=models.DO_NOTHING, db_column='comision', primary_key=True)
-    docente = models.ForeignKey(Docente, on_delete=models.DO_NOTHING, db_column='docente', primary_key=True)
+    comision = models.ForeignKey(Comision, on_delete=models.DO_NOTHING, db_column='comision')
+    docente = models.ForeignKey(Docente, on_delete=models.DO_NOTHING, db_column='docente')
     profesor = models.BooleanField(db_column='profesor')
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['comision', 'docente'],
+                name='unique_combination_comision_docente'
+                )]
         db_table = 'equipodocente'
         verbose_name = 'Equipo Docente'
         verbose_name_plural = 'Equipos Docentes'
@@ -546,3 +556,48 @@ class Asistencia(models.Model):
 
     def __str__(self):
         return '{}-{}, {}'.format(self.clase.nombre.upper(), self.estudiante.persona.apellidos.upper(), self.estudiante.persona.nombres.title())
+
+
+class EvaluacionUnidad(models.Model):
+    comision = models.ForeignKey(Comision, on_delete=models.DO_NOTHING, db_column='comision')
+    estudiante = models.ForeignKey(Estudiante, on_delete=models.DO_NOTHING, db_column='estudiante')
+    unidad = models.ForeignKey(Unidad, on_delete=models.DO_NOTHING, db_column='unidad')
+    aprobado = models.BooleanField(db_column='aprobado')
+
+    class Meta:
+        db_table = 'evaluacionunidad'
+        verbose_name = 'Evaluacion de Unidad'
+        verbose_name_plural = 'Evaluaciones de Unidades'
+
+    def __str__(self):
+        return '{}, {} - {}'.format(self.estudiante.persona.apellidos.upper(), self.estudiante.persona.nombres.title(), self.unidad.nombre.upper())
+
+
+class Parcial(models.Model):
+    comision = models.ForeignKey(Comision, on_delete=models.DO_NOTHING, db_column='comision')
+    estudiante = models.ForeignKey(Estudiante, on_delete=models.DO_NOTHING, db_column='estudiante')
+    unidad = models.ForeignKey(Unidad, on_delete=models.DO_NOTHING, db_column='unidad')
+    nota = models.IntegerField(db_column='nota')
+
+    class Meta:
+        db_table = 'parcial'
+        verbose_name = 'Parcial'
+        verbose_name_plural = 'Parciales'
+
+    def __str__(self):
+        return '{}, {} - {}'.format(self.estudiante.persona.apellidos.upper(), self.estudiante.persona.nombres.title(), self.unidad.nombre.upper())
+
+
+class EvaluacionDiaria(models.Model):
+    parcial = models.ForeignKey(Parcial, on_delete=models.DO_NOTHING, db_column='parcial')
+    orden = models.IntegerField(db_column='orden')
+    estudiante = models.ForeignKey(Estudiante, on_delete=models.DO_NOTHING, db_column='estudiante')
+    aprobado = models.BooleanField(db_column='aprobado')
+
+    class Meta:
+        db_table = 'evaluacionesdiarias'
+        verbose_name = 'Evaluacion Diaria'
+        verbose_name_plural = 'Evaluaciones Diarias'
+
+    def __str__(self):
+        return '{}, {} ({})'.format(self.estudiante.persona.apellidos.upper(), self.estudiante.persona.nombres.title(), self.parcial.unidad.nombre.upper())
