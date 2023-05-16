@@ -1,4 +1,4 @@
-from apps.core.models import PartidoPBA
+from apps.inscripcion.models import PartidoPBA
 
 Values_partidos=(
     ('6049','AZUL'),

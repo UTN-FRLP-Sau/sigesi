@@ -1,4 +1,4 @@
-from apps.core.models import Pais, PartidoPBA, Provincia, Localidad, Escuela, MailEscuela, TelefonoEscuela
+from apps.inscripcion.models import Pais, PartidoPBA, Provincia, Localidad, Escuela, MailEscuela, TelefonoEscuela
 
 
 def run():

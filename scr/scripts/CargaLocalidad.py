@@ -1,4 +1,4 @@
-from apps.core.models import Localidad
+from apps.inscripcion.models import Localidad
 
 Values_localidad= (
 (6049005,'AZUL',0,0,6049,6),

@@ -1,4 +1,4 @@
-from apps.core.models import Provincia
+from apps.inscripcion.models import Provincia
 
 Values_provincias = ((2, 'Ciudad de Buenos Aires',
                       32), (6, 'Buenos Aires', 32), (10, 'Catamarca', 32),

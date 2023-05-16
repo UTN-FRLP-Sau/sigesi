@@ -1,4 +1,4 @@
-from apps.core.models import TelefonoEscuela
+from apps.inscripcion.models import TelefonoEscuela
 
 Values_telefono= (
 ('03764190792',540076500),
@@ -15062,9 +15062,17 @@ Values_telefono= (
 
 def run():
     TelefonoEscuela.objects.all().delete()
-
+    i=0
     for x in Values_telefono:
+        i=i+1
+        if len(str(x[1]))==8:
+            cue='0'+str(x[1])
+        elif len(str(x[1]))==9:
+            cue=str(x[1])
         pais = TelefonoEscuela(
-        x[0],
-        x[1]
-        )
+            i,
+            x[0],
+            cue
+            )
+
+        pais.save()

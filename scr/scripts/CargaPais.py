@@ -1,4 +1,4 @@
-from apps.core.models import Pais
+from apps.inscripcion.models import Pais
 
 values_paises=(
     ('AF','AFG','Afganistan',0,0,93,4),
