@@ -595,7 +595,7 @@ class EvaluacionDiaria(models.Model):
     aprobado = models.BooleanField(db_column='aprobado')
 
     class Meta:
-        db_table = 'evaluacionesdiarias'
+        db_table = 'evaluaciondiaria'
         verbose_name = 'Evaluacion Diaria'
         verbose_name_plural = 'Evaluaciones Diarias'
 

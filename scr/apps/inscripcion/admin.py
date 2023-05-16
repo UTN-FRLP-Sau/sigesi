@@ -1,54 +1,56 @@
 from django.contrib import admin
 
 # Register your models here.
-from apps.inscripcion.models import (Pais, PartidoPBA, Provincia, Localidad, Escuela,
-                                     Persona, TelefonoEscuela, MailEscuela)
-
-'''
-class PaisAdmin(admin.ModelAdmin):
-    list_display = []
-
-
-class PartidoPBAAdmin(admin.ModelAdmin):
-    pass
-
-
-class ProvinciaAdmin(admin.ModelAdmin):
-    pass
-
-
-class LocalidadAdmin(admin.ModelAdmin):
-    pass
-
-
-class EscuelaAdmin(admin.ModelAdmin):
-    pass
-
-
-class PersonaAdmin(admin.ModelAdmin):
-    pass
-
-
-class TelefonoEscuelaAdmin(admin.ModelAdmin):
-    pass
-
-
-class MailEscuelaAdmin(admin.ModelAdmin):
-    pass
-
-
-class AuthorAdmin(admin.ModelAdmin):
-    pass
-
+from apps.inscripcion.models import (
+                                    PartidoPBA,
+                                    Pais,
+                                    Provincia,
+                                    Localidad,
+                                    TipoDocumento,
+                                    Persona,
+                                    Escuela,
+                                    TelefonoEscuela,
+                                    MailEscuela,
+                                    Genero,
+                                    Docente,
+                                    TituloSecundario,
+                                    Estudiante,
+                                    Archivos,
+                                    Aula,
+                                    ModalidadCursado,
+                                    Comision,
+                                    EquipoDocente,
+                                    Unidad,
+                                    Clase,
+                                    Asistencia,
+                                    EvaluacionUnidad,
+                                    Parcial,
+                                    EvaluacionDiaria
+)
 
 # Register your models here.
 
-admin.site.register(Pais, PaisAdmin)
-admin.site.register(PartidoPBA, PartidoPBAAdmin)
-admin.site.register(Provincia, ProvinciaAdmin)
-admin.site.register(Localidad, LocalidadAdmin)
-admin.site.register(Escuela, EscuelaAdmin)
-admin.site.register(Persona, PersonaAdmin)
-admin.site.register(TelefonoEscuela, TelefonoEscuelaAdmin)
-admin.site.register(MailEscuela, MailEscuelaAdmin)
-'''
+admin.site.register(PartidoPBA)
+admin.site.register(Pais)
+admin.site.register(Provincia)
+admin.site.register(Localidad)
+admin.site.register(TipoDocumento)
+admin.site.register(Persona)
+admin.site.register(Escuela)
+admin.site.register(TelefonoEscuela)
+admin.site.register(MailEscuela)
+admin.site.register(Genero)
+admin.site.register(Docente)
+admin.site.register(TituloSecundario)
+admin.site.register(Estudiante)
+admin.site.register(Archivos)
+admin.site.register(Aula)
+admin.site.register(ModalidadCursado)
+admin.site.register(Comision)
+admin.site.register(EquipoDocente)
+admin.site.register(Unidad)
+admin.site.register(Clase)
+admin.site.register(Asistencia)
+admin.site.register(EvaluacionUnidad)
+admin.site.register(Parcial)
+admin.site.register(EvaluacionDiaria)
