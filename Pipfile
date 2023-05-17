@@ -4,9 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+django = "*"
+django-environ = "*"
+django-grappelli = "*"
+django-extensions = "*"
+django-bootstrap5 = "*"
+mysqlclient = "*"
 
 [dev-packages]
-yapf = "*"
 autopep8 = "*"
 
 [requires]

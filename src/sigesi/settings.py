@@ -29,9 +29,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = [env('ALLOWED_HOSTS_1'), 'localhost']
+ALLOWED_HOSTS = str(env('ALLOWED_HOSTS')).split(',')
 
 # Application definition
 
@@ -80,8 +80,8 @@ DATABASES = {
         'NAME': env('DATABASE_NAME'),
         'USER': env('DATABASE_USER'),
         'PASSWORD': env('DATABASE_PASS'),
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'HOST': env('DATABASE_HOST'),
+        'PORT': env('DATABASE_PORT'),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
