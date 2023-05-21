@@ -1,11 +1,13 @@
-from django.db import models
+# future
+# Librerias Standars
 import os
 from uuid import uuid4
-
-"""
-Tabla imagenes, no entiendo xq todo es null, ni que es el tipo
-CPA y CP4, cual tiene 4 digitos
-"""
+from datetime import date
+import re
+# Librerias de Terceros
+# Django
+from django.db import models
+# Django Locales
 
 
 # Create your models here.
@@ -46,9 +48,9 @@ def _generar_ruta_documento(instance, filename):
     # Extraer extension del fichero
     extension = os.path.splitext(filename)[1][1:]
     # Generamos la ruta relativa a media_root
-    # donde almacenar el archivo usando la fecha actual
+    # # donde almacenar el archivo usando la fecha actual
     # año/mes/dia
-    ruta = os.path.join('static/media/documentos', credencial)
+    ruta = os.path.join('static/media/documentos', date.today().strftime('%y/%m/%d'))
     # Generamos el nombre del archivo con un idenfiticar
     # aleatorio y la extension del archivo original
     nombre_archivo = '{}.{}'.format(uuid4().hex,extension)
@@ -59,12 +61,9 @@ def _generar_ruta_documento(instance, filename):
 class PartidoPBA(models.Model):
     id = models.CharField(max_length=5,
                           primary_key=True,
+                          unique=True,
                           db_column='id')
-    nombre = models.CharField(max_length=100, db_column='nombre')
-
-    def save(self):
-        self.nombre = self.nombre.lower()
-        super(PartidoPBA, self).save()
+    nombre = models.CharField(max_length=100, db_column='nombre', unique=True)
 
     class Meta:
         ordering = ['nombre']
@@ -75,18 +74,21 @@ class PartidoPBA(models.Model):
     def __str__(self):  # Python 3
         return '{}'.format(self.nombre.title())
 
+    def save(self):
+        self.nombre = self.nombre.lower()
+        super(PartidoPBA, self).save()
+        
+    def get_absolute_url():
+        pass
+
 
 class Pais(models.Model):
-    id = models.IntegerField(primary_key=True, db_column='id')
-    nombre = models.CharField(max_length=50, db_column='nombre')
+    id = models.IntegerField(primary_key=True, db_column='id', unique=True)
+    nombre = models.CharField(max_length=50, db_column='nombre', unique=True)
     coord_x = models.FloatField(db_column='coordenadaX')
     coord_y = models.FloatField(db_column='coordenadaY')
-    nacionalidad = models.CharField(max_length=100, db_column='nacionalidad')
-
-    def save(self):
-        self.nombre=self.nombre.lower()
-        self.nacionalidad = self.nacionalidad.lower()
-        super(Pais, self).save()
+    nacionalidad = models.CharField(
+        max_length=100, db_column='nacionalidad', unique=True)
 
     class Meta:
         ordering = ['nombre']
@@ -97,17 +99,20 @@ class Pais(models.Model):
     def __str__(self):  # Python 3
         return '{}'.format(self.nombre.title())
 
+    def save(self):
+        self.nombre=self.nombre.lower()
+        self.nacionalidad = self.nacionalidad.lower()
+        super(Pais, self).save()
+
+    def get_absolute_url():
+        pass
 
 class Provincia(models.Model):
-    id = models.IntegerField(primary_key=True, db_column='id')
-    nombre = models.CharField(max_length=50, db_column='nombre')
+    id = models.IntegerField(primary_key=True, db_column='id', unique=True)
+    nombre = models.CharField(max_length=50, db_column='nombre', unique=True)
     pais = models.ForeignKey(Pais,
                              on_delete=models.DO_NOTHING,
                              db_column='pais')
-
-    def save(self):
-        self.nombre=self.nombre.lower()
-        super(Provincia, self).save()
 
     class Meta:
         ordering = ['nombre']
@@ -118,9 +123,15 @@ class Provincia(models.Model):
     def __str__(self):  # Python 3
         return '{}'.format(self.nombre.title())
 
+    def save(self):
+        self.nombre=self.nombre.lower()
+        super(Provincia, self).save()
+
+    def get_absolute_url():
+        pass
 
 class Localidad(models.Model):
-    id = models.IntegerField(primary_key=True, db_column='id')
+    id = models.IntegerField(primary_key=True, db_column='id', unique=True)
     nombre = models.CharField(max_length=51, db_column='nombre')
     partido = models.ForeignKey(PartidoPBA,
                                 on_delete=models.DO_NOTHING,
@@ -131,10 +142,6 @@ class Localidad(models.Model):
                                   on_delete=models.DO_NOTHING,
                                   db_column='provincia')
 
-    def save(self):
-        self.nombre=self.nombre.lower()
-        super(Localidad,self).save()
-
     class Meta:
         ordering = ['nombre']
         verbose_name = 'Localidad'
@@ -144,13 +151,15 @@ class Localidad(models.Model):
     def __str__(self):  # Python 3
         return '{}'.format(self.nombre.title())
 
+    def save(self):
+        self.nombre=self.nombre.lower()
+        super(Localidad,self).save()
+
+    def get_absolute_url():
+        pass
 
 class TipoDocumento(models.Model):
-    tipo = models.CharField(max_length=50, db_column='tipo')
-
-    def save(self):
-        self.tipo = self.tipo.lower()
-        super(TipoDocumento,self).save()
+    tipo = models.CharField(max_length=50, db_column='tipo', unique=True)
 
     class Meta:
         ordering=['tipo']
@@ -161,14 +170,19 @@ class TipoDocumento(models.Model):
     def __str__(self):
         return '{}'.format(self.tipo.title())
 
+    def save(self):
+        self.tipo = self.tipo.lower()
+        super(TipoDocumento,self).save()
 
+    def get_absolute_url():
+        pass
 class Persona(models.Model):
     apellidos = models.CharField(max_length=60, db_column='apellidos')
     nombres = models.CharField(max_length=60, db_column='nombres')
     fecha_nacimiento = models.DateField(db_column='nacimientofecha')
     pais_nacimiento = models.ForeignKey(Pais,
                                         on_delete=models.DO_NOTHING,
-                                        related_name='nacimiento_pais',
+                                        related_name='pais_nacimiento',
                                         db_column='nacimientopais')
     nacionalidad = models.ForeignKey(Pais,
                                      on_delete=models.DO_NOTHING,
@@ -177,10 +191,10 @@ class Persona(models.Model):
     documento_tipo = models.ForeignKey(TipoDocumento,
                                        on_delete=models.DO_NOTHING,
                                        db_column='documentotipo')
-    numero_documento = models.CharField(max_length=16, db_column='documentonumero')
+    numero_documento = models.CharField(max_length=16, db_column='documentonumero', unique=True)
     pais_documento = models.ForeignKey(Pais,
                                        on_delete=models.DO_NOTHING,
-                                       related_name='documento_pais_emisor',
+                                       related_name='pais_documento_emisor',
                                        db_column='documentopaisemisor')
     domicilio_piso = models.CharField(max_length=4,
                                       default=None,
@@ -205,7 +219,16 @@ class Persona(models.Model):
     domicilio_coordenada_x = models.FloatField(db_column='domiciliocoordenadaX')
     domicilio_coordenada_y = models.FloatField(db_column='domiciliocoordenadaY')
     telefono = models.CharField(max_length=20, db_column='telefono')
-    correo = models.EmailField(max_length=254, db_column='email')
+    correo = models.EmailField(max_length=254, db_column='email', unique=True)
+
+    class Meta:
+        ordering = ['apellidos']
+        verbose_name = 'Persona'
+        verbose_name_plural = 'Personas'
+        db_table = 'persona'
+
+    def __str__(self):  # Python 3
+        return '{}, {}'.format(self.apellidos.upper(), self.nombres.title())
 
     def save(self):
         self.apellidos=self.apellidos.lower()
@@ -220,19 +243,15 @@ class Persona(models.Model):
         self.telefono =self.telefono.lower()
         self.correo = self.correo.lower()
         super(Persona, self).save()
+        
+    def get_absolute_url():
+        pass
 
-    class Meta:
-        ordering = ['apellidos']
-        verbose_name = 'Persona'
-        verbose_name_plural = 'Personas'
-        db_table = 'persona'
-
-    def __str__(self):  # Python 3
-        return '{}, {}'.format(self.apellidos.upper(), self.nombres.title())
 
 class Escuela(models.Model):
     cue = models.CharField(max_length=9,
                            primary_key=True,
+                           unique=True,
                            db_column='CUE')
     gestion = models.CharField(max_length=20,
                                choices=GESTION_ESCUELA_CHOICES,
@@ -254,16 +273,6 @@ class Escuela(models.Model):
     domicilio_coordenada_x = models.FloatField(default=0, db_column='domiciliocoordenadaX')
     domicilio_coordenada_y = models.FloatField(default=0, db_column='domiciliocoordenadaY')
 
-    def save(self):
-        self.gestion = self.gestion.lower()
-        self.ambito = self.ambito.lower()
-        self.nombre = self.nombre.lower()
-        self.domicilio_calle = self.domicilio_calle.lower()
-        self.domicilio_cpa = self.domicilio_cpa.lower()
-        self.domicilio_cp4 = self.domicilio_cp4.lower()
-        super(Escuela, self).save()
-
-
     class Meta:
         ordering = ['nombre']
         verbose_name = 'Escuela'
@@ -273,16 +282,23 @@ class Escuela(models.Model):
     def __str__(self):  # Python 3
         return '{} ({})'.format(self.nombre.title(), self.cue)
 
+    def save(self):
+        self.gestion = self.gestion.lower()
+        self.ambito = self.ambito.lower()
+        self.nombre = self.nombre.lower()
+        self.domicilio_calle = self.domicilio_calle.lower()
+        self.domicilio_cpa = self.domicilio_cpa.lower()
+        self.domicilio_cp4 = self.domicilio_cp4.lower()
+        super(Escuela, self).save()
+
+    def get_absolute_url():
+        pass
 
 class TelefonoEscuela(models.Model):
     telefono = models.CharField(max_length=50, db_column='telefono')
     escuela = models.ForeignKey(Escuela,
                             on_delete=models.DO_NOTHING,
                             db_column='escuela')
-
-    def save(self):
-        self.telefono = self.telefono.lower()
-        super(TelefonoEscuela, self).save()
 
     class Meta:
         ordering = ['escuela']
@@ -293,6 +309,13 @@ class TelefonoEscuela(models.Model):
     def __str__(self):  # Python 3
         return '{}-{}'.format(self.escuela.nombre, self.telefono)
 
+    def save(self):
+        self.telefono = self.telefono.lower()
+        super(TelefonoEscuela, self).save()
+        
+    def get_absolute_url():
+        pass
+
 
 class MailEscuela(models.Model):
     escuela = models.ForeignKey(Escuela,
@@ -300,10 +323,6 @@ class MailEscuela(models.Model):
                             on_delete=models.DO_NOTHING,
                             db_column='escuela')
     mail = models.EmailField(max_length=254, db_column='mail')
-
-    def save(self):
-        self.mail=self.mail.lower()
-        super(MailEscuela, self).save()
 
     class Meta:
         ordering = ['escuela']
@@ -314,12 +333,16 @@ class MailEscuela(models.Model):
     def __str__(self):  # Python 3
         return '{}-{}'.format(self.escuela.nombre, self.mail)
 
-class Genero(models.Model):
-    nombre = models.CharField(db_column='nombre', max_length=45)
-
     def save(self):
-        self.nombre = self.nombre.lower()
-        super(Genero, self).save()
+        self.mail=self.mail.lower()
+        super(MailEscuela, self).save()
+        
+    def get_absolute_url():
+        pass
+
+
+class Genero(models.Model):
+    nombre = models.CharField(db_column='nombre', max_length=45, unique=True)
 
     class Meta:
         ordering=['nombre']
@@ -330,9 +353,17 @@ class Genero(models.Model):
     def __str__(self):
         return '{}'.format(self.nombre.title())
 
+    def save(self):
+        self.nombre = self.nombre.lower()
+        super(Genero, self).save()
+
+    def get_absolute_url():
+        pass
+
 
 class Docente(models.Model):
-    cbu = models.IntegerField(db_column='cbu')
+    cbu = models.IntegerField(db_column='cbu', unique=True)
+#    comprobante = models.FileField(db_column='comprobante', upload_to=_generar_ruta_documento)
     genero = models.ForeignKey(Genero, on_delete=models.DO_NOTHING, db_column='genero')
     persona = models.ForeignKey(Persona, on_delete=models.DO_NOTHING, db_column='persona')
 
@@ -345,14 +376,16 @@ class Docente(models.Model):
     def __str__(self):
         return '{}, {}'.format(self.persona.apellidos.upper(), self.persona.nombres.title())
 
+    def save(self):
+        super(Docente, self).save()
+
+    def get_absolute_url():
+        pass
+
 
 class TituloSecundario(models.Model):
-    titulo = models.CharField(max_length=45, db_column='titulo')
+    titulo = models.CharField(max_length=45, db_column='titulo', unique=True)
     tecnico = models.BooleanField(db_column='tecnico')
-
-    def save(self):
-        self.titulo = self.titulo.lower()
-        super(TituloSecundario, self).save()
 
     class Meta:
         ordering=['titulo']
@@ -363,10 +396,20 @@ class TituloSecundario(models.Model):
     def __str__(self):
         return '{}'.format(self.titulo.title())
 
+    def save(self):
+        self.titulo = self.titulo.lower()
+        super(TituloSecundario, self).save()
+
+    def get_absolute_url():
+        pass
+
 
 class Estudiante(models.Model):
-    credencial = models.IntegerField(primary_key=True, db_column='credencial')
-    legajo = models.IntegerField(default=0, db_column='legajo')
+    credencial = models.IntegerField(primary_key=True,
+                                     db_column='credencial',
+                                     unique=True,
+                                     auto_created=True)
+    legajo = models.IntegerField(default=0, db_column='legajo', unique=True)
     cuil = models.CharField(max_length=13, null=True, blank=True, db_column='cuil')
     sexo = models.CharField(max_length=1, db_column='sexo', choices=SEXO_ESTUDIANTE_CHOICE, null=True, blank=True)
     genero = models.ForeignKey(Genero, on_delete=models.DO_NOTHING, db_column='genero', null=True, blank=True)
@@ -379,13 +422,7 @@ class Estudiante(models.Model):
     especialidad = models.IntegerField(choices=ESPECIALIDAD_ESTUDIANTE_CHOICE, db_column='especialidad', null=True, blank=True)
     turno = models.CharField(max_length=1, null=True, blank=True, db_column='turno', choices=TURNO_ESTUDIANTE_CHOICES)
     modalidad =models.IntegerField(db_column='modalidad', null=True, blank=True)
-    persona = models.ForeignKey(Persona, on_delete=models.DO_NOTHING, db_column='persona')
-
-    def save(self):
-        self.nombre_autopercibido = self.nombre_autopercibido.lower()
-        self.titulo_secundario = self.titulo_secundario.lower()
-        self.emergencia_contacto = self.emergencia_contacto.lower()
-        super(Estudiante, self).save()
+    persona = models.OneToOneField(Persona, on_delete=models.DO_NOTHING, db_column='persona')
 
     class Meta:
         ordering=['credencial']
@@ -395,6 +432,23 @@ class Estudiante(models.Model):
 
     def __str__(self):
         return '{}, {}'.format(self.persona.apellidos.upper(), self.persona.nombres.title())
+
+    def save(self):
+        #Guardamos todo en minusculas
+        self.nombre_autopercibido = self.nombre_autopercibido.lower()
+        self.titulo_secundario = self.titulo_secundario.lower()
+        self.emergencia_contacto = self.emergencia_contacto.lower()
+        
+        #Damos el formato de cuil de la forma XX-XXXXXXXX-X
+        patron = r'^\d{2}-\d{8}-\d$'
+        cuil = self.cuil
+        cuil = cuil.replace("-","")
+        if re.match(patron, cuil):
+            self.cuil = cuil[:2]+'-'+cuil[2:11]+'-'+cuil[11:]
+        super(Estudiante, self).save()
+        
+    def get_absolute_url():
+        pass
 
 
 class Archivos(models.Model):
@@ -409,18 +463,20 @@ class Archivos(models.Model):
 
     def __str__(self):
         return '({}) - {}, {}'.format(self.id, self.persona.apellidos.upper(), self.persona.nombres.title())
+    
+    def save(self):
+        super(Archivos, self).save()
+        
+    def get_absolute_url():
+        pass
 
 
 class Aula(models.Model):
-    nombre = models.CharField(db_column='denominacion', max_length=20)
+    nombre = models.CharField(db_column='denominacion', max_length=20, unique=True)
     capacidad = models.IntegerField(db_column='capacidad')
     aire = models.BooleanField(db_column='aire')
     proyector = models.BooleanField(db_column='proyector')
     accesibilidad = models.BooleanField(db_column='accesibiliad')
-
-    def save(self):
-        self.nombre = self.nombre.lower()
-        super(Aula, self).save()
 
     class Meta:
         ordering=['nombre']
@@ -431,14 +487,17 @@ class Aula(models.Model):
     def __str__(self):
         return '{}'.format(self.nombre.title())
 
-
-class ModalidadCursado(models.Model):
-    nombre = models.CharField(max_length=15, db_column='nombre')
-    descripcion = models.CharField(max_length=150, db_column='descripcion')
-
     def save(self):
         self.nombre = self.nombre.lower()
-        self.descripcion = self.descripcion.lower()
+        super(Aula, self).save()
+
+    def get_absolute_url():
+        pass
+
+
+class ModalidadCursado(models.Model):
+    nombre = models.CharField(max_length=15, db_column='nombre', unique=True)
+    descripcion = models.CharField(max_length=150, db_column='descripcion')
 
     class Meta:
         db_table = 'modalidadcursada'
@@ -448,19 +507,23 @@ class ModalidadCursado(models.Model):
     def __str__(self):
         return '{}'.format(self.nombre.title())
 
+    def save(self):
+        self.nombre = self.nombre.lower()
+        self.descripcion = self.descripcion.lower()
+
+    def get_absolute_url():
+        pass
+
 
 class Comision(models.Model):
     aula = models.ForeignKey(Aula, on_delete=models.DO_NOTHING, db_column='aula')
     nombre = models.CharField(max_length=4, db_column='nombre')
     modalidad = models.ForeignKey(ModalidadCursado, on_delete=models.DO_NOTHING, db_column='modalidadcursada')
     ingreso_anio = models.IntegerField(db_column='ingresoanio')
-    estudiante = models.ManyToManyField(Estudiante)
-
-    def save(self):
-        self.nombre = self.nombre.lower()
-        super(Comision, self).save()
+    estudiante = models.ManyToManyField(Estudiante, db_table='matricula')
 
     class Meta:
+        unique_together = ['nombre', 'ingreso_anio']
         ordering = ['ingreso_anio','nombre']
         db_table = 'comision'
         verbose_name = 'Comision'
@@ -469,24 +532,13 @@ class Comision(models.Model):
     def __str__(self):
         return '{}-{}'.format(self.nombre.upper(), self.ingreso_anio)
 
-'''
-class Matricula(models.Model):
-    estudiante = models.ForeignKey(Estudiante, on_delete=models.DO_NOTHING, db_column='estudiante', primary_key=True)
-    comision = models.ForeignKey(Comision, on_delete=models.DO_NOTHING, db_column='comision', primary_key=True)
+    def save(self):
+        self.nombre = self.nombre.lower()
+        super(Comision, self).save()
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['estudiante', 'comision'],
-                name='unique_combination_estudiante_comision'
-                )]
-        db_table = 'matricula'
-        verbose_name = 'Matricula'
-        verbose_name_plural = 'Matriculas'
+    def get_absolute_url():
+        pass
 
-    def __str__(self):
-        return '{}, {} ({})'.format(self.estudiante.persona.apellidos.upper(), self.estudiante.persona.nombres.title(), self.comision.nombre.upper())
-'''
 
 class EquipoDocente(models.Model):
     comision = models.ForeignKey(Comision, on_delete=models.DO_NOTHING, db_column='comision')
@@ -505,16 +557,17 @@ class EquipoDocente(models.Model):
 
     def __str__(self):
         return '{}-{}'.format(self.comision.nombre.upper(), self.docente.persona.apellidos.upper())
+    
+    def save(self):
+        super(EquipoDocente, self).save()
+
+    def get_absolute_url():
+        pass
 
 
 class Unidad(models.Model):
-    nombre = models.CharField(max_length=45, db_column='nombre')
+    nombre = models.CharField(max_length=45, db_column='nombre', unique=True)
     detalle = models.CharField(max_length=100, db_column='detalle')
-
-    def save(self):
-        self.nombre=self.nombre.lower()
-        self.detalle=self.detalle.lower()
-        super(Unidad, self).save()
 
     class Meta:
         db_table = 'unidad'
@@ -524,15 +577,19 @@ class Unidad(models.Model):
     def __str__(self):
         return '{}'.format(self.nombre.title())
 
-
-class Clase(models.Model):
-    nombre = models.CharField(max_length=45, db_column='nombre')
-    detalle = models.CharField(max_length=45, db_column='detalle')
-
     def save(self):
         self.nombre=self.nombre.lower()
         self.detalle=self.detalle.lower()
-        super(Clase, self).save()
+        super(Unidad, self).save()
+
+    def get_absolute_url():
+        pass
+
+
+
+class Clase(models.Model):
+    nombre = models.CharField(max_length=45, db_column='nombre', unique=True)
+    detalle = models.CharField(max_length=45, db_column='detalle')
 
     class Meta:
         db_table = 'clase'
@@ -542,6 +599,14 @@ class Clase(models.Model):
     def __str__(self):
         return '{}'.format(self.nombre.title())
 
+    def save(self):
+        self.nombre=self.nombre.lower()
+        self.detalle=self.detalle.lower()
+        super(Clase, self).save()
+
+    def get_absolute_url():
+        pass
+
 
 class Asistencia(models.Model):
     clase = models.ForeignKey(Clase, on_delete=models.DO_NOTHING, db_column='clase_id')
@@ -550,6 +615,7 @@ class Asistencia(models.Model):
     fecha_hora = models.DateTimeField(db_column='fechahora')
 
     class Meta:
+        unique_together = ['clase', 'estudiante', 'comision']
         db_table = 'asistencia'
         verbose_name = 'Asistencia'
         verbose_name_plural = 'Asistencias'
@@ -557,6 +623,11 @@ class Asistencia(models.Model):
     def __str__(self):
         return '{}-{}, {}'.format(self.clase.nombre.upper(), self.estudiante.persona.apellidos.upper(), self.estudiante.persona.nombres.title())
 
+    def save(self):
+        super(Asistencia, self).save()
+
+    def get_absolute_url():
+        pass
 
 class EvaluacionUnidad(models.Model):
     comision = models.ForeignKey(Comision, on_delete=models.DO_NOTHING, db_column='comision')
@@ -571,6 +642,12 @@ class EvaluacionUnidad(models.Model):
 
     def __str__(self):
         return '{}, {} - {}'.format(self.estudiante.persona.apellidos.upper(), self.estudiante.persona.nombres.title(), self.unidad.nombre.upper())
+    
+    def save(self):
+        super(EvaluacionUnidad, self).save()
+
+    def get_absolute_url():
+        pass
 
 
 class Parcial(models.Model):
@@ -587,6 +664,11 @@ class Parcial(models.Model):
     def __str__(self):
         return '{}, {} - {}'.format(self.estudiante.persona.apellidos.upper(), self.estudiante.persona.nombres.title(), self.unidad.nombre.upper())
 
+    def save(self):
+        super(Parcial, self).save()
+
+    def get_absolute_url():
+        pass
 
 class EvaluacionDiaria(models.Model):
     parcial = models.ForeignKey(Parcial, on_delete=models.DO_NOTHING, db_column='parcial')
@@ -601,3 +683,9 @@ class EvaluacionDiaria(models.Model):
 
     def __str__(self):
         return '{}, {} ({})'.format(self.estudiante.persona.apellidos.upper(), self.estudiante.persona.nombres.title(), self.parcial.unidad.nombre.upper())
+
+    def save(self):
+        super(EvaluacionDiaria, self).save()
+
+    def get_absolute_url():
+        pass
