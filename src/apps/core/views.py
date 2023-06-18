@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from django.template import RequestContext
+#from django.template import RequestContext
 
 # Create your views here.
 
 
-def LandingPage(request):
+def landing_page(request):
     return render(request, 'landing/index.html')

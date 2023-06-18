@@ -20,6 +20,6 @@ from django.urls import path
 from .views import informacion_inscripcion, persona_create
 
 urlpatterns = [
-    path('info/', informacion_inscripcion),
+    path('info/', informacion_inscripcion, name='inscripcion/info'),
     path('new/', persona_create, name='crear_persona')
 ]
