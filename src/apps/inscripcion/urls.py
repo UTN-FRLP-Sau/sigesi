@@ -17,7 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.conf.urls import include
 from django.urls import path
+from .views import informacion_inscripcion, persona_create
 
 urlpatterns = [
-    #    path('', LandingPage),
+    path('info/', informacion_inscripcion),
+    path('new/', persona_create, name='crear_persona')
 ]

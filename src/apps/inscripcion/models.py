@@ -1,10 +1,13 @@
 # future
+
 # Librerias Standars
 import os
 from uuid import uuid4
 from datetime import date
 import re
+
 # Librerias de Terceros
+
 # Django
 from django.db import models
 # Django Locales
@@ -77,7 +80,7 @@ class PartidoPBA(models.Model):
     def save(self):
         self.nombre = self.nombre.lower()
         super(PartidoPBA, self).save()
-        
+
     def get_absolute_url():
         pass
 
@@ -194,8 +197,15 @@ class Persona(models.Model):
     numero_documento = models.CharField(max_length=16, db_column='documentonumero', unique=True)
     pais_documento = models.ForeignKey(Pais,
                                        on_delete=models.DO_NOTHING,
+                                       null=True,
+                                       blank=True,
                                        related_name='pais_documento_emisor',
                                        db_column='documentopaisemisor')
+    domicilio_calle = models.CharField(max_length=100,
+                                      default=None,
+                                      null=True,
+                                      blank=True,
+                                      db_column='domiciliocalle')
     domicilio_piso = models.CharField(max_length=4,
                                       default=None,
                                       null=True,
@@ -212,12 +222,24 @@ class Persona(models.Model):
                                       blank=True,
                                       db_column='domiciliobarrio')
     domicilio_localidad = models.ForeignKey(Localidad,
+                                            null=True,
+                                            blank=True,
                                             on_delete=models.DO_NOTHING,
                                             db_column='domiciliolocalidad')
-    domicilio_cpa = models.CharField(max_length=8, db_column='domicilioCPA')
-    domicilio_cp4 = models.CharField(max_length=4, db_column='domicilioCP4')
-    domicilio_coordenada_x = models.FloatField(db_column='domiciliocoordenadaX')
-    domicilio_coordenada_y = models.FloatField(db_column='domiciliocoordenadaY')
+    domicilio_cpa = models.CharField(max_length=8,
+                                     db_column='domicilioCPA',
+                                     null=True,
+                                     blank=True)
+    domicilio_cp4 = models.CharField(max_length=4,
+                                     db_column='domicilioCP4',
+                                     null=True,
+                                     blank=True)
+    domicilio_coordenada_x = models.FloatField(db_column='domiciliocoordenadaX',
+                                               null=True,
+                                               blank=True)
+    domicilio_coordenada_y = models.FloatField(db_column='domiciliocoordenadaY',
+                                               null=True,
+                                               blank=True)
     telefono = models.CharField(max_length=20, db_column='telefono')
     correo = models.EmailField(max_length=254, db_column='email', unique=True)
 
@@ -234,16 +256,15 @@ class Persona(models.Model):
         self.apellidos=self.apellidos.lower()
         self.nombres = self.nombres.lower()
         self.numero_documento = self.numero_documento.lower()
-        self.domicilio_piso = self.domicilio_piso.lower()
-        self.domicilio_departamento = self.domicilio_departamento.lower()
-        self.domicilio_localidad = self.domicilio_localidad.lower()
-        self.domicilio_barrio = self.domicilio_barrio.lower()
-        self.domicilio_cpa = self.domicilio_cpa.lower()
-        self.domicilio_cp4 = self.domicilio_cp4.lower()
-        self.telefono =self.telefono.lower()
-        self.correo = self.correo.lower()
+        self.domicilio_piso = self.domicilio_piso.lower() if self.domicilio_piso is not None else None
+        self.domicilio_departamento = self.domicilio_departamento.lower() if self.domicilio_departamento is not None else None
+        self.domicilio_barrio = self.domicilio_barrio.lower() if self.domicilio_barrio is not None else None
+        self.domicilio_cpa = self.domicilio_cpa.lower() if self.domicilio_cpa is not None else None
+        self.domicilio_cp4 = self.domicilio_cp4.lower() if self.domicilio_cp4 is not None else None
+        self.telefono = str(self.telefono).lower() if self.telefono is not None else None
+        self.correo = self.correo.lower() if self.correo is not None else None
         super(Persona, self).save()
-        
+
     def get_absolute_url():
         pass
 
@@ -312,7 +333,7 @@ class TelefonoEscuela(models.Model):
     def save(self):
         self.telefono = self.telefono.lower()
         super(TelefonoEscuela, self).save()
-        
+
     def get_absolute_url():
         pass
 
@@ -336,7 +357,7 @@ class MailEscuela(models.Model):
     def save(self):
         self.mail=self.mail.lower()
         super(MailEscuela, self).save()
-        
+
     def get_absolute_url():
         pass
 
@@ -405,11 +426,8 @@ class TituloSecundario(models.Model):
 
 
 class Estudiante(models.Model):
-    credencial = models.IntegerField(primary_key=True,
-                                     db_column='credencial',
-                                     unique=True,
-                                     auto_created=True)
-    legajo = models.IntegerField(default=0, db_column='legajo', unique=True)
+    credencial = models.AutoField(primary_key=True, db_column='credencial')
+    legajo = models.IntegerField(default=0, db_column='legajo')
     cuil = models.CharField(max_length=13, null=True, blank=True, db_column='cuil')
     sexo = models.CharField(max_length=1, db_column='sexo', choices=SEXO_ESTUDIANTE_CHOICE, null=True, blank=True)
     genero = models.ForeignKey(Genero, on_delete=models.DO_NOTHING, db_column='genero', null=True, blank=True)
@@ -435,19 +453,22 @@ class Estudiante(models.Model):
 
     def save(self):
         #Guardamos todo en minusculas
-        self.nombre_autopercibido = self.nombre_autopercibido.lower()
-        self.titulo_secundario = self.titulo_secundario.lower()
-        self.emergencia_contacto = self.emergencia_contacto.lower()
-        
+        self.nombre_autopercibido = self.nombre_autopercibido.lower() if self.nombre_autopercibido is not None else None
+        self.titulo_secundario = self.titulo_secundario.lower() if self.titulo_secundario is not None else None
+        self.emergencia_contacto = self.emergencia_contacto.lower() if self.emergencia_contacto is not None else None
+
         #Damos el formato de cuil de la forma XX-XXXXXXXX-X
-        patron = r'^\d{2}-\d{8}-\d$'
-        cuil = self.cuil
-        cuil = cuil.replace("-","")
-        if re.match(patron, cuil):
-            self.cuil = cuil[:2]+'-'+cuil[2:11]+'-'+cuil[11:]
+        if self.cuil is not None:
+            patron = r'^\d{2}-\d{8}-\d$'
+            cuil = self.cuil
+            cuil = cuil.replace("-","")
+            if re.match(patron, cuil):
+                self.cuil = cuil[:2]+'-'+cuil[2:11]+'-'+cuil[11:]
+        else:
+            self.cuil=None
         super(Estudiante, self).save()
-        
-    def get_absolute_url():
+
+    def get_absolute_url(self):
         pass
 
 
@@ -463,10 +484,10 @@ class Archivos(models.Model):
 
     def __str__(self):
         return '({}) - {}, {}'.format(self.id, self.persona.apellidos.upper(), self.persona.nombres.title())
-    
+
     def save(self):
         super(Archivos, self).save()
-        
+
     def get_absolute_url():
         pass
 
@@ -557,7 +578,7 @@ class EquipoDocente(models.Model):
 
     def __str__(self):
         return '{}-{}'.format(self.comision.nombre.upper(), self.docente.persona.apellidos.upper())
-    
+
     def save(self):
         super(EquipoDocente, self).save()
 
@@ -642,7 +663,7 @@ class EvaluacionUnidad(models.Model):
 
     def __str__(self):
         return '{}, {} - {}'.format(self.estudiante.persona.apellidos.upper(), self.estudiante.persona.nombres.title(), self.unidad.nombre.upper())
-    
+
     def save(self):
         super(EvaluacionUnidad, self).save()
 

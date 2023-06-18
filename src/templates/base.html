@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="es">
+
+<head>
+    {% include 'base-head.html' %}
+</head>
+
+
+
+<body>
+
+    {% include 'base-mainmenu.html' %}
+
+    {% block content %}{% endblock %}
+
+    {% include 'base-javascript.html' %}
+
+</body>
+
+
+</html>
