@@ -18,11 +18,11 @@ from django.contrib import admin
 from django.conf.urls import include
 from django.urls import path
 
-from apps.core.views import LandingPage
+from apps.core.views import landing_page
 
 urlpatterns = [
     path('grappelli/', include('grappelli.urls')),  # grappelli URLS
     path('admin/', admin.site.urls),  # admin site
-    path('', LandingPage, name='home'),
+    path('', landing_page, name='home'),
     path('inscripcion/', include('apps.inscripcion.urls'))
 ]
