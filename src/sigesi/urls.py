@@ -23,7 +23,6 @@ from apps.core.views import landing_page
 urlpatterns = [
     path('grappelli/', include('grappelli.urls')),  # grappelli URLS
     path('admin/', admin.site.urls),  # admin site
-    #Vistas de la web
     path('', landing_page, name='home'),
     path('inscripcion/', include('apps.inscripcion.urls'))
 ]
