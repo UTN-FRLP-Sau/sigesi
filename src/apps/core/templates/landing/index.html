@@ -9,27 +9,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Inscripciones UTN - Regional La Plata</title>
+    <title>Ingreso UTN - Regional La Plata</title>
     {% bootstrap_css %}
-    <link href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet"
-        type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="{% static 'landing/img/logo_favicon.ico' %}" />
-    <!-- Bootstrap icons-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="{% static 'landing\css\styles.css' %}" rel="stylesheet" />
 </head>
 
-<body class="d-flex flex-column h-100">
+<body id="top" class="d-flex flex-column h-100">
     <main class="flex-shrink-0">
         <!-- Navigation-->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
             <div class="container px-5">
                 <a class="navbar-brand" href="https://www.frlp.utn.edu.ar/">
-                    <img srcset="{% static 'landing/img/logo_frlp_b.png' %} 1x,
-                    {% static 'landing/img/logo_ingreso.png'} % 2x">
+                    <img src="{% static 'landing/img/logo_frlp_b.png' %}">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -37,11 +31,11 @@
                         class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="#quienes_somos">Quienes
-                                Somos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#quienes_somos">Quienes Somos</a></li>
                         <li class="nav-item"><a class="nav-link" href="#ingenierias">Que se estudia</a></li>
                         <li class="nav-item"><a class="nav-link" href="#ingreso">Inscripcion</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#como_llego">Como llego</a></li>
+                        <!-- <li class="nav-item"><a class="nav-link" href="#como_llego">Como llego</a></li> -->
                         <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
                     </ul>
                 </div>
@@ -54,11 +48,11 @@
                 <div class="row align-items-center justify-content-center">
                     <div class="col-xl-7 col-xxl-6" style="border: 1px; box-shadow: 10px;">
                         <div class="my-1 text-center text-xl-start">
-                            <h1 class="display-5 fw-bolder text-white mb-2">Sumate a la Universidad Tecnologica</h1>
+                            <h1 class="display-5 fw-bolder text-white mb-2">Sumate a la Universidad Tecnológica</h1>
                             <p class="lead fw-normal text-white mb-4">Convierte tus sueños en realidad:
-                                ¡Inscríbete en la UTN hoy mismo!</p>
+                                ¡Inscribite ahora en la UTN La Plata!</p>
                             <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xl-start">
-                                <a class="btn btn-primary btn-lg px-4 me-sm-3" href="#ingreso">Como me inscribo</a>
+                                <a class="btn btn-primary btn-lg px-4 me-sm-3" href="#ingreso">¿Cómo me inscribo?</a>
                             </div>
                         </div>
                     </div>
@@ -79,15 +73,15 @@
                     <div class="row gx-5 justify-content-center">
                         <div class="col-lg-10 col-xl-9">
                             <div class="text-center">
-                                <div class="fs-4 mb-4 fst-italic">"La Universidad Tecnológica Nacional es una
-                                    institución educativa de estudios universitarios con la misión específica de
-                                    crear, preservar y transmitir la cultura universal en el campo de la tecnología.
-                                    Está orientada hacia las Carreras de Ingeniería y otras disciplinas afines.
-                                    Se compone de 30 facultades regionales a lo largo y ancho de la República
-                                    Argentina. Anualmente, la UTN aporta al sistema productivo nacional más
-                                    del 35 % de graduados en ingenierías, y +40% de los estudiantes de ingeniería
-                                    del país. Conocé más sobre la UTN haciendo
-                                    <a href="https://www.frlp.utn.edu.ar/">click acá!</a>"
+                                <div class="fs-4 mb-4 fst-italic">
+                                    La Universidad Tecnológica Nacional es una institución educativa universitaria con
+                                    la misión específica de crear, preservar y transmitir la cultura universal en el
+                                    campo de la tecnología. Está enfocada en las carreras de Ingeniería y disciplinas
+                                    afines. Se compone de 30 facultades regionales distribuidas en toda la República
+                                    Argentina. Cada año, la UTN contribuye con más del 35% de los graduados en
+                                    ingeniería y más del 40% de los estudiantes de ingeniería del país. Si deseas
+                                    obtener más información sobre la UTN, te invitamos a explorar más en su página web
+                                    oficial haciendo <a href="https://www.utn.edu.ar/es/">click acá</a>!
                                 </div>
                             </div>
                         </div>
@@ -100,7 +94,7 @@
                 <div class="row gx-5 justify-content-center">
                     <div class="col-lg-10 col-xl-8" style="margin-bottom: 2%;">
                         <div class="justify-content-center">
-                            <h2 class="fw-bolder">¿QUE INGENIERIAS SE PUEDEN ESTUDIAR EN LA PLATA?</h2>
+                            <h2 class="fw-bolder">¿Qué ingenierías se pueden estudiar en la Plata?</h2>
                         </div>
                     </div>
                     <div class="row gx-5">
@@ -112,9 +106,9 @@
                                     <div class="badge bg-primary bg-gradient rounded-pill mb-2">Carrera de Grado</div>
                                     <a class="text-decoration-none link-dark stretched-link"
                                         href="https://www.frlp.utn.edu.ar/carrera-civil">
-                                        <h5 class="card-title mb-3">Ingenieria Civil</h5>
+                                        <h5 class="card-title mb-3">Ingeniería Civil</h5>
                                     </a>
-                                    <p class="card-text mb-0"><b>Duracion:</b> 5 años y 6 meses</p>
+                                    <p class="card-text mb-0"><b>Duración:</b> 5 años y 6 meses</p>
                                     <p class="card-text mb-0"><b>Turnos de 1er año:</b> Mañana o Noche</p>
                                     <!-- <p class="card-text mb-0">Titulo intermedio: Analista universitario de sistemas</p> -->
                                 </div>
@@ -128,9 +122,9 @@
                                     <div class="badge bg-primary bg-gradient rounded-pill mb-2">Carrera de Grado</div>
                                     <a class="text-decoration-none link-dark stretched-link"
                                         href="https://www.frlp.utn.edu.ar/carrera-electrica">
-                                        <h5 class="card-title mb-3">Ingenieria en Energia Electrica</h5>
+                                        <h5 class="card-title mb-3">Ingeniería en Energía Eléctrica</h5>
                                     </a>
-                                    <p class="card-text mb-0"><b>Duracion:</b> 5 años</p>
+                                    <p class="card-text mb-0"><b>Duración:</b> 5 años</p>
                                     <p class="card-text mb-0"><b>Turnos de 1er año:</b> Noche</p>
                                     <!-- <p class="card-text mb-0">Titulo intermedio: Analista universitario de sistemas</p> -->
                                 </div>
@@ -144,9 +138,9 @@
                                     <div class="badge bg-primary bg-gradient rounded-pill mb-2">Carrera de Grado</div>
                                     <a class="text-decoration-none link-dark stretched-link"
                                         href="https://www.frlp.utn.edu.ar/carrera-industrial">
-                                        <h5 class="card-title mb-3">Ingenieria Industrial</h5>
+                                        <h5 class="card-title mb-3">Ingeniería Industrial</h5>
                                     </a>
-                                    <p class="card-text mb-0"><b>Duracion:</b> 5 años</p>
+                                    <p class="card-text mb-0"><b>Duración:</b> 5 años</p>
                                     <p class="card-text mb-0"><b>Turnos de 1er año:</b> Mañana o Noche</p>
                                     <!-- <p class="card-text mb-0">Titulo intermedio: Analista universitario de sistemas</p> -->
                                 </div>
@@ -160,9 +154,9 @@
                                     <div class="badge bg-primary bg-gradient rounded-pill mb-2">Carrera de Grado</div>
                                     <a class="text-decoration-none link-dark stretched-link"
                                         href="https://www.frlp.utn.edu.ar/carrera-mecanica">
-                                        <h5 class="card-title mb-3">Ingenieria Mecanica</h5>
+                                        <h5 class="card-title mb-3">Ingeniería Mecánica</h5>
                                     </a>
-                                    <p class="card-text mb-0"><b>Duracion:</b> 5 años</p>
+                                    <p class="card-text mb-0"><b>Duración:</b> 5 años</p>
                                     <p class="card-text mb-0"><b>Turnos de 1er año:</b> Mañana o Noche</p>
                                     <!-- <p class="card-text mb-0">Titulo intermedio: Analista universitario de sistemas</p> -->
                                 </div>
@@ -176,11 +170,11 @@
                                     <div class="badge bg-primary bg-gradient rounded-pill mb-2">Carrera de Grado</div>
                                     <a class="text-decoration-none link-dark stretched-link"
                                         href="https://www.frlp.utn.edu.ar/carrera-quimica">
-                                        <h5 class="card-title mb-3">Ingenieria Quimica</h5>
+                                        <h5 class="card-title mb-3">Ingeniería Química</h5>
                                     </a>
-                                    <p class="card-text mb-0"><b>Duracion:</b> 5 años</p>
+                                    <p class="card-text mb-0"><b>Duración:</b> 5 años</p>
                                     <p class="card-text mb-0"><b>Turnos de 1er año:</b> Noche</p>
-                                    <p class="card-text mb-0"><b>Titulo intermedio:</b> Técnico Universitario en Química
+                                    <p class="card-text mb-0"><b>Título intermedio:</b> Técnico Universitario en Química
                                     </p>
                                 </div>
                             </div>
@@ -192,12 +186,12 @@
                                 <div class="card-body p-4">
                                     <div class="badge bg-primary bg-gradient rounded-pill mb-2">Carrera de Grado</div>
                                     <a class="text-decoration-none link-dark stretched-link"
-                                        href="https://www.frlp.utn.edu.ar/carrera-quimica">
-                                        <h5 class="card-title mb-3">Ingenieria en Sistemas de Informacion</h5>
+                                        href="https://sistemas.frlp.utn.edu.ar/misitio2/">
+                                        <h5 class="card-title mb-3">Ingeniería en Sistemas de Información</h5>
                                     </a>
-                                    <p class="card-text mb-0"><b>Duracion:</b> 5 años</p>
+                                    <p class="card-text mb-0"><b>Duración:</b> 5 años</p>
                                     <p class="card-text mb-0"><b>Turnos de 1er año:</b> Mañana, Tarde o Noche</p>
-                                    <p class="card-text mb-0"><b>Titulo intermedio:</b> Analista Universitario de
+                                    <p class="card-text mb-0"><b>Título intermedio:</b> Analista Universitario de
                                         Sistema</p>
                                 </div>
                             </div>
@@ -207,36 +201,27 @@
             </div>
         </section>
 
-
-        <section class="py-5" id="ingreso">
+        <section class="py-5" id="ingreso" style="margin-top: 15px;">
             <div class="container">
                 <div class="row gx-5 justify-content-center">
                     <div class="col-sm-4" style="margin-bottom: 2%;">
-                        <h3><img src="{% static 'landing/img/logo_ingreso.png' %}" alt="Ingreso UTN"
-                                class="img-responsive" /></h3>
+                        <img src="{% static 'landing/img/logo_ingreso.png' %}" alt="Ingreso UTN"
+                            class="img-fluid rounded mx-auto d-block" />
                         <div style="background: #f5f5f5; padding: .75rem; margin-bottom:3rem; margin-top:3rem;">
                             <h4><span class="label"> <b>Período de Inscripción</b></span></h4>
-                            <p class="mt-4">Desde el 5 de junio al 2 de febrero de cada año.</p>
+                            <p style="font-size:1.15em">Desde el 5 de junio al 2 de febrero de cada año.</p>
                             <p style="font-size:1.15em">
                                 Las inscripciones no estarán disponibles durante los recesos de invierno y verano,
                                 por lo tanto, no será posible completar el formulario en estos períodos.</p>
                         </div>
-                        <div style="background: #f5f5f5; padding: .75rem; margin-bottom:3rem; margin-top:3rem;">
-                            <h4><span>Condiciones de Ingreso a la UTN Facultad La Plata</span></h4>
-                            <p>Serás considerado “ingresante” a la Universidad siempre que logres la aprobación
-                                del Seminario de Ingreso, al momento de iniciarse el proximo ciclo lectivo de las
-                                carreras de ingeniería.</p>
-                            <p>Sólo los ingresantes estarán habilitados a cursar todas las materias del primer nivel
-                                de la carrera de ingeniería elegida. Los restantes serán considerados como “Aspirantes”
-                                y deberan recursar el seminario.</p>
-                        </div>
                     </div>
-
                     <div class="col-sm-8">
                         <h4>Pasos para pre-inscribirte</h4>
-                        <p><b>La preinscripción se realiza únicamente para solicitar información y
-                                no garantiza la inscripción final.</b></p>
-                        <p>Para registrarte inscripción en la carrera de ingeniería deberás:</p>
+                        <p><b>La preinscripción se realiza únicamente para solicitar información sobre el Seminario
+                                Universitario de Ingreso. Para realizar una inscripción definitiva, deberás presentar la
+                                documentación requerida.</b>
+                        </p>
+                        <p>Para registrar tu inscripción en la UTN La Plata, deberás:</p>
                         <ul>
                             <li><b>Paso 1:</b><strong><a href="https://preinscripcion.frlp.utn.edu.ar/">Completar el
                                         formulario de preinscripción
@@ -251,7 +236,7 @@
                             El mismo cubre los contenidos de matemática y física del nivel secundario
                         <p>
                         <div class="row" style="margin:0; padding-top:1rem; padding-bottom:2rem;">
-                            <div class="col-sm-6">
+                            <div class="col-sm-12">
                                 <p><a href="{% static 'landing/doc/programa_2023.pdf' %}" class="btn btn-info"
                                         role="button" download style="background: rgba(0, 0, 0, .05);"><span
                                             class="glyphicon glyphicon-download" aria-hidden="true"></span>
@@ -262,7 +247,7 @@
                         <p>A continuación podrás observar las distintas modalidades previstas:</p>
                         <ul>
                             <li>No intensivo (podés inscribirte hasta el 31/07/2023)
-                                <a href="#">ver información</a>.
+                                <!-- <a href="#">ver información</a>. -->
                             </li>
                             <ul>
                                 <li>Modalidad Presencial</li>
@@ -270,7 +255,7 @@
                                 <li>Modalidad Virtual o a Distancia</li>
                             </ul>
                             <li>Intensivo (podés inscribirte hasta el 31/01/2024)
-                                <a href="#">ver información</a>.
+                                <!-- <a href="#">ver información</a>. -->
                             </li>
                             <ul>
                                 <li>Modalidad Presencial</li>
@@ -279,7 +264,7 @@
                             </ul>
                         </ul>
 
-                        <div style="background: #EEE; padding: 2.5rem; margin-bottom:3rem;" class="border-pencil">
+                        <div style="background: #EEE; padding: 2.5rem; margin-bottom:3rem;">
                             <h3>Importante:</h3>
                             <p>Te recomendamos que, previo a confirmar tu inscripción, hayas revisado detalladamente la
                                 información presentada para las modalidades. De esta manera, podrás escoger con buen
@@ -292,10 +277,41 @@
                                     href="mailto:ingreso@frlp.utn.edu.ar">ingreso@frlp.utn.edu.ar</a>
                                 o bien acercarte a la oficina de Ingreso, de lunes a viernes de 12 a 16 horas.</p>
                         </div>
+                        <div style="padding: .75rem; margin-bottom:3rem; margin-top:3rem;">
+                            <h4><span>Condiciones de Ingreso a la UTN Facultad La Plata</span></h4>
+                            <p>Serás considerado “ingresante” a la Universidad siempre que logres la aprobación
+                                del Seminario de Ingreso, al momento de iniciarse el proximo ciclo lectivo de las
+                                carreras de ingeniería.</p>
+                            <p>Sólo los ingresantes estarán habilitados a cursar todas las materias del primer nivel
+                                de la carrera de ingeniería elegida. Los restantes serán considerados como “Aspirantes”
+                                y deberan recursar el seminario.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
+
+        <!-- Documentacion a presentar -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        ...
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!--
         <section class="py-5" id="como_llego">
@@ -329,9 +345,9 @@
                         <!-- FAQ Accordion 1-->
                         <div class="accordion mb-5" id="accordionExample">
                             <div class="accordion-item">
-                                <h3 class="accordion-header" id="headingOne"><button class="accordion-button"
+                                <h3 class="accordion-header" id="headingOne"><button class="accordion-button collapsed"
                                         type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-                                        aria-expanded="false" aria-controls="collapseOne">¿Qué puedo estudiar en la
+                                        aria-controls="collapseOne">¿Qué puedo estudiar en la
                                         UTN La Plata?</button></h3>
                                 <div class="accordion-collapse collapse" id="collapseOne" aria-labelledby="headingOne"
                                     data-bs-parent="#accordionExample">
@@ -560,9 +576,10 @@
     <!-- Footer-->
     <footer class="bg-dark py-4 mt-auto">
         <div class="container px-5">
+            <!--
             <div class="row align-items-center justify-content-between flex-column flex-sm-row">
                 <div class="col-auto">
-                    <div class="small m-0 text-white">Copyright &copy; Your Website 2023</div>
+                    <div class="small m-0 text-white">Ingreso &copy; Copyright 2023</div>
                 </div>
                 <div class="col-auto">
                     <a class="link-light small" href="#!">Privacy</a>
@@ -572,6 +589,7 @@
                     <a class="link-light small" href="#!">Contact</a>
                 </div>
             </div>
+        -->
         </div>
     </footer>
     <!-- Bootstrap core JS-->
