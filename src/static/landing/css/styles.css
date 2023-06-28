@@ -8794,7 +8794,7 @@ html {
 }
 
 .bg-header {
-    background-image: url('../img/banner.jpeg');
+    background-image: url('../img/banner.png');
     background-size: cover;
     height: 100vh;
 }
