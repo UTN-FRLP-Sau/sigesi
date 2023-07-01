@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<div class="container">
+    <div class="row gx-5 justify-content-center">
+        <div class="col-sm-8">
+            <div style="background: #EEE; padding-right: 2.5rem; padding-left: 2.5rem; padding-bottom: 2.5rem; ">
+                <h2 style="text-align: center;">Importante</h2>
+                <p>
+                    Antes de acceder al formulario, le pedimos que posea 2 archivos PDF con la siguiente documentación,
+                    tenga en cuenta que solo podrá subir un archivo por campo:
+                </p>
+                <div class="accordion mb-2" id="accordionExample">
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="headingEighth"><button class="accordion-button collapsed"
+                                type="button" data-bs-toggle="collapse" data-bs-target="#collapseEighth"
+                                aria-expanded="false" aria-controls="collapseEighth">Si soy de nacionalidad argentina o
+                                naturalizada argentina:</button>
+                        </h3>
+                        <div class="accordion-collapse collapse" id="collapseEighth" aria-labelledby="headingEighth"
+                            data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <ul>
+                                    <li><b>PDF 1:</b> Foto o escaneo del DNI en ambas caras.</li>
+                                    <li><b>PDF 2:</b> Certificado del secundario, puede ser:</li>
+                                    <ul>
+                                        <li>Título </li>
+                                        <li>Analítico</li>
+                                        <li>Certificado de título en trámite</li>
+                                        <li>Certificado de alumno regular</li>
+                                        <li>Certificado de materias adeudadas</li>
+                                    </ul>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="headingOne"><button class="accordion-button collapsed"
+                                type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                                aria-expanded="false" aria-controls="collapseOne">Si soy de nacionalidad
+                                extranjera:</button>
+                        </h3>
+                        <div class="accordion-collapse collapse" id="collapseOne" aria-labelledby="headingOne"
+                            data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <ul>
+                                    <li><b>PDF 1:</b> DNI argentino, o en su defecto el documento de identidad de tu
+                                        país y la
+                                        constancia de inicio de trámite de radicación. </br>
+                                        (La puedes iniciar en el siguiente <a
+                                            href="https://www.migraciones.gov.ar/radex/index.html">enlace</a>)
+                                    </li>
+                                    <li><b>PDF 2:</b> Certificado del secundario, debes validar tus estudios en el
+                                        siguiente
+                                        <a
+                                            href="https://www.argentina.gob.ar/tema/estudiar/guia-validez-titulos-estudios">enlace</a>
+                                        </p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p><b>Ten en cuenta que los datos deben coincidir con los usados en el formulario de preinscripción</b>
+                </p>
+
+                <p>Le recomendamos que, antes de confirmar su inscripción, haya examinado minuciosamente la información
+                    presentada para las modalidades. De esta manera, podrás escoger con buen criterio una de ellas.
+                    Desde el Área Ingreso a la UTN La Plata, responsable de la implementación del Seminario de Ingreso,
+                    te alentamos a participar en la Modalidad Presencial.</p>
+                <p>Ante cualquier inquietud, no dudes en comunicarte a través de <a
+                        href="mailto:ingreso@frlp.utn.edu.ar">ingreso@frlp.utn.edu.ar</a>
+                    o bien acercarte a la oficina de Ingreso, de lunes a viernes de 12 a 16 horas.</p>
+                <div style="padding-top: 2%; text-align: center;">
+                    <a class="btn btn-primary" href="{% url 'documentacion_subir' %}" role="button"> Continuar con la
+                        inscripcion</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

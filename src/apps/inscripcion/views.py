@@ -5,17 +5,57 @@
 # Librerias de Terceros
 
 # Django
+from typing import Optional, Type
+from django.forms.models import BaseModelForm
 from django.shortcuts import render
 from django.template import RequestContext
 from django.views.generic.edit import CreateView
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
+from django.views.generic import TemplateView
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.contrib import messages
 
 # Django Locales
-from .forms import PersonaForm
-from .models import Persona, Estudiante, Pais
+from .forms import PersonaForm, EntregarDocumentacionForm
+from .models import Persona, Estudiante, Pais, Documentacion
+from .decorators import group_required
 
 # Create your views here.
+
+
+class EntregarDocumentacion(CreateView):
+    template_name = 'documentacion\create.html'
+    form_class = EntregarDocumentacionForm
+    model = Documentacion
+    #success_url = reverse_lazy('home')
+
+    def form_valid(self, form):
+        form.save()
+        return render(self.request, 'documentacion/success.html')
+
+
+class ConfirmacionInformacion(TemplateView):
+    template_name = "documentacion/info.html"
+
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(group_required('inscriptor',), name='dispatch')
+class MostrarDocumentacion(DetailView):
+    template_name = 'documentacion/view.html'
+    model = Documentacion
+    context_object_name='objeto'
+
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(group_required('inscriptor',), name='dispatch')
+class ListarDocumentacion(ListView):
+    template_name = 'documentacion/list.html'
+    model = Documentacion
+    context_object_name='aspirantes'
 
 
 def informacion_inscripcion(request):

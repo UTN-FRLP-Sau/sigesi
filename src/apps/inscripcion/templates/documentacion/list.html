@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load bootstrap_icons %}
+
+{% block content %}
+
+<div class="col-md-12">
+    <h1 class="text-center">
+        Documentacion Presentada
+    </h1>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Numero de Documento
+                        </th>
+                        <th>
+                            Correo
+                        </th>
+                        <th>
+                            Modalidad
+                        </th>
+                        <th>
+                            Periodo
+                        </th>
+                        <th>
+                            Identificacion
+                        </th>
+                        <th>
+                            Certificado de estudios
+                        </th>
+                    </tr>
+                </thead>
+
+                {% for un_aspirante in aspirantes %}
+                <tbody>
+                    <tr>
+                        <td>
+                            {{ un_aspirante.num_documento }}
+                        </td>
+                        <td>
+                            {{ un_aspirante.correo }}
+                        </td>
+                        <td>
+                            {{ un_aspirante.modalidad }}
+                        </td>
+                        <td>
+                            {{ un_aspirante.periodo }}
+                        </td>
+                        <td>
+                            <a href="#">{% bs_icon 'file-arrow-down' extra_classes="bi-file-arrow-down" %}</a>
+                        </td>
+                        <td style="align-items: center;">
+                            <a href="#">{% bs_icon 'file-arrow-down' extra_classes="bi-file-arrow-down" %}</a>
+                        </td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

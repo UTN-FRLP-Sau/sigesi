@@ -25,7 +25,8 @@ from apps.inscripcion.models import (
                                     Asistencia,
                                     EvaluacionUnidad,
                                     Parcial,
-                                    EvaluacionDiaria
+                                    EvaluacionDiaria,
+                                    Documentacion
 )
 
 # Register your models here.
@@ -54,3 +55,4 @@ admin.site.register(Asistencia)
 admin.site.register(EvaluacionUnidad)
 admin.site.register(Parcial)
 admin.site.register(EvaluacionDiaria)
+admin.site.register(Documentacion)

@@ -17,9 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.conf.urls import include
 from django.urls import path
-from .views import informacion_inscripcion, persona_create
+from .views import informacion_inscripcion, ConfirmacionInformacion, EntregarDocumentacion, MostrarDocumentacion, ListarDocumentacion
 
 urlpatterns = [
-    path('info/', informacion_inscripcion, name='inscripcion/info'),
-    path('new/', persona_create, name='crear_persona')
+    path('info', ConfirmacionInformacion.as_view(), name='confirmacion_info'),
+    path('doc/upload', EntregarDocumentacion.as_view(), name='documentacion_subir'),
+    path('doc/view/<pk>', MostrarDocumentacion.as_view(), name='documentacion_mostrar'),
+    path('doc/list', ListarDocumentacion.as_view(), name='documentacion_listar'),
+    #path('doc/upload/success', EntregaCorrecta.as_view(), name='entrega_correcta')
 ]
