@@ -10,8 +10,9 @@ import re
 
 # Django
 from django.db import models
+from django.urls import reverse
 # Django Locales
-
+from .validators import validate_file_extension
 
 # Create your models here.
 
@@ -25,12 +26,12 @@ AMBITO_ESCUELA_CHOICES = [
     ("urbano", "Urbano")
 ]
 
-SEXO_ESTUDIANTE_CHOICE = [
+SEXO_ESTUDIANTE_CHOICES = [
     ("m", "Masculino"),
     ("f", "Femenino")
 ]
 
-ESPECIALIDAD_ESTUDIANTE_CHOICE = [
+ESPECIALIDAD_ESTUDIANTE_CHOICES = [
     (5, "Ing. en Sistemas de Informacion"),
     (7, "Ing. en Energia Electrica"),
     (17, "Ing. Mecanica"),
@@ -39,11 +40,26 @@ ESPECIALIDAD_ESTUDIANTE_CHOICE = [
     (31, "Ing. Civil")
 ]
 
-
 TURNO_ESTUDIANTE_CHOICES = [
     ("m", "Turno Mañana"),
     ("t", "Turno Tarde"),
     ("n", "Turno Noche")
+]
+
+TURNO_INGRESO_AGOSTO_CHOICES = [
+    ("m", "Turno Mañana"),
+    ("t", "Turno Tarde")
+]
+
+MODALIDAD_CHOICES =[
+    ('p', "Presencial"),
+    ('s', "Semi-Presencial"),
+    ('l', "Libre"),
+]
+
+PERIODO_CHOICES =[
+    ('e', "Extensivo - Agosto-Diciembre"),
+    ('i', "Intensivo - Febrero-Marzo"),
 ]
 
 
@@ -429,7 +445,7 @@ class Estudiante(models.Model):
     credencial = models.AutoField(primary_key=True, db_column='credencial')
     legajo = models.IntegerField(default=0, db_column='legajo')
     cuil = models.CharField(max_length=13, null=True, blank=True, db_column='cuil')
-    sexo = models.CharField(max_length=1, db_column='sexo', choices=SEXO_ESTUDIANTE_CHOICE, null=True, blank=True)
+    sexo = models.CharField(max_length=1, db_column='sexo', choices=SEXO_ESTUDIANTE_CHOICES, null=True, blank=True)
     genero = models.ForeignKey(Genero, on_delete=models.DO_NOTHING, db_column='genero', null=True, blank=True)
     nombre_autopercibido = models.CharField(max_length=60, db_column='nombreautopercibido', null=True, blank=True)
     escuela = models.ForeignKey(Escuela, on_delete=models.DO_NOTHING, db_column='escuela', null=True, blank=True)
@@ -437,7 +453,7 @@ class Estudiante(models.Model):
     titulo_secundario = models.ForeignKey(TituloSecundario, db_column='tituloescuela', null=True, blank=True, on_delete=models.DO_NOTHING)
     emergencia_telefono = models.CharField(max_length=20, db_column='emergenciatelefono', null=True, blank=True)
     emergencia_contacto = models.CharField(max_length=60, db_column='emergenciacontacto', null=True, blank=True)
-    especialidad = models.IntegerField(choices=ESPECIALIDAD_ESTUDIANTE_CHOICE, db_column='especialidad', null=True, blank=True)
+    especialidad = models.IntegerField(choices=ESPECIALIDAD_ESTUDIANTE_CHOICES, db_column='especialidad', null=True, blank=True)
     turno = models.CharField(max_length=1, null=True, blank=True, db_column='turno', choices=TURNO_ESTUDIANTE_CHOICES)
     modalidad =models.IntegerField(db_column='modalidad', null=True, blank=True)
     persona = models.OneToOneField(Persona, on_delete=models.DO_NOTHING, db_column='persona')
@@ -710,3 +726,26 @@ class EvaluacionDiaria(models.Model):
 
     def get_absolute_url():
         pass
+
+class Documentacion(models.Model):
+    num_documento = models.CharField(max_length=20)
+    correo = models.EmailField(max_length=254)
+    file_documento = models.FileField(upload_to=_generar_ruta_documento, validators=[validate_file_extension])
+    file_certificado = models.FileField(upload_to=_generar_ruta_documento, validators=[validate_file_extension])
+    modalidad = models.CharField(choices= MODALIDAD_CHOICES, max_length=1)
+    periodo = models.CharField(choices= PERIODO_CHOICES, max_length=1)
+    turno = models.CharField(choices= TURNO_INGRESO_AGOSTO_CHOICES, max_length=1, default="m")
+    aprobada = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = 'Documentacion'
+        verbose_name_plural = 'Documentaciones'
+
+    def __str__(self):
+        return '{}'.format(self.num_documento)
+
+    def save(self):
+        super(Documentacion, self).save()
+
+    def get_absolute_url(self):
+        return reverse("documentacion_mostrar", kwargs={"pk": self.pk})

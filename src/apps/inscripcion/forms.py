@@ -1,11 +1,16 @@
 from django import forms
+import django_bootstrap5.widgets as bw
+from django.core.exceptions import ValidationError
 from .models import (Pais,
                      TipoDocumento,
                      Escuela,
                      Genero,
                      Persona,
-                     ESPECIALIDAD_ESTUDIANTE_CHOICE,
-                     SEXO_ESTUDIANTE_CHOICE
+                     ESPECIALIDAD_ESTUDIANTE_CHOICES,
+                     SEXO_ESTUDIANTE_CHOICES,
+                     MODALIDAD_CHOICES,
+                     PERIODO_CHOICES,
+                     Documentacion
 )
 
 class PersonaForm(forms.Form):
@@ -25,8 +30,8 @@ class PersonaForm(forms.Form):
     correo_2 = forms.EmailField(initial='e@w.com')
     #estudiante
     escuela = forms.ModelChoiceField(queryset=Escuela.objects.all(), required=False)
-    especialidad = forms.ChoiceField(choices=[('','---------')]+ESPECIALIDAD_ESTUDIANTE_CHOICE, initial=5)
-    sexo = forms.ChoiceField(choices=[('','---------')]+SEXO_ESTUDIANTE_CHOICE, initial='m')
+    especialidad = forms.ChoiceField(choices=[('','---------')]+ESPECIALIDAD_ESTUDIANTE_CHOICES, initial=5)
+    sexo = forms.ChoiceField(choices=[('','---------')]+SEXO_ESTUDIANTE_CHOICES, initial='m')
     genero = forms.ModelChoiceField(Genero.objects.all(),required=False)
 
     def clean_documento_numero(self):
@@ -70,3 +75,19 @@ class PersonaForm(forms.Form):
         cleaned_data = super(PersonaForm, self).clean()
         # retornamos los datos limpios
         return cleaned_data
+
+
+
+class EntregarDocumentacionForm(forms.ModelForm):
+    class Meta:
+        model = Documentacion
+        fields = ['num_documento', 'correo', 'file_documento', 'file_certificado', 'modalidad', 'periodo', 'turno']
+        labels = {
+            'num_documento': 'Numero de documento o pasaporte',
+            'correo': 'Correo electrónico',
+            'file_documento': 'Subir identificacion',
+            'file_certificado': 'Subir certificado de estudios secundarios',
+            'modalidad': 'Elegir modalidad',
+            'periodo': 'Elegir periodo',
+            'periodo': 'Elegir turno'
+        }
