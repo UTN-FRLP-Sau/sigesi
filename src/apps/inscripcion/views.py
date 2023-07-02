@@ -28,7 +28,7 @@ from .decorators import group_required
 
 
 class EntregarDocumentacion(CreateView):
-    template_name = 'documentacion\create.html'
+    template_name = 'documentacion/create.html'
     form_class = EntregarDocumentacionForm
     model = Documentacion
     #success_url = reverse_lazy('home')

@@ -26,3 +26,4 @@ urlpatterns = [
     path('', landing_page, name='home'),
     path('inscripcion/', include('apps.inscripcion.urls'))
 ]
+# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

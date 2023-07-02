@@ -26,12 +26,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = 'Y9k:F%pxWM{@KDw4g#G9u%]*JgrU*eud;akx_6ca!-p,?[:56k'
+#env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = False
+#env('DEBUG')
 
 ALLOWED_HOSTS = str(env('ALLOWED_HOSTS')).split(',')
+
+CSRF_TRUSTED_ORIGINS = ['https://*ingreso.frlp.utn.edu.ar','https://*.127.0.0.1']
+
 
 # Application definition
 
@@ -71,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+		'django.template.context_processors.csrf'
             ],
         },
     },
@@ -135,11 +141,12 @@ USE_TZ = True
 
 # Configuracion de los Archivos Media
 MEDIA_URL = '/media/'
-MEDIA_DIRS = BASE_DIR / 'static/media'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
+MEDIA_DIRS = [BASE_DIR / 'static/media']
+MEDIA_ROOT = BASE_DIR / 'public/media'
 
 # Configuracion de los estaticos (bootstrap, CSS, JavaScript)
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'public/static'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]

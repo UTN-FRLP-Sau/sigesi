@@ -11,6 +11,9 @@ import re
 # Django
 from django.db import models
 from django.urls import reverse
+from django.conf import settings
+from django.core.files.storage import default_storage
+
 # Django Locales
 from .validators import validate_file_extension
 
@@ -69,12 +72,19 @@ def _generar_ruta_documento(instance, filename):
     # Generamos la ruta relativa a media_root
     # # donde almacenar el archivo usando la fecha actual
     # año/mes/dia
-    ruta = os.path.join('static/media/documentos', date.today().strftime('%y/%m/%d'))
-    # Generamos el nombre del archivo con un idenfiticar
-    # aleatorio y la extension del archivo original
+    ruta_relativa = date.today().strftime('%y/%m/%d')
+    # Obtenemos una instancia de Storage
+    storage = default_storage
+    # Validacion y normalizacion de la ruta
+    ruta_validada = storage.path(os.path.join(settings.MEDIA_ROOT, 'documentos'))
+    # Verificamos que la ruta sea segura y este dentro del directorio permitido MEDIA_ROOT
+    if not storage.exists(ruta_validada):
+        # La ruta esta fuera del directorio permitido
+        raise ValueError("Ruta invalida")
+    # Generamos el nombre del archivo con un idenfiticar aleatorio y la extension del archivo original
     nombre_archivo = '{}.{}'.format(uuid4().hex,extension)
     # Retornamos la ruta completa
-    return os.path.join(ruta, nombre_archivo)
+    return storage.path(os.path.join(ruta_validada, ruta_relativa, nombre_archivo))
 
 
 class PartidoPBA(models.Model):
