@@ -744,11 +744,7 @@ def _generar_ruta_file_documento(instance, filename):
     # Obtenemos una instancia de Storage
     storage = default_storage
     # Validacion y normalizacion de la ruta
-    ruta_validada = 'documentos/{}'.format(ruta_relativa)
-    # Verificamos que la ruta sea segura y este dentro del directorio permitido MEDIA_ROOT
-    if not storage.exists(ruta_validada):
-        # La ruta esta fuera del directorio permitido
-        raise ValueError("Ruta invalida")
+    ruta_validada = 'documentos'
     # Generamos el nombre del archivo con un idenfiticar aleatorio y la extension del archivo original
     nombre_archivo = '{}_{}.{}'.format(last_id,'identificacion',extension)
     # Retornamos la ruta completa
@@ -764,11 +760,7 @@ def _generar_ruta_file_certificado(instance, filename):
     # Obtenemos una instancia de Storage
     storage = default_storage
     # Validacion y normalizacion de la ruta
-    ruta_validada = 'documentos/{}'.format(ruta_relativa)
-    # Verificamos que la ruta sea segura y este dentro del directorio permitido MEDIA_ROOT
-    if not storage.exists(ruta_validada):
-        # La ruta esta fuera del directorio permitido
-        raise ValueError("Ruta invalida")
+    ruta_validada = 'documentos'
     # Generamos el nombre del archivo con un idenfiticar aleatorio y la extension del archivo original
     nombre_archivo = '{}_{}.{}'.format(last_id,'certificado',extension)
     # Retornamos la ruta completa
