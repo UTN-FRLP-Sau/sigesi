@@ -11,27 +11,32 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-from dotenv import load_dotenv
 # from django.urls import reverse_lazy
+import environ
 import os
 
+env=environ.Env(
+    DEBUG=(bool, False)
+)
 # Inicializamos la variable de entorno
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Tomar las Variables de entorno del archivo .env
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY')
 #env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if str(os.environ.get('DEBUG')).lower()=='true' else False
+DEBUG = env('DEBUG')
+#DEBUG = True if str(os.environ.get('DEBUG')).lower()=='true' else False
 
-ALLOWED_HOSTS = str(os.environ.get('ALLOWED_HOSTS')).split(',')
+ALLOWED_HOSTS = str(env('ALLOWED_HOSTS')).split(',')
 
 CSRF_TRUSTED_ORIGINS = ['https://*ingreso.frlp.utn.edu.ar','https://*.127.0.0.1']
 
@@ -88,11 +93,11 @@ WSGI_APPLICATION = 'sigesi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DATABASE_NAME'),
-        'USER': os.environ.get('DATABASE_USER'),
-        'PASSWORD': os.environ.get('DATABASE_PASS'),
-        'HOST': os.environ.get('DATABASE_HOST'),
-        'PORT': os.environ.get('DATABASE_PORT'),
+        'NAME': env('DATABASE_NAME'),
+        'USER': env('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASS'),
+        'HOST': env('DATABASE_HOST'),
+        'PORT': env('DATABASE_PORT'),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
