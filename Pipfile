@@ -12,6 +12,7 @@ django-bootstrap5 = "*"
 mysqlclient = "*"
 pillow = "*"
 django-bootstrap-icons = "*"
+python-dotenv = "*"
 
 [dev-packages]
 autopep8 = "*"

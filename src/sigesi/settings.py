@@ -11,13 +11,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-import environ
+from dotenv import load_dotenv
 # from django.urls import reverse_lazy
 import os
 
 # Inicializamos la variable de entorno
-env = environ.Env()
-environ.Env.read_env()
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,14 +25,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'Y9k:F%pxWM{@KDw4g#G9u%]*JgrU*eud;akx_6ca!-p,?[:56k'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 #env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-#env('DEBUG')
+DEBUG = True if str(os.environ.get('DEBUG')).lower()=='true' else False
 
-ALLOWED_HOSTS = str(env('ALLOWED_HOSTS')).split(',')
+ALLOWED_HOSTS = str(os.environ.get('ALLOWED_HOSTS')).split(',')
 
 CSRF_TRUSTED_ORIGINS = ['https://*ingreso.frlp.utn.edu.ar','https://*.127.0.0.1']
 
@@ -90,11 +88,11 @@ WSGI_APPLICATION = 'sigesi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': env('DATABASE_NAME'),
-        'USER': env('DATABASE_USER'),
-        'PASSWORD': env('DATABASE_PASS'),
-        'HOST': env('DATABASE_HOST'),
-        'PORT': env('DATABASE_PORT'),
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PASS'),
+        'HOST': os.environ.get('DATABASE_HOST'),
+        'PORT': os.environ.get('DATABASE_PORT'),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
@@ -150,7 +148,7 @@ STATIC_ROOT = BASE_DIR / 'public/static'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
-
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Login y Logout
 # LOGIN_URL = reverse_lazy('usuario:login')
