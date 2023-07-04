@@ -81,13 +81,16 @@ class PersonaForm(forms.Form):
 class EntregarDocumentacionForm(forms.ModelForm):
     class Meta:
         model = Documentacion
-        fields = ['num_documento', 'correo', 'file_documento', 'file_certificado', 'modalidad', 'periodo', 'turno']
+        fields = ['num_documento', 'correo', 'file_documento', 'file_certificado', 'periodo', 'modalidad', 'turno']
         labels = {
             'num_documento': 'Numero de documento o pasaporte',
             'correo': 'Correo electrónico',
             'file_documento': 'Subir identificacion',
             'file_certificado': 'Subir certificado de estudios secundarios',
-            'modalidad': 'Elegir modalidad',
-            'periodo': 'Elegir periodo',
-            'periodo': 'Elegir turno'
+            'periodo': '¿Cuándo quiero cursar?',
+            'modalidad': '¿Cómo lo quiero cursar?',
+            'turno': '¿En qué turno quiero cursar?'
+        }
+        help_texts ={
+            'modalidad': 'La modalidad Semi-Presencial solo es para las personas que no residan en La Plata, Berisso o Ensenada',
         }
