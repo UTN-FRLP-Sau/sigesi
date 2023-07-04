@@ -11,7 +11,6 @@ import re
 # Django
 from django.db import models
 from django.urls import reverse
-from django.conf import settings
 from django.core.files.storage import default_storage
 
 # Django Locales
@@ -66,17 +65,15 @@ PERIODO_CHOICES =[
 ]
 
 
-def _generar_ruta_documento(instance, filename):
+def _generar_ruta_documento(instance, filename, path):
     # Extraer extension del fichero
     extension = os.path.splitext(filename)[1][1:]
-    # Generamos la ruta relativa a media_root
-    # # donde almacenar el archivo usando la fecha actual
-    # año/mes/dia
+    # Generamos la ruta relativa a media_root en funcion del a
     ruta_relativa = date.today().strftime('%y/%m/%d')
     # Obtenemos una instancia de Storage
     storage = default_storage
     # Validacion y normalizacion de la ruta
-    ruta_validada = storage.path(os.path.join(settings.MEDIA_ROOT, 'documentos'))
+    ruta_validada = 'documentos'
     # Verificamos que la ruta sea segura y este dentro del directorio permitido MEDIA_ROOT
     if not storage.exists(ruta_validada):
         # La ruta esta fuera del directorio permitido
@@ -84,7 +81,7 @@ def _generar_ruta_documento(instance, filename):
     # Generamos el nombre del archivo con un idenfiticar aleatorio y la extension del archivo original
     nombre_archivo = '{}.{}'.format(uuid4().hex,extension)
     # Retornamos la ruta completa
-    return storage.path(os.path.join(ruta_validada, ruta_relativa, nombre_archivo))
+    return os.path.join(ruta_validada, ruta_relativa, nombre_archivo)
 
 
 class PartidoPBA(models.Model):
@@ -737,11 +734,51 @@ class EvaluacionDiaria(models.Model):
     def get_absolute_url():
         pass
 
+def _generar_ruta_file_documento(instance, filename):
+    # Extraer extension del fichero
+    extension = os.path.splitext(filename)[1][1:]
+    # Obtener el ultimo ID del modelo Documentacion
+    last_id = Documentacion.objects.last().pk if Documentacion.objects.exists() else 0
+    # Generamos la ruta relativa a media_root en funcion del num_documento
+    ruta_relativa = str(instance.num_documento).lower()
+    # Obtenemos una instancia de Storage
+    storage = default_storage
+    # Validacion y normalizacion de la ruta
+    ruta_validada = 'documentos/{}'.format(ruta_relativa)
+    # Verificamos que la ruta sea segura y este dentro del directorio permitido MEDIA_ROOT
+    if not storage.exists(ruta_validada):
+        # La ruta esta fuera del directorio permitido
+        raise ValueError("Ruta invalida")
+    # Generamos el nombre del archivo con un idenfiticar aleatorio y la extension del archivo original
+    nombre_archivo = '{}_{}.{}'.format(last_id,'identificacion',extension)
+    # Retornamos la ruta completa
+    return os.path.join(ruta_validada, ruta_relativa, nombre_archivo)
+
+def _generar_ruta_file_certificado(instance, filename):
+    # Extraer extension del fichero
+    extension = os.path.splitext(filename)[1][1:]
+    # Obtener el ultimo ID del modelo Documentacion
+    last_id = Documentacion.objects.last().pk if Documentacion.objects.exists() else 0
+    # Generamos la ruta relativa a media_root en funcion del num_documento
+    ruta_relativa = str(instance.num_documento).lower()
+    # Obtenemos una instancia de Storage
+    storage = default_storage
+    # Validacion y normalizacion de la ruta
+    ruta_validada = 'documentos/{}'.format(ruta_relativa)
+    # Verificamos que la ruta sea segura y este dentro del directorio permitido MEDIA_ROOT
+    if not storage.exists(ruta_validada):
+        # La ruta esta fuera del directorio permitido
+        raise ValueError("Ruta invalida")
+    # Generamos el nombre del archivo con un idenfiticar aleatorio y la extension del archivo original
+    nombre_archivo = '{}_{}.{}'.format(last_id,'certificado',extension)
+    # Retornamos la ruta completa
+    return os.path.join(ruta_validada, ruta_relativa, nombre_archivo)
+
 class Documentacion(models.Model):
-    num_documento = models.CharField(max_length=20)
-    correo = models.EmailField(max_length=254)
-    file_documento = models.FileField(upload_to=_generar_ruta_documento, validators=[validate_file_extension])
-    file_certificado = models.FileField(upload_to=_generar_ruta_documento, validators=[validate_file_extension])
+    num_documento = models.CharField(max_length=20, unique=True)
+    correo = models.EmailField(max_length=254, unique=True)
+    file_documento = models.FileField(upload_to=_generar_ruta_file_documento, validators=[validate_file_extension])
+    file_certificado = models.FileField(upload_to=_generar_ruta_file_certificado, validators=[validate_file_extension])
     modalidad = models.CharField(choices= MODALIDAD_CHOICES, max_length=1)
     periodo = models.CharField(choices= PERIODO_CHOICES, max_length=1)
     turno = models.CharField(choices= TURNO_INGRESO_AGOSTO_CHOICES, max_length=1, default="m")
