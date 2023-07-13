@@ -17,15 +17,23 @@ Including another URLconf
 from django.contrib import admin
 from django.conf.urls import include
 from django.urls import path
-from django.conf import settings
-from django.conf.urls.static import static
+#from django.conf import settings
+#from django.conf.urls.static import static
+#from django.contrib.auth.views import logout, login
 
-from apps.core.views import landing_page
+
+from apps.core.views import landing_page, Error_404, Error_500
+
+handler404 = Error_404
+handler500 = Error_500
 
 urlpatterns = [
+    #path('logout/', logout, {'template_name': 'sesion/logout.html'}, name='logout'), #Sesion_logout
+    #path('login/', login, {'template_name': 'sesion/login.html'}, name='login'), #Sesion_login
     path('grappelli/', include('grappelli.urls')),  # grappelli URLS
     path('admin/', admin.site.urls),  # admin site
     path('', landing_page, name='home'),
-    path('inscripcion/', include('apps.inscripcion.urls'))
+    path('inscripcion/', include('apps.inscripcion.urls')),
+    path('cuentas/', include('django.contrib.auth.urls'))
 ]
 #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
