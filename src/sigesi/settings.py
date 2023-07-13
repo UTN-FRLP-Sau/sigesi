@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-# from django.urls import reverse_lazy
+from django.urls import reverse_lazy
 import environ
 import os
 
@@ -79,7 +79,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-		'django.template.context_processors.csrf'
+                'django.template.context_processors.csrf'
             ],
         },
     },
@@ -156,9 +156,9 @@ STATICFILES_DIRS = [
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Login y Logout
-# LOGIN_URL = reverse_lazy('usuario:login')
-# LOGIN_REDIRECT_URL = reverse_lazy('home')
-# LOGOUT_URL = reverse_lazy('home')
+LOGIN_URL = reverse_lazy('login')
+LOGIN_REDIRECT_URL = reverse_lazy('home')
+LOGOUT_URL = reverse_lazy('home')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
