@@ -21,7 +21,7 @@
     <main class="flex-shrink-0">
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
-            <div class="container px-5">
+            <div class="container px-1">
                 <a class="navbar-brand" href="https://www.frlp.utn.edu.ar/">
                     <img src="{% static 'landing/img/logo_frlp_b.png' %}">
                 </a>
@@ -37,22 +37,28 @@
                         <li class="nav-item"><a class="nav-link" href="#ingreso">Inscripción</a></li>
                         <!-- <li class="nav-item"><a class="nav-link" href="#como_llego">Como llego</a></li> -->
                         <li class="nav-item"><a class="nav-link" href="#faq">Preguntas Frecuentes</a></li>
+                        <!-- <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li> -->
                     </ul>
                 </div>
             </div>
         </nav>
         <!-- Header-->
-        <header class="bg-dark py-5 bg-header">
-            <div class="container-flux py-5 px-5"
+        <header class="bg-dark py-2 py-lg-5 bg-header">
+            <div class="container-flux py-2 py-lg-5 px-5"
                 style="background-color: rgba(10, 0, 0, 0.37); background-size: cover;">
                 <div class="row align-items-center justify-content-center">
-                    <div class="col-xl-7 col-xxl-6 order-2 order-sm-1" style="border: 1px; box-shadow: 10px;">
+                    <div class="col-xl-7 col-xxl-6 order-2 order-sm-1" style="box-shadow: 10px;">
                         <div class="my-1 text-center text-xl-start">
                             <h1 class="display-5 fw-bolder text-white mb-2">Sumate a la Universidad Tecnológica</h1>
                             <p class="lead fw-normal text-white mb-4">Convertí tus sueños en realidad:
                                 ¡Inscribite ahora en la UTN La Plata!</p>
                             <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xl-start">
-                                <a class="btn btn-primary btn-lg px-4 me-sm-3" href="#ingreso">¿Cómo me inscribo?</a>
+                                <a class="btn btn-primary btn-lg" style="width: 100%;" href="#ingreso">¿Cómo me
+                                    inscribo?</a>
+                                <!-- </div> -->
+                                <!-- <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xl-start" style="margin-top: 2%;"> -->
+                                <a class="btn btn-primary btn-lg" style="width: 100%;"
+                                    href="https://calendar.app.google/Vg3m91mR5frhPuD69" target="_blank">Visitanos</a>
                             </div>
                         </div>
                     </div>
@@ -229,8 +235,6 @@
                         <ul>
                             <li><b>Paso 1:</b> Completar el <a href="https://preinscripcion.frlp.utn.edu.ar/">
                                     formulario</a> de preinscripción online.</li>
-                            <!-- <li><b>Paso 2:</b>Enviar la documentacion solicitada por correo a: <a
-                                    href="mailto:inscripciones@frlp.utn.edu.ar">inscripciones@frlp.utn.edu.ar</a></li> -->
                             <li><b>Paso 2:</b> Para confirmar la inscripcion, y elegir la modalidad y periodo,
                                 ingresar al siguiente <a href="{% url 'confirmacion_info' %}">link</a>
                             </li>
