@@ -132,3 +132,5 @@ GitHub.sublime-settings
 # Visual Studio Code #
 .vscode/*
 .history
+src/static/landing/fonts/*
+.prettierignore

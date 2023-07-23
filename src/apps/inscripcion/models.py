@@ -784,6 +784,11 @@ class Documentacion(models.Model):
         return '{}'.format(self.num_documento)
 
     def save(self):
+        #Borramos los puntos y espacios de los numeros de documentos
+        num_documento = self.num_documento
+        num_documento = num_documento.strip(" ") #Borramos los espacios finales e iniciales
+        num_documento = num_documento.replace(".","") #Borramos los puntos
+        self.num_documento = num_documento.replace(" ","") #Borramos los espacios finales
         super(Documentacion, self).save()
 
     def get_absolute_url(self):

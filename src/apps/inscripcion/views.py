@@ -5,33 +5,50 @@
 # Librerias de Terceros
 
 # Django
-from typing import Optional, Type
-from django.forms.models import BaseModelForm
+import threading
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMultiAlternatives
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.template import RequestContext
+from django.urls import reverse
+from django.template.loader import get_template
+from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.views.generic import TemplateView
-from django.http import HttpResponse, HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.contrib import messages
 
 # Django Locales
-from .forms import PersonaForm, EntregarDocumentacionForm
-from .models import Persona, Estudiante, Pais, Documentacion
+from .forms import EntregarDocumentacionForm
+from .models import Documentacion
 from .decorators import group_required
 
+#Funciones generales
+def create_email(user_mail, subject, template_name, context):
+    template = get_template(template_name)
+    content = template.render(context)
+
+    message = EmailMultiAlternatives(
+        subject=subject,
+        body='',
+        from_email=settings.EMAIL_HOST_USER,
+        to=[
+            user_mail
+        ],
+        cc=[]
+    )
+
+    message.attach_alternative(content, 'text/html')
+    return message
+
+
 # Create your views here.
-
-
 class EntregarDocumentacion(CreateView):
     template_name = 'documentacion/create.html'
     form_class = EntregarDocumentacionForm
     model = Documentacion
-    #success_url = reverse_lazy('home')
 
     def form_valid(self, form):
         form.save()
@@ -55,101 +72,80 @@ class MostrarDocumentacion(DetailView):
 class ListarDocumentacion(ListView):
     template_name = 'documentacion/list.html'
     model = Documentacion
+    paginate_by = 20
     context_object_name='aspirantes'
 
-
-def informacion_inscripcion(request):
-        return render(request, 'info.html')
-
-
-def persona_create(request):
-    # Verificamos que el methodo sea POST
-    if request.method == 'POST':
-        # Si el methodo es POST, obtenemos el formulario
-        form = PersonaForm(request.POST)
-        # Verificamos si el Formulario es valido
-        print(form.is_valid())
-        if form.is_valid():
-            # Si es valido, instaciamos los datos del modelo Persona:
-            person = Persona(
-                nombres = form.cleaned_data['nombre'],
-                apellidos = form.cleaned_data['apellido'],
-                fecha_nacimiento = form.cleaned_data['fecha_nacimiento'],
-                pais_nacimiento = Pais.objects.get(nombre=form.cleaned_data['pais_nacimiento']),
-                nacionalidad = Pais.objects.get(pk=form.cleaned_data['pais_nacionalidad']),
-                documento_tipo = form.cleaned_data['documento_tipo'],
-                numero_documento = form.cleaned_data['documento_numero'],
-                domicilio_calle = form.cleaned_data['domicilio_calle'],
-                domicilio_cpa = form.cleaned_data['domicilio_cp'],
-                telefono = form.cleaned_data['telefono'],
-                correo = form.cleaned_data['correo_1']
-            )
-            #Instanciamos el modelo Estudiante
-            estudent = Estudiante(
-                sexo = form.cleaned_data['sexo'],
-                genero = form.cleaned_data['genero'],
-                escuela = form.cleaned_data['escuela'],
-                especialidad = form.cleaned_data['especialidad'],
-                persona = person
-            )
-            # Guardamos la instancia del modelo en la DB
-            person.save()
-            estudent.save()
-            return HttpResponseRedirect(reverse('home'))
+    def get(self, *args, **kwargs):
+        if kwargs['aprobada']=='all':
+            self.object_list = Documentacion.objects.all()
         else:
-            form = PersonaForm()
-            context =({
-                'formulario': form,
-                })
+            queryset = Documentacion.objects.filter(aprobada=kwargs['aprobada'])
+            if queryset.exists():
+                self.object_list = Documentacion.objects.filter(aprobada=kwargs['aprobada'])
+            else:
+                return HttpResponseRedirect(reverse("documentacion_listar", args=['all']))
+        context = self.get_context_data()
+        context['estado'] = kwargs['aprobada']
+        return self.render_to_response(context)
+
+
+login_required
+group_required('inscriptor',)
+def confirmar_documentacion(request):
+    if request.method == "POST":
+        #Si es POST, obtenemos lo parametros del fomrulario
+        doc_id = request.POST['id']
+        opcion = request.POST['opcion']
+        estado = request.POST['estado']
+        if opcion == 'si':
+            # Como la opcion es si, se le aprueba la documentacion.
+            # Obtenemos la instacia de la documentacion
+            doc = Documentacion.objects.get(pk=doc_id)
+            # Se modifica el atributo aprobado a True
+            doc.aprobada =True
+            # Antes de guardar la instancia enviamos el correo con la confirmacion
+            try:
+                email=create_email(
+                    user_mail=doc.correo,
+                    subject='Confirmación de Inscripción',
+                    template_name='documentacion/confirmacion_correo.html',
+                    context={}
+                    )
+                thread = threading.Thread(target=email.send)
+                thread.start()
+                doc.save()
+            except:
+                messages.error(request, 'El correo no se a podido enviar, reintente mas tarde. Si el problema persiste, contacte con el administrador')
+            # Retornamos a la vista actual
+            return HttpResponseRedirect(reverse("documentacion_listar", args=[estado]))
+        else:
+            # Como la opcion no es si, se le rechaza la documentacion.
+            # Obtenemos la instacia de la documentacion
+            doc = Documentacion.objects.get(pk=doc_id)
+            # Se modifica el atributo aprobado a True
+            doc.aprobada = False
+            # Se guarda la instancia
+            doc.save()
+            # Retornamos a la vista actual
+            return HttpResponseRedirect(reverse("documentacion_listar", args=[estado]))
     else:
-        form = PersonaForm()
-        context =({
-            'formulario': form,
-            })
-    return render (request, 'persona_create.html', context)
+        return HttpResponseRedirect(reverse("inscriptor_home"))
+    #documento = Documentacion.objects.get(pk=pk)
+    #pass
 
 
-'''
-				# Creamos el User de Django
-				u = User.objects.create_user(
-											username = form.cleaned_data['nickname'],
-											email = form.cleaned_data['email'],
-											password = form.cleaned_data['password1'],
-											last_name = form.cleaned_data['apellido'],
-											first_name = form.cleaned_data['nombre'],
-											)
-				# Lo agregamos al grupo alumnos
-				u.groups.add(grupo_alumno)
-				# Instanciamos a usuarios.Alumno
-				a = Alumno(
-					user = u,
-					fecha_nacimiento = form.cleaned_data['fecha_nacimiento'],
-					dni = form.cleaned_data['dni'],
-					legajo = form.cleaned_data['legajo'],
-					#comision = form.cleaned_data['comision'],
-					carrera = form.cleaned_data['especialidad'],
-					timestamp = datetime.now(),
-					)
-				u.save() # Guardamos Django.User
-				a.save() # Guardamos usuarios.Alumno
-				print (a)
-				print (u)
-				# Retornamos el formulrio para crear otro alumno
-				return HttpResponseRedirect(reverse('usuario:crear_alumno'))
-			else:
-				print ('algo no anda')
-
-		else:
-			form = Fomulario_Creacion_Alumno()
-
-		context =({
-			'formulario': form,
-		})
-
-		return render (request, 'alumno/crear.html', context)
-
-	# Si no es laboratorista
-	else:
-		# Redireccionamos al "Home"
-		return HttpResponseRedirect(reverse('home'))
-'''
+@login_required
+@group_required('inscriptor',)
+def inscriptor_home(request):
+    presentadas = Documentacion.objects.all().count()
+    procesadas = Documentacion.objects.values('aprobada').filter(aprobada='True').count()
+    faltantes = presentadas - procesadas
+    porcientos = round(100*procesadas/presentadas,1)
+    #Tarea.object.values("estado").filter(estado="Completado").count()
+    context={
+        'presentadas': presentadas,
+        'procesadas': procesadas,
+        'faltantes': faltantes,
+        'porcientos': porcientos,
+    }
+    return render(request, 'usuario/home.html', context)

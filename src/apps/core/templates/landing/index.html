@@ -1,5 +1,6 @@
 {% load static %}
 {% load django_bootstrap5 %}
+{% load bootstrap_icons %}
 
 <!DOCTYPE html>
 <html lang="es">
@@ -37,7 +38,12 @@
                         <li class="nav-item"><a class="nav-link" href="#ingreso">Inscripción</a></li>
                         <!-- <li class="nav-item"><a class="nav-link" href="#como_llego">Como llego</a></li> -->
                         <li class="nav-item"><a class="nav-link" href="#faq">Preguntas Frecuentes</a></li>
-                        <!-- <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li> -->
+                        {% if request.user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Salir</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'inscriptor_home' %}">Home</a></li>
+                        {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -262,7 +268,7 @@
                             <ul>
                                 <li>Modalidad Presencial</li>
                                 <li>Modalidad Semi-Presencial</li>
-                                <li>Modalidad Virtual o a Distancia</li>
+                                <li>Modalidad Virtual a distancia o Libre</li>
                             </ul>
                             <li>Intensivo (podés inscribirte hasta el 31/12/2023)
                                 <!-- <a href="#">ver información</a>. -->
@@ -270,7 +276,7 @@
                             <ul>
                                 <li>Modalidad Presencial</li>
                                 <li>Modalidad Semi-Presencial</li>
-                                <li>Modalidad Virtual o a Distancia</li>
+                                <li>Modalidad Virtual a distancia o Libre</li>
                             </ul>
                         </ul>
 

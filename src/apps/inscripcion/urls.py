@@ -1,28 +1,28 @@
-"""
-URL configuration for sigesi project.
+# future
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-from django.contrib import admin
-from django.conf.urls import include
+# Librerias Standars
+
+# Librerias de Terceros
+
+# Django
 from django.urls import path
-from .views import informacion_inscripcion, ConfirmacionInformacion, EntregarDocumentacion, MostrarDocumentacion, ListarDocumentacion
+
+# Django Locales
+from .views import (ConfirmacionInformacion,
+                    EntregarDocumentacion,
+                    MostrarDocumentacion,
+                    ListarDocumentacion,
+                    confirmar_documentacion,
+                    inscriptor_home
+                    )
 
 urlpatterns = [
     path('info', ConfirmacionInformacion.as_view(), name='confirmacion_info'),
     path('doc/upload', EntregarDocumentacion.as_view(), name='documentacion_subir'),
     path('doc/view/<pk>', MostrarDocumentacion.as_view(), name='documentacion_mostrar'),
-    path('doc/list', ListarDocumentacion.as_view(), name='documentacion_listar'),
-    #path('doc/upload/success', EntregaCorrecta.as_view(), name='entrega_correcta')
+    path('doc/confirm/', confirmar_documentacion, name='documentacion_confirmar'),
+    #path('doc/delete/<pk>', rechazar_documentacion, name='documentacion_confirmar'),
+    #path('doc/edit/<pk>', ConfirmarDocumentacion.as_view(), name='documentacion_confirmar'),
+    path('doc/list/<str:aprobada>/', ListarDocumentacion.as_view(), name='documentacion_listar'),
+    path('home', inscriptor_home, name='inscriptor_home'),
 ]
