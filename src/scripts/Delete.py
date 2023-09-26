@@ -6,6 +6,6 @@ def run():
     MailEscuela.objects.all().delete()
     Escuela.objects.all().delete()
     Localidad.objects.all().delete()
-    Provincia.objects.all().delete()
     PartidoPBA.objects.all().delete()
+    Provincia.objects.all().delete()
     Pais.objects.all().delete()

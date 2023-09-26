@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+
+
+<div class="container-fluid">
+    <div class=" row justify-content-center align-items-center" style="height: 90vh;">
+        <div class="col-lg-10 col-xl-6">
+            <h2 class="fw-bolder text-center">Inscripcion Paso 1</h2>
+            <div class="center-block" style="margin-bottom: 5%" >
+                {{ persona_form.errors }}
+                <form enctype="multipart/form-data" id="formulario" method="POST">
+                    {% csrf_token %}
+                    <h3>Datos Personales</h3>
+                    <div class="row conteiner-fluid">
+                    <div class="col-lg-6">
+                    {% bootstrap_field persona_form.apellidos layout='floating' %}
+                    </div>
+                    <div class="col-lg-6">
+                    {% bootstrap_field persona_form.nombres layout='floating' %}
+                    </div>
+                    <div class="col-lg-4">
+                    {% bootstrap_field persona_form.fecha_nacimiento layout='floating' %}
+                    </div>
+                    <div class="col-lg-4">
+                    {% bootstrap_field persona_form.pais_nacimiento layout='floating' %}
+                    </div>
+                    <div class="col-lg-4">
+                    {% bootstrap_field persona_form.nacionalidad layout='floating' %}
+                    </div>
+                    <div class="col-lg-4">
+                    {% bootstrap_field persona_form.documento_tipo layout='floating' %}
+                    </div>
+                    <div class="col-lg-4">
+                    {% bootstrap_field persona_form.pais_documento layout='floating' %}
+                    </div>
+                    <div class="col-lg-4">
+                    {% bootstrap_field persona_form.numero_documento layout='floating' %}
+                    </div>
+                    </div>
+<!-- ############################################################ -->
+                    <hr>
+                    <h3>Datos de Contacto</h3>
+                    <div class="row conteiner-fluid">
+                    <div class="col-lg-6">
+                    {% bootstrap_field persona_form.telefono layout='floating' %}
+                    </div>
+                    <div class="col-lg-6">
+                    {% bootstrap_field persona_form.telefono2 layout='floating' %}
+                    </div>
+                    <div class="col-lg-6">
+                    {% bootstrap_field persona_form.correo layout='floating' %}
+                    </div>
+                    <div class="col-lg-6">
+                    {% bootstrap_field persona_form.correo2 layout='floating' %}
+                    </div>
+<!-- ############################################################ -->
+                    <hr>
+                    <h3>Domicilio de Actual de Residencia</h3>
+                    <div class="row conteiner-fluid">
+                    <div class="col-lg-7">
+                    {% bootstrap_field persona_form.domicilio_pais layout='floating'%}
+                    </div>
+                    <div id='id_domicilio_provincia_div' class="col-lg-7" hidden>
+                    {% bootstrap_field persona_form.domicilio_provincia layout='floating' %}
+                    </div>
+                    <div id='id_domicilio_partido_div' class="col-lg-7" hidden>
+                    {% bootstrap_field persona_form.domicilio_partido layout='floating' %}
+                    </div>
+                    <div id='id_domicilio_localidad_div' class="col-lg-7" hidden>
+                    {% bootstrap_field persona_form.domicilio_localidad layout='floating' %}
+                    </div>
+                    </div>
+                    <div id='id_domicilio_direccion_div' class="row conteiner-fluid" hidden>
+                    <div class="col-lg-4">
+                    {% bootstrap_field persona_form.domicilio_barrio layout='floating' %}
+                    </div>
+                    <div class="col-lg-4">
+                    {% bootstrap_field persona_form.domicilio_calle layout='floating' %}
+                    </div>
+                    <div class="col-lg-2">
+                    {% bootstrap_field persona_form.domicilio_piso layout='floating' %}
+                    </div>
+                    <div class="col-lg-2">
+                    {% bootstrap_field persona_form.domicilio_departamento layout='floating' %}
+                    </div>
+                    </div>
+                    <div class="row conteiner-fluid">
+                    <div class="col-lg-2">
+                    {% bootstrap_button button_type="submit" content="Siguiente" %}
+                    </div>
+                    <div class="col-lg-2">
+                    {% bootstrap_button button_type="reset" content="Cancelar" %}
+                    </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block content_js %}
+<script>
+function show_provincia() {
+    let pais = document.getElementById("id_domicilio_pais").value;
+
+    if (pais == "9") { // 9=Argentina
+        document.getElementById("id_domicilio_provincia_div").removeAttribute("hidden");
+    } else {
+        document.getElementById("id_domicilio_provincia_div").setAttribute("hidden","");
+    }
+}
+
+function show_partido() {
+    let provincia = document.getElementById("id_domicilio_provincia").value;
+    const localidades = document.getElementById('id_domicilio_localidad').options;
+
+    if (provincia == "6") { // 6=Buenos Aires
+        document.getElementById("id_domicilio_partido_div").removeAttribute("hidden");
+        document.getElementById("id_domicilio_localidad_div").setAttribute("hidden","");
+    } else {
+        document.getElementById("id_domicilio_partido_div").setAttribute("hidden","");
+        document.getElementById("id_domicilio_localidad_div").removeAttribute("hidden");
+        for (let i=0; i<localidades.length; i++) {
+            let localidad = localidades[i].value;
+            console.log(localidad.substring(0, localidad.length - 6), provincia, localidad.substring(0, localidad.length - 6)== provincia)
+            if (localidad.substring(0, localidad.length - 6)== provincia) {
+                localidades[i].style.display = 'block';
+            } else {
+                localidades[i].style.display = 'none';
+            }
+        }
+    }
+}
+
+function show_localidad() {
+    const partido = document.getElementById("id_domicilio_partido").value;
+    const localidades = document.getElementById('id_domicilio_localidad').options;
+
+    console.log(partido)
+    if (partido != "") {
+        document.getElementById("id_domicilio_localidad_div").removeAttribute("hidden");
+        for (let i=0; i<localidades.length; i++) {
+            let localidad = localidades[i].value;
+            if (localidad.substring(0, localidad.length - 6) == partido) {
+                localidades[i].style.display = 'block';
+            } else {
+                localidades[i].style.display = 'none';
+            }
+        }
+    } else {
+        document.getElementById("id_domicilio_localidad_div").setAttribute("hidden","");
+    }
+}
+
+function show_direccion() {
+    let localidad = document.getElementById("id_domicilio_localidad").value;
+
+    if (localidad != "") {
+        document.getElementById("id_domicilio_direccion_div").removeAttribute("hidden");
+    } else {
+        document.getElementById("id_domicilio_direccion_div").setAttribute("hidden","");
+    }
+}
+</script>
+
+
+{% endblock %}

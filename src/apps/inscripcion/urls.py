@@ -12,6 +12,8 @@ from .views import (ConfirmacionInformacion,
                     EntregarDocumentacion,
                     MostrarDocumentacion,
                     ListarDocumentacion,
+                    CreatePersona,
+                    CrearEstudiante,
                     confirmar_documentacion,
                     inscriptor_home
                     )
@@ -25,4 +27,8 @@ urlpatterns = [
     #path('doc/edit/<pk>', ConfirmarDocumentacion.as_view(), name='documentacion_confirmar'),
     path('doc/list/<str:aprobada>/', ListarDocumentacion.as_view(), name='documentacion_listar'),
     path('home', inscriptor_home, name='inscriptor_home'),
+
+    #De aqui en mas es el nuevo sistema
+    path('new/person/', CreatePersona.as_view(), name='crear_persona'),
+    path('new/student/<int:persona_id>/', CrearEstudiante.as_view(), name='crear_estudiante'),
 ]

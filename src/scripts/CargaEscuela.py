@@ -16742,15 +16742,18 @@ def run():
             cue=str(x[0])
 
         pais = Escuela(
-            cue,
-            x[1],
-            x[2],
-            x[3],
-            x[4],
-            x[5],
-            x[6],
-            x[7],
-            x[8]
+            cue=cue,
+            gestion=x[1],
+            ambito=x[2],
+            tecnica=x[3],
+            nombre=x[4],
+            domicilio_calle=x[5],
+            domicilio_altura=x[6],
+            domicilio_localidad=x[7],
+            domicilio_cpa =x[8],
+            domicilio_cp4 =x[9],
+            domicilio_coordenada_x =x[10],
+            domicilio_coordenada_y =x[11]
             )
 
         pais.save()

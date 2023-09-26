@@ -1,0 +1,95 @@
+{% extends 'base.html' %} {% load django_bootstrap5 %} {% load bootstrap_icons %} {% block content %}
+
+<div class="col-md-12">
+    <h1 class="text-center">Documentacion</h1>
+</div>
+<div class="container">
+    <div class="row">
+        {% for message in messages %}
+        <div class="col-12 d-flex justify-content-center">
+            <div class="alert alert-danger col-4 alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+        {% endfor %}
+        {% if is_paginated %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">&laquo;</a>
+                </li>
+                {% endif %} {% for i in paginator.page_range %}
+                <li class="page-item {% if page_obj.number == i %}active{% endif %}">
+                    <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                </li>
+                {% endfor %} {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">&raquo;</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        <div class="col-md-12">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Correo</th>
+                        <th>Modalidad</th>
+                        <th>Periodo</th>
+                        <th>Turno</th>
+                        <th>Identificacion</th>
+                        <th>Certificado</th>
+                        <th>Confirmacion</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for un_aspirante in aspirantes %}
+                    <tr>
+                        <td>{{ un_aspirante.num_documento }}</td>
+                        <td>{{ un_aspirante.correo }}</td>
+                        <td>{{ un_aspirante.get_modalidad_display }}</td>
+                        <td>{{ un_aspirante.get_periodo_display }}</td>
+                        <td>{{ un_aspirante.get_turno_display }}</td>
+                        <td class="text-center">
+                            <a class="btn btn-info btn-sm" href="{{ un_aspirante.file_documento.url }}" role="button"
+                                target="_blank">Ver</a>
+                        </td>
+                        <td class="text-center">
+                            <a class="btn btn-info btn-sm" href="{{ un_aspirante.file_certificado.url }}" role="button"
+                                target="_blank">Ver</a>
+                        </td>
+                        <td>
+                            <form action="{% url 'documentacion_confirmar' %}" method="post">
+                                <input type="text" name="id" value="{{ un_aspirante.pk }}" hidden>
+                                <input type="text" name="estado" value="{{ estado }}" hidden>
+                                {% csrf_token %}
+                                <!-- <button type="submit" name="opcion" value="no"
+                                    class="btn btn-danger">&#x2718;</i></button> -->
+                                {% if not un_aspirante.aprobada %}
+                                <button type="submit" name="opcion" value="si"
+                                    class="btn btn-success">&check;</i></button>
+                                {% endif %}
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

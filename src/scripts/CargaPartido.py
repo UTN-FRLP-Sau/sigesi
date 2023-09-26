@@ -1,4 +1,5 @@
 from apps.inscripcion.models import PartidoPBA
+from apps.inscripcion.models import Provincia
 
 Values_partidos=(
     ('6049','AZUL'),
@@ -143,9 +144,11 @@ def run():
     PartidoPBA.objects.all().delete()
 
     for x in Values_partidos:
+        print(x)
         pais = PartidoPBA(
-            x[0],
-            x[1].title()
+            id = x[0],
+            nombre = x[1],
+            provincia = Provincia.objects.get(id=6)
         )
 
         pais.save()

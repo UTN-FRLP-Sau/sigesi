@@ -1,4 +1,6 @@
 from apps.inscripcion.models import Localidad
+from apps.inscripcion.models import PartidoPBA
+from apps.inscripcion.models import Provincia
 
 Values_localidad= (
 (6049005,'AZUL',0,0,6049,6),
@@ -8773,12 +8775,10 @@ def run():
 
     for x in Values_localidad:
         pais = Localidad(
-            x[0],
-            x[1],
-            x[2],
-            x[3],
-            x[4],
-            x[5]
+            id = x[0],
+            nombre = x[1],
+            partido = None if x[4]==None else PartidoPBA.objects.get(id=int(x[4])),
+            provincia = Provincia.objects.get(id=x[5])
             )
 
         pais.save()

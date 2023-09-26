@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMultiAlternatives
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -18,11 +19,11 @@ from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 
 # Django Locales
-from .forms import EntregarDocumentacionForm
-from .models import Documentacion
+from .forms import EntregarDocumentacionForm, CreatePersonaForm, CreateStudentForm
+from .models import Documentacion, Persona
 from .decorators import group_required
 
 #Funciones generales
@@ -149,3 +150,47 @@ def inscriptor_home(request):
         'porcientos': porcientos,
     }
     return render(request, 'usuario/home.html', context)
+
+
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+
+
+class CreatePersona(View):
+    template_name = 'inscripcion/create_person.html'
+
+    def get(self, request):
+        persona_form = CreatePersonaForm()
+        return render(request, self.template_name, {'persona_form': persona_form})
+
+    def post(self, request):
+        persona_form = CreatePersonaForm(request.POST)
+        if persona_form.is_valid():
+            persona = persona_form.save(commit=False)
+            persona.save()
+            return HttpResponseRedirect(reverse('crear_estudiante', args=[persona.id]))
+        return render(request, self.template_name, {'persona_form': persona_form})
+
+    def form_valid(self, form):
+        form.save()
+        return render(self.request, 'inscripcion/success.html')
+
+
+class CrearEstudiante(View):
+    template_name = 'inscripcion/create_student.html'
+
+    def get(self, request, persona_id):
+        estudiante_form = CreateStudentForm()
+        return render(request, self.template_name, {'form': estudiante_form})
+
+    def post(self, request, persona_id):
+        persona = Persona.objects.get(pk=persona_id)
+        estudiante_form = CreateStudentForm(request.POST)
+        if estudiante_form.is_valid():
+            with transaction.atomic():
+                estudiante = estudiante_form.save(commit=False)
+                estudiante.persona = persona
+                estudiante.save()
+            return render(self.request, 'inscripcion/success.html')
+        return render(request, self.template_name, {'form': estudiante_form})

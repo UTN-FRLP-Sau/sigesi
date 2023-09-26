@@ -1,4 +1,5 @@
 from apps.inscripcion.models import Pais
+from slugify import slugify
 
 values_paises=(
     ('AF','AFG','Afganistan',0,0,93,4),
@@ -252,15 +253,14 @@ values_paises=(
 def run():
     Pais.objects.all().delete()
 
+    i=0
     for x in values_paises:
         pais = Pais(
-        x[6],
-        x[0],
-        x[1],
-        x[2],
-        x[3],
-        x[4],
-        x[5]
+        id = i,
+        nombre = x[2],
+        coord_x = x[3],
+        coord_y = x[4],
+        nacionalidad = slugify(str(x[2]), separator='_')
         )
-
         pais.save()
+        i=i+1

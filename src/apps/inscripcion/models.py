@@ -48,9 +48,10 @@ TURNO_ESTUDIANTE_CHOICES = [
     ("n", "Turno Noche")
 ]
 
-TURNO_INGRESO_AGOSTO_CHOICES = [
+TURNO_INGRESO_CHOICES = [
     ("m", "Turno Mañana"),
-    ("t", "Turno Tarde")
+    ("t", "Turno Tarde"),
+    ("n", "Turno Noche"),
 ]
 
 MODALIDAD_CHOICES =[
@@ -82,30 +83,6 @@ def _generar_ruta_documento(instance, filename, path):
     nombre_archivo = '{}.{}'.format(uuid4().hex,extension)
     # Retornamos la ruta completa
     return os.path.join(ruta_validada, ruta_relativa, nombre_archivo)
-
-
-class PartidoPBA(models.Model):
-    id = models.CharField(max_length=5,
-                          primary_key=True,
-                          unique=True,
-                          db_column='id')
-    nombre = models.CharField(max_length=100, db_column='nombre', unique=True)
-
-    class Meta:
-        ordering = ['nombre']
-        verbose_name = 'Partido'
-        verbose_name_plural = 'Partidos'
-        db_table = 'partidopba'
-
-    def __str__(self):  # Python 3
-        return '{}'.format(self.nombre.title())
-
-    def save(self):
-        self.nombre = self.nombre.lower()
-        super(PartidoPBA, self).save()
-
-    def get_absolute_url():
-        pass
 
 
 class Pais(models.Model):
@@ -155,6 +132,34 @@ class Provincia(models.Model):
 
     def get_absolute_url():
         pass
+
+
+class PartidoPBA(models.Model):
+    id = models.CharField(max_length=5,
+                          primary_key=True,
+                          unique=True,
+                          db_column='id')
+    nombre = models.CharField(max_length=100, db_column='nombre', unique=True)
+    provincia = models.ForeignKey(Provincia,
+                             on_delete=models.DO_NOTHING,
+                             db_column='provincia')
+
+    class Meta:
+        ordering = ['nombre']
+        verbose_name = 'Partido'
+        verbose_name_plural = 'Partidos'
+        db_table = 'partidopba'
+
+    def __str__(self):  # Python 3
+        return '{}'.format(self.nombre.title())
+
+    def save(self):
+        self.nombre = self.nombre.lower()
+        super(PartidoPBA, self).save()
+
+    def get_absolute_url():
+        pass
+
 
 class Localidad(models.Model):
     id = models.IntegerField(primary_key=True, db_column='id', unique=True)
@@ -469,7 +474,7 @@ class Estudiante(models.Model):
         ordering=['credencial']
         db_table = 'estudiante'
         verbose_name = 'Estudiante'
-        verbose_name_plural = 'Estudiantess'
+        verbose_name_plural = 'Estudiantes'
 
     def __str__(self):
         return '{}, {}'.format(self.persona.apellidos.upper(), self.persona.nombres.title())
@@ -771,9 +776,9 @@ class Documentacion(models.Model):
     correo = models.EmailField(max_length=254, unique=True)
     file_documento = models.FileField(upload_to=_generar_ruta_file_documento, validators=[validate_file_extension])
     file_certificado = models.FileField(upload_to=_generar_ruta_file_certificado, validators=[validate_file_extension])
-    modalidad = models.CharField(choices= MODALIDAD_CHOICES, max_length=1)
-    periodo = models.CharField(choices= PERIODO_CHOICES, max_length=1)
-    turno = models.CharField(choices= TURNO_INGRESO_AGOSTO_CHOICES, max_length=1, default="m")
+    modalidad = models.CharField(choices= [choices for choices in MODALIDAD_CHOICES if choices[0]!=''], max_length=1)
+    periodo = models.CharField(choices= [choices for choices in PERIODO_CHOICES if choices[0]!= 'e' ], max_length=1)
+    turno = models.CharField(choices= [choices for choices in TURNO_INGRESO_CHOICES if choices[0]!= 'n' ], max_length=1, default="m")
     aprobada = models.BooleanField(default=False)
 
     class Meta:

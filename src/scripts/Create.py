@@ -11,9 +11,9 @@ from .Delete import run as Delete
 def run():
     Delete()
     Pais()
-    Partido()
     Provincia()
+    Partido()
     Localidad()
-    Escuela()
-    Mail()
-    Telefono()
+    #Escuela()
+    #Mail()
+    #Telefono()

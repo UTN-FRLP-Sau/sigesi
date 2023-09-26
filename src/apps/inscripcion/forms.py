@@ -1,81 +1,17 @@
+#from typing import Any, Dict
 from django import forms
-import django_bootstrap5.widgets as bw
+#import django_bootstrap5.widgets as bw
 from django.core.exceptions import ValidationError
 from .models import (Pais,
-                     TipoDocumento,
-                     Escuela,
-                     Genero,
+                     Provincia,
+                     PartidoPBA,
+                     Estudiante,
                      Persona,
                      ESPECIALIDAD_ESTUDIANTE_CHOICES,
+                     TURNO_INGRESO_CHOICES,
                      SEXO_ESTUDIANTE_CHOICES,
-                     MODALIDAD_CHOICES,
-                     PERIODO_CHOICES,
                      Documentacion
 )
-
-class PersonaForm(forms.Form):
-    #persona
-    nombre = forms.CharField(max_length=50, label='Nombres')
-    apellido = forms.CharField(max_length=50, required=False, label='Apellidos', initial='ronconi')
-    fecha_nacimiento = forms.DateField(label='Fecha de Nacimiento', initial='15/08/1990')
-    pais_nacimiento = forms.ModelChoiceField(Pais.objects.all(),required=False, label='Pais de nacimiento', initial=11)
-    pais_nacionalidad = forms.ChoiceField(choices=[('','---------')]+[(pais.id, pais.nacionalidad.title()) for pais in Pais.objects.all()], initial=11)
-    documento_tipo = forms.ModelChoiceField(TipoDocumento.objects.all(),required=False, initial=1)
-    documento_numero = forms.CharField(max_length=13,required=False, initial=12)
-    domicilio_calle = forms.CharField(max_length=100,required=False, initial=12)
-    domicilio_cp = forms.CharField(max_length=100,required=False, initial=12)
-    domicilio_numero = forms.IntegerField(required=False, initial=1234)
-    telefono = forms.IntegerField(required=False, initial=1234)
-    correo_1 = forms.EmailField(initial='e@w.com')
-    correo_2 = forms.EmailField(initial='e@w.com')
-    #estudiante
-    escuela = forms.ModelChoiceField(queryset=Escuela.objects.all(), required=False)
-    especialidad = forms.ChoiceField(choices=[('','---------')]+ESPECIALIDAD_ESTUDIANTE_CHOICES, initial=5)
-    sexo = forms.ChoiceField(choices=[('','---------')]+SEXO_ESTUDIANTE_CHOICES, initial='m')
-    genero = forms.ModelChoiceField(Genero.objects.all(),required=False)
-
-    def clean_documento_numero(self):
-        ''' Validacion del Numero de documento
-
-        El metodo valida que el numero de documento no exista en al base de datos, en caso de que no exista
-        retorna documento_numero
-
-        Excepciones
-        --ValidationError -- Cuando existe el numero devuelve un error
-        '''
-        documento_numero = self.cleaned_data.get('documento_numero')
-        if documento_numero:
-            if Persona.objects.filter(numero_documento=documento_numero).exists():
-                raise forms.ValidationError('documento_numero', 'El numero de documento ya se encuentra registrado')
-        return documento_numero
-
-
-    '''Validacion de Correo
-    def clean_correo_1(self):
-
-        Metodo que valida que ambos correos sean iguiales, y que no exista en la base de datos,
-        antes de validar el formulario para que sea enviado retorna el correo_1
-
-        Excepciones:
-        -- ValidationError -- Cuando el correo ya existe muestra un error
-        -- ValidationError -- Cuando los correos no coinciden muestra un error
-        correo_1 = self.cleaned_data.get('correo_1')
-        correo_2 = self.cleaned_data.get('correo_2')
-        if correo_1==correo_2:
-            if Persona.objects.filter(correo=correo_1).exists():
-                raise forms.ValidationError('El correo ya se encuentra registrado')
-        else:
-            raise forms.ValidationError('Los correos no coinciden')
-        return correo_1
-        '''
-
-
-    def clean(self):
-        # Limpiamos los datos del formulario
-        cleaned_data = super(PersonaForm, self).clean()
-        # retornamos los datos limpios
-        return cleaned_data
-
 
 
 class EntregarDocumentacionForm(forms.ModelForm):
@@ -93,4 +29,138 @@ class EntregarDocumentacionForm(forms.ModelForm):
         }
         help_texts ={
             'modalidad': 'La modalidad Semi-Presencial solo es para las personas que no residan en La Plata, Berisso o Ensenada',
+        }
+
+
+class NacionalidadModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.nacionalidad
+
+
+class CreatePersonaForm(forms.ModelForm):
+    correo2 = forms.EmailField(max_length=255, label='Confirmar Correo')
+    telefono2 = forms.IntegerField(label='Confirmar Telefono')
+    nacionalidad = NacionalidadModelChoiceField(queryset=Pais.objects.all())
+    domicilio_pais = forms.ModelChoiceField(queryset=Pais.objects.all(),
+                                            label='Pais',
+                                            required=True,
+                                            widget=forms.Select(
+                                                attrs={
+                                                    'onchange': 'show_provincia();',
+                                                    }
+                                                )
+                                            )
+    domicilio_provincia = forms.ModelChoiceField(queryset=Provincia.objects.all(),
+                                                 label='Provincia',
+                                                 required=True,
+                                                 widget=forms.Select(
+                                                     attrs={
+                                                         'onchange': 'show_partido();',
+                                                         #'style':'display:none',
+                                                         }
+                                                     )
+                                                 )
+    domicilio_partido = forms.ModelChoiceField(queryset=PartidoPBA.objects.all(),
+                                               label='Partido',
+                                               required=True,
+                                               widget=forms.Select(
+                                                    attrs={
+                                                        'onchange': 'show_localidad();',
+                                                        #'style':'display:none',
+                                                         }
+                                                    )
+                                                )
+
+    # nacionalidad = forms.ModelChoiceField(queryset=Pais.objects.all(),
+    #                                       to_field_name='nacionalidad',
+    #                                       label='Nacionalidad',
+    #                                       widget=forms.Select)
+
+    class Meta:
+        model = Persona
+        fields = ['apellidos',#
+                  'nombres',#
+                  'fecha_nacimiento',#
+                  'pais_nacimiento',#
+                  'nacionalidad',#
+                  'documento_tipo',#
+                  'numero_documento',#
+                  'telefono',
+                  'telefono2',
+                  'correo',
+                  'correo2',
+                  'pais_documento',#
+                  'domicilio_pais',
+                  'domicilio_provincia',
+                  'domicilio_partido',
+                  'domicilio_localidad',
+                  'domicilio_barrio',
+                  'domicilio_calle',
+                  'domicilio_piso',
+                  'domicilio_departamento',
+                  #'domicilio_cpa',
+                  #'domicilio_cp4',
+                  # 'domicilio_coordenada_x',
+                  # 'domicilio_coordenada_y',
+                  ]
+        labels = {
+            'apellido': 'Apellidos',
+            'nombre': 'Nombres',
+            'fecha_nacimiento': 'Fecha de nacimiento',
+            'pais_nacimiento': 'Pais de nacimiento',
+#            'nacionalidad': 'Nacionalidad',
+            'documento_tipo': 'Tipo de documento',
+            'numero_documento': 'Numero de documento, o codigo de credencial',
+            'pais_documento': 'Pais de origen del documento',
+            'domicilio_pais': 'Pais',
+            'domicilio_provincia': 'Provincia',
+            'domicilio_partido': 'Partido',
+            'domicilio_localidad': 'Localidad',
+            'domicilio_barrio': 'Barrio',
+            'domicilio_calle': 'Calle',
+            'domicilio_piso': 'Piso',
+            'domicilio_departamento': 'Departamento',
+            #'domicilio_cpa': 'CPA',
+            #'domicilio_cp4': 'CP4',
+            'telefono': 'Numero de telefono',
+            'correo': 'Correo electronico'
+        }
+        help_texts ={
+            'apellido': 'Tal como aparece en su documento',
+            'nombre': 'Tal como aparece en su documento',
+            'telefono': 'Sin 0 ni 15, ejemplo 3446565656',
+        }
+        widgets ={
+            'domicilio_localidad': forms.Select(attrs={'onchange': 'show_direccion();'}),
+            #'domicilio_barrio': forms.TextInput(attrs={'style':'display:none'}),
+            #'domicilio_calle': forms.TextInput(attrs={'style':'display:none'}),
+            #'domicilio_piso': forms.TextInput(attrs={'style':'display:none'}),
+            #'domicilio_departamento': forms.TextInput(attrs={'style':'display:none'}),
+#            'nacionalidad': NacionalidadModelChoiceField(queryset=Pais.objects.all())
+#            'nacionalidad': forms.Select(choices=Pais.objects.values_list('nacionalidad', 'nacionalidad'))
+        }
+
+
+class CreateStudentForm(forms.ModelForm):
+    class Meta:
+        model = Estudiante
+        fields = [#'legajo',
+                  'cuil', 'sexo', 'genero', 'nombre_autopercibido', 'escuela', 'anio_egreso', 'titulo_secundario',
+            'emergencia_telefono', 'emergencia_contacto', 'especialidad', 'turno', 'modalidad']#, 'persona']
+        labels = {
+            'cuil': 'Cuil/Cuit',
+            'sexo': 'Sexo',
+            'genero': 'Genero',
+            'nombre_autopercibido': 'Como preferis que te llamen',
+            'escuela':'Escuela',
+            'anio_egreso': 'En que año egresaste del secundario',
+            'titulo_secundario': 'Cual es el titulo con el que egresaste',
+            'emergencia_contacto': 'Nombre del Contacto de Emergencia',
+            'emergencia_telefono': 'Telefono de Emergencia',
+            'especialidad': 'Carrera',
+            'turno': 'Turno de Preferencia',
+            'modalidad': 'Modealidad de cursado'
+            }
+        help_texts ={
+
         }

@@ -54,7 +54,8 @@ INSTALLED_APPS = ('grappelli',
                   'django_bootstrap5',
                   'django_bootstrap_icons',
                   'apps.core',
-                  'apps.inscripcion',)
+                  'apps.inscripcion',
+                  )
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
