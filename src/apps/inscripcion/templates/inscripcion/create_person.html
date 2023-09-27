@@ -71,6 +71,8 @@
                     <div id='id_domicilio_localidad_div' class="col-lg-7" hidden>
                     {% bootstrap_field persona_form.domicilio_localidad layout='floating' %}
                     </div>
+
+                    {% comment %}
                     </div>
                     <div id='id_domicilio_direccion_div' class="row conteiner-fluid" hidden>
                     <div class="col-lg-4">
@@ -85,6 +87,7 @@
                     <div class="col-lg-2">
                     {% bootstrap_field persona_form.domicilio_departamento layout='floating' %}
                     </div>
+                    {% endcomment %}
                     </div>
                     <div class="row conteiner-fluid">
                     <div class="col-lg-2">
@@ -103,7 +106,95 @@
 {% endblock %}
 
 {% block content_js %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $("#id_domicilio_pais").on("change", getProvincias);
+    $("#id_domicilio_provincia").on("change", getPartidos);
+});
+
+function getProvincias(){
+    let paisID = $("#id_domicilio_pais").val();
+    if (paisID=='9') {
+        document.getElementById("id_domicilio_provincia_div").removeAttribute("hidden");
+        // Eliminamos las opciones anteriores del select
+        $("#id_domicilio_provincia").html("");
+        var request = $.ajax({
+            type: "GET",
+            url: "{% url 'get_provincias' %}",
+            data: {
+                "domicilio_pais": paisID,
+                },
+                });
+                request.done(function(response) {
+                    // Agregamos los resultados al select
+                    $("#id_domicilio_provincia").html(response.provincias);
+                    //$("#id_domicilio_provincia").html("<option value='' selected='selected'>---------</option>");
+                    if ($("#id_domicilio_provinicia").val()=='6'){
+                        $("#id_domicilio_provincia, #id_domicilio_partido").trigger("change");
+                    } else {
+                        $("#id_domicilio_provincia, #id_domicilio_localidad").trigger("change");
+                    }
+            });
+    } else {
+        document.getElementById("id_domicilio_provincia_div").setAttribute("hidden","");
+        //$("#id_domicilio_pais").html("<option value='' selected='selected'>---------</option>");
+        $("#id_domicilio_provincia").html("<option value='' selected='selected'>---------</option>");
+        //$("#id_domicilio_pais, #id_domicilio_provincia").trigger("change");
+    }
+}
+
+function getPartidos(){
+    let provinciaID = $("#id_domicilio_provincia").val();
+    if (provinciaID=='6') {
+        document.getElementById("id_domicilio_partido_div").removeAttribute("hidden");
+        document.getElementById("id_domicilio_localidad_div").setAttribute("hidden","");
+        // Eliminamos las opciones anteriores del select
+        $("#id_domicilio_partido").html("");
+        var request = $.ajax({
+            type: "GET",
+            url: "{% url 'get_partidos' %}",
+            data: {
+                "domicilio_provincias": provinciaID,
+                },
+                });
+                request.done(function(response) {
+                    // Agregamos los resultados al select
+                    $("#id_domicilio_partido").html(response.partidos);
+                    //$("#id_domicilio_provincia").html("<option value='' selected='selected'>---------</option>");
+                    //$("#id_domicilio_provincia, #id_domicilio_partido").trigger("change");
+            });
+    } else {
+        document.getElementById("id_domicilio_partido_div").setAttribute("hidden","");
+        document.getElementById("id_domicilio_localidad_div").removeAttribute("hidden");
+        // Eliminamos las opciones anteriores del select
+        $("#id_domicilio_localidad").html("");
+        var request = $.ajax({
+            type: "GET",
+            url: "{% url 'get_partidos' %}",
+            data: {
+                "domicilio_provincias": provinciaID,
+                },
+                });
+                request.done(function(response) {
+                    // Agregamos los resultados al select
+                    $("#id_domicilio_localidad").html(response.localidades);
+                    //$("#id_domicilio_provincia").html("<option value='' selected='selected'>---------</option>");
+                    //$("#id_domicilio_pais, #id_domicilio_provincia").trigger("change");
+            });
+        
+        //$("#id_domicilio_pais").html("<option value='' selected='selected'>---------</option>");
+        //$("#id_domicilio_localidad").html("<option value='' selected='selected'>---------</option>");
+        //$("#id_domicilio_pais, #id_domicilio_provincia").trigger("change");
+    }
+}
+
+
+
+</script>
+
+{% comment %}
 <script>
+    
 function show_provincia() {
     let pais = document.getElementById("id_domicilio_pais").value;
 
@@ -166,6 +257,5 @@ function show_direccion() {
     }
 }
 </script>
-
-
+{% endcomment %}
 {% endblock %}

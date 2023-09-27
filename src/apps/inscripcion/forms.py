@@ -1,10 +1,16 @@
 #from typing import Any, Dict
+from collections.abc import Mapping
+from typing import Any
 from django import forms
 #import django_bootstrap5.widgets as bw
 from django.core.exceptions import ValidationError
+from django.core.files.base import File
+from django.db.models.base import Model
+from django.forms.utils import ErrorList
 from .models import (Pais,
                      Provincia,
                      PartidoPBA,
+                     Localidad,
                      Estudiante,
                      Persona,
                      ESPECIALIDAD_ESTUDIANTE_CHOICES,
@@ -43,38 +49,41 @@ class CreatePersonaForm(forms.ModelForm):
     nacionalidad = NacionalidadModelChoiceField(queryset=Pais.objects.all())
     domicilio_pais = forms.ModelChoiceField(queryset=Pais.objects.all(),
                                             label='Pais',
-                                            required=True,
-                                            widget=forms.Select(
-                                                attrs={
-                                                    'onchange': 'show_provincia();',
-                                                    }
-                                                )
+                                            #required=True,
+                                            #widget=forms.Select(
+                                            #    attrs={
+                                            #        'onchange': 'show_provincia();',
+                                            #        }
+                                            #    )
                                             )
     domicilio_provincia = forms.ModelChoiceField(queryset=Provincia.objects.all(),
                                                  label='Provincia',
-                                                 required=True,
-                                                 widget=forms.Select(
-                                                     attrs={
-                                                         'onchange': 'show_partido();',
-                                                         #'style':'display:none',
-                                                         }
-                                                     )
+                                                 #required=True,
+                                                 #widget=forms.Select(
+                                                 #    attrs={
+                                                 #        'onchange': 'show_partido();',
+                                                 #        }
+                                                 #    )
                                                  )
     domicilio_partido = forms.ModelChoiceField(queryset=PartidoPBA.objects.all(),
                                                label='Partido',
-                                               required=True,
-                                               widget=forms.Select(
-                                                    attrs={
-                                                        'onchange': 'show_localidad();',
-                                                        #'style':'display:none',
-                                                         }
-                                                    )
+                                               #required=True,
+                                               #widget=forms.Select(
+                                               #     attrs={
+                                               #         'onchange': 'show_localidad();',
+                                               #          }
+                                               #     )
+                                                )
+    domicilio_localidad = forms.ModelChoiceField(queryset=Localidad.objects.all(),
+                                               label='Localidad',
+                                               #required=True,
+                                               #widget=forms.Select(
+                                               #     attrs={
+                                               #         'onchange': 'show_localidad();',
+                                               #          }
+                                               #     )
                                                 )
 
-    # nacionalidad = forms.ModelChoiceField(queryset=Pais.objects.all(),
-    #                                       to_field_name='nacionalidad',
-    #                                       label='Nacionalidad',
-    #                                       widget=forms.Select)
 
     class Meta:
         model = Persona
@@ -131,7 +140,7 @@ class CreatePersonaForm(forms.ModelForm):
             'telefono': 'Sin 0 ni 15, ejemplo 3446565656',
         }
         widgets ={
-            'domicilio_localidad': forms.Select(attrs={'onchange': 'show_direccion();'}),
+            #'domicilio_localidad': forms.Select(attrs={'onchange': 'show_direccion();'}),
             #'domicilio_barrio': forms.TextInput(attrs={'style':'display:none'}),
             #'domicilio_calle': forms.TextInput(attrs={'style':'display:none'}),
             #'domicilio_piso': forms.TextInput(attrs={'style':'display:none'}),
@@ -139,6 +148,12 @@ class CreatePersonaForm(forms.ModelForm):
 #            'nacionalidad': NacionalidadModelChoiceField(queryset=Pais.objects.all())
 #            'nacionalidad': forms.Select(choices=Pais.objects.values_list('nacionalidad', 'nacionalidad'))
         }
+        
+    def __init__(self, *args, **kwargs):
+        super(CreatePersonaForm, self).__init__(*args, **kwargs)
+        self.fields['domicilio_provincia'].queryset = Provincia.objects.none()
+        self.fields['domicilio_partido'].queryset = PartidoPBA.objects.none()
+        self.fields['domicilio_localidad'].queryset = Localidad.objects.none()
 
 
 class CreateStudentForm(forms.ModelForm):
