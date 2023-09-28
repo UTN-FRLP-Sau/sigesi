@@ -140,7 +140,7 @@ class CreatePersonaForm(forms.ModelForm):
             'telefono': 'Sin 0 ni 15, ejemplo 3446565656',
         }
         widgets ={
-            #'domicilio_localidad': forms.Select(attrs={'onchange': 'show_direccion();'}),
+            #'domicilio_localidad': forms.Select(attrs={ 'data-live-search':'true'}),
             #'domicilio_barrio': forms.TextInput(attrs={'style':'display:none'}),
             #'domicilio_calle': forms.TextInput(attrs={'style':'display:none'}),
             #'domicilio_piso': forms.TextInput(attrs={'style':'display:none'}),
@@ -148,7 +148,7 @@ class CreatePersonaForm(forms.ModelForm):
 #            'nacionalidad': NacionalidadModelChoiceField(queryset=Pais.objects.all())
 #            'nacionalidad': forms.Select(choices=Pais.objects.values_list('nacionalidad', 'nacionalidad'))
         }
-        
+
     def __init__(self, *args, **kwargs):
         super(CreatePersonaForm, self).__init__(*args, **kwargs)
         self.fields['domicilio_provincia'].queryset = Provincia.objects.none()

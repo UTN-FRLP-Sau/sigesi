@@ -17,7 +17,7 @@ from .views import (ConfirmacionInformacion,
                     confirmar_documentacion,
                     inscriptor_home
                     )
-from .ajax import get_provincias, get_partidos
+from .ajax import get_provincias, get_partidos, get_localidades
 
 urlpatterns = [
     path('info', ConfirmacionInformacion.as_view(), name='confirmacion_info'),
@@ -32,8 +32,9 @@ urlpatterns = [
     #De aqui en mas es el nuevo sistema
     path('new/person/', CreatePersona.as_view(), name='crear_persona'),
     path('new/student/<int:persona_id>/', CrearEstudiante.as_view(), name='crear_estudiante'),
-    
+
     #URL para Ajax
     path('ajax/new/person/get_provincias', get_provincias, name='get_provincias'),
-    path('ajax/new/person/get_partidos', get_partidos, name='get_partidos')
+    path('ajax/new/person/get_partidos', get_partidos, name='get_partidos'),
+    path('ajax/new/person/get_localidades', get_localidades, name='get_localidades'),
 ]
