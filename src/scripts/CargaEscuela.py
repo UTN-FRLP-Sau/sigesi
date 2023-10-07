@@ -16731,7 +16731,6 @@ Values_escuelas =(
 (940022000,'Estatal','Urbano',True,'COL. de Educación Secundaria TECNICA Malvinas Argentinas','MONTE INDEPENDENCIA 261 EL MIRADOR',0,0,94007152)
 )
 
-
 def run():
     Escuela.objects.all().delete()
 

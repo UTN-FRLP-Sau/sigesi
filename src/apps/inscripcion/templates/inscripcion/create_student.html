@@ -6,20 +6,346 @@
 
 <div class="container-fluid">
     <div class=" row justify-content-center align-items-center" style="height: 90vh;">
-        <div class="col-lg-10 col-xl-6">
-            <h2 class="fw-bolder text-center">Inscripcion Paso 2</h2>
-            <div class="center-block">
-                {{ form.errors }}
+        <div class="col-10 col-lg-10 col-xl-6">
+            <h2 class="fw-bolder text-center">Inscripcion Paso 1</h2>
+            <div class="center-block" style="margin-bottom: 5%">
                 <form enctype="multipart/form-data" id="formulario" method="POST">
                     {% csrf_token %}
-                    {% bootstrap_form form layout="floating" %}
+                    <h3>Datos Personales</h3>
+                    <div class="row conteiner-fluid">
+                        <div class="col-lg-6">
+                            {% bootstrap_field persona_form.apellidos layout='floating' %}
+                        </div>
+                        <div class="col-lg-6">
+                            {% bootstrap_field persona_form.nombres layout='floating' %}
+                        </div>
+                        <div class="conteiner-fluid">
+                        <div class="row">
+                        <div class="col-lg-4">
+                            {% bootstrap_field persona_form.sexo layout='floating' %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% bootstrap_field persona_form.genero layout='floating' %}
+                        </div>
+                        <div class="col-lg-4" id='id_genero_otro_div' hidden>
+                            {% bootstrap_field persona_form.genero_otro layout='floating' %}
+                        </div>
+                        </div>
+                        </div>
+                        <div class="col-lg-4">
+                            {% bootstrap_field persona_form.fecha_nacimiento layout='floating' %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% bootstrap_field persona_form.pais_nacimiento layout='floating' %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% bootstrap_field persona_form.nacionalidad layout='floating' %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% bootstrap_field persona_form.documento_tipo layout='floating' %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% bootstrap_field persona_form.pais_documento layout='floating' %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% bootstrap_field persona_form.numero_documento layout='floating' %}
+                        </div>
+                        <div class="col-lg-6" id='id_cuil_div' hidden>
+                            {% bootstrap_field persona_form.cuil layout='floating' %}
+                        </div>
+                    </div>
+                    <!-- ############################################################ -->
+                    <hr>
+                    <h3>Datos de Contacto</h3>
+                    <div class="row conteiner-fluid">
+                        <div class="col-lg-6">
+                            {% bootstrap_field persona_form.telefono layout='floating' %}
+                        </div>
+                        <div class="col-lg-6">
+                            {% bootstrap_field persona_form.telefono2 layout='floating' %}
+                        </div>
+                        <div class="col-lg-6">
+                            {% bootstrap_field persona_form.correo layout='floating' %}
+                        </div>
+                        <div class="col-lg-6">
+                            {% bootstrap_field persona_form.correo2 layout='floating' %}
+                        </div>
+                        <!-- ############################################################ -->
+                        <hr>
+                        <h3>Domicilio de Actual de Residencia</h3>
+                        <div class="row conteiner-fluid">
+                            <div class="col-lg-7">
+                                {% bootstrap_field persona_form.domicilio_pais layout='floating'%}
+                            </div>
+                            <div id='id_domicilio_provincia_div' class="col-lg-7 hidden-field" hidden>
+                                {% bootstrap_field persona_form.domicilio_provincia layout='floating' %}
+                            </div>
+                            <div id='id_domicilio_partido_div' class="col-lg-7" hidden>
+                                {% bootstrap_field persona_form.domicilio_partido layout='floating' %}
+                            </div>
+                            <div id='id_domicilio_localidad_div' class="col-lg-7" hidden>
+                                {% bootstrap_field persona_form.domicilio_localidad layout='floating' %}
+                            </div>
+                        </div>
+                        <div id='id_domicilio_direccion_div' class="row conteiner-fluid" hidden>
+                            <div class="col-lg-7">
+                                {% bootstrap_field persona_form.domicilio_barrio layout='floating' %}
+                            </div>
+                            <div class="col-lg-7">
+                                {% bootstrap_field persona_form.domicilio_calle layout='floating' %}
+                            </div>
+                            <div class='row'>
+                                <div class="col-lg-4">
+                                    {% bootstrap_field persona_form.domicilio_altura layout='floating' %}
+                                </div>
+                                <div class="col-lg-2">
+                                    {% bootstrap_field persona_form.domicilio_piso layout='floating' %}
+                                </div>
+                                <div class="col-lg-2">
+                                    {% bootstrap_field persona_form.domicilio_departamento layout='floating' %}
+                                </div>
+                            </div>
+                        </div>
+                        <div id='id_estudiante_form_div' hidden>
+                        <!-- ############################################################ -->
+                        <hr>
+                        <h3>Estudios Secundarios</h3>
+                        <div class='row'>
+                            <div class="col-lg-7" >
+                                {% bootstrap_field estudiante_form.escuela layout='horizontal' %}
+                            </div>
+                            <div class="col-lg-6" >
+                                {% bootstrap_field estudiante_form.titulo_secundario layout='vertical' %}
+                            </div>
+                            <div class="col-lg-6" >
+                                {% bootstrap_field estudiante_form.anio_egreso layout='vertical' %}
+                            </div>
+                        </div>
+                        <!-- ############################################################ -->
+                        <hr>
+                        <h3>Contacto de emergencia</h3>
+                        <div class='row'>
+                            <div class="col-lg-5" >
+                                {% bootstrap_field estudiante_form.emergencia_telefono layout='vertical' %}
+                            </div>
+                            <div class="col-lg-7" >
+                                {% bootstrap_field estudiante_form.emergencia_contacto layout='vertical' %}
+                            </div>
+                        </div>
+                        <!-- ############################################################ -->
+                        <hr>
+                        <h3>Inscripcion</h3>
+                        <div class='row'>
+                        <p class='warning'>Tenga en cuenta que el turno y la modalidad se encuentras sujetos a
+                            disponibilidad y capacidad</p>
+                            <div class="col-lg-6" >
+                                {% bootstrap_field estudiante_form.especialidad layout='vertical' %}
+                            </div>
+                            <div class="col-lg-3" >
+                                {% bootstrap_field estudiante_form.turno layout='vertical' %}
+                            </div>
+                            <div class="col-lg-3" >
+                                {% bootstrap_field estudiante_form.modalidad layout='vertical' %}
+                            </div>
+                        </div>
+                        </div>
 
-                    {% bootstrap_button button_type="submit" content="Confirmar" %}
-                    {% bootstrap_button button_type="reset" content="Cancelar" %}
+                        <div class="row conteiner-fluid" id="id_botones_div" hidden>
+                            <div class="col-lg-2">
+                                {% bootstrap_button button_type="submit" content="Siguiente" %}
+                            </div>
+                            <div class="col-lg-2">
+                                {% bootstrap_button button_type="reset" content="Cancelar" %}
+                            </div>
+                        </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block content_js %}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#id_domicilio_pais").on("change", getProvincias);
+        $("#id_domicilio_provincia").on("change", getPartidos);
+        $("#id_domicilio_partido").on("change", getLocalidades);
+        $("#id_domicilio_localidad").on("change", direccion);
+        $("#id_pais_documento").on("change", cuil);
+        $("#id_sexo").on("change", sexo);
+        $("#id_genero").on("change", genero);
+        $("#id_modalidad").on("change", modalidad);
+        limpiar();
+        bloquear_copy_paste();
+
+    });
+
+    function bloquear_copy_paste() {
+        $("#id_telefono2").on('paste', function(e){
+            e.preventDefault();
+        })
+        $("#id_correo2").on('paste', function(e){
+            e.preventDefault();
+        })
+        $("#id_telefono").on('copy', function(e){
+            e.preventDefault();
+        })
+        $("#id_correo").on('copy', function(e){
+            e.preventDefault();
+        })
+    }
+
+    function limpiar() {
+        if ($("#id_domicilio_pais").hasClass("is_valid")) {
+            $("#id_domicilio_pais").val('')
+            $("#id_domicilio_pais").removeClass("is-valid").addClass("is-invalid")
+            }
+        if ($("#id_modalidad").hasClass(".is_valid")) {
+            $("#id_modalidad").val('')
+            $("#id_modalidad").removeClass("is-valid").addClass("is-invalid")
+        }
+    }
+
+    function getProvincias() {
+        document.getElementById("id_domicilio_provincia_div").setAttribute("hidden", "");
+        document.getElementById("id_domicilio_partido_div").setAttribute("hidden", "");
+        document.getElementById("id_domicilio_localidad_div").setAttribute("hidden", "");
+        document.getElementById("id_domicilio_direccion_div").setAttribute("hidden", "");
+
+        let paisID = $("#id_domicilio_pais").val();
+        if (paisID == '9') {
+            document.getElementById("id_estudiante_form_div").setAttribute("hidden","");
+            document.getElementById("id_domicilio_provincia_div").removeAttribute("hidden");
+            // Eliminamos las opciones anteriores del select
+            $("#id_domicilio_provincia").html("");
+            var request = $.ajax({
+                type: "GET",
+                url: "{% url 'get_provincias' %}",
+                data: {
+                    "domicilio_pais": paisID,
+                },
+            });
+            request.done(function (response) {
+                // Agregamos los resultados al select
+                $("#id_domicilio_provincia").html(response.provincias);
+            });
+        } else {
+            document.getElementById("id_estudiante_form_div").removeAttribute("hidden");
+            document.getElementById("id_domicilio_provincia_div").setAttribute("hidden", "");
+            $("#id_domicilio_provincia").html("<option value='' selected='selected'>---------</option>");
+        }
+    }
+
+    function getPartidos() {
+        let provinciaID = $("#id_domicilio_provincia").val();
+        document.getElementById("id_domicilio_direccion_div").setAttribute("hidden", "");
+        //console.log(provinciaID)
+        if (provinciaID == '6') {
+            document.getElementById("id_domicilio_partido_div").removeAttribute("hidden");
+            document.getElementById("id_domicilio_localidad_div").setAttribute("hidden", "");
+            // Eliminamos las opciones anteriores del select
+            $("#id_domicilio_partido").html("");
+            var request = $.ajax({
+                type: "GET",
+                url: "{% url 'get_partidos' %}",
+                data: {
+                    "domicilio_provincia": provinciaID,
+                },
+            });
+            request.done(function (response) {
+                // Agregamos los resultados al select
+                $("#id_domicilio_partido").html(response.partidos);
+            });
+        } else {
+            document.getElementById("id_domicilio_localidad_div").removeAttribute("hidden");
+            document.getElementById("id_domicilio_partido_div").setAttribute("hidden", "");
+            // Eliminamos las opciones anteriores del select
+            $("#id_domicilio_localidad").html("");
+            var request = $.ajax({
+                type: "GET",
+                url: "{% url 'get_partidos' %}",
+                data: {
+                    "domicilio_provincia": provinciaID,
+                },
+            });
+            request.done(function (response) {
+                // Agregamos los resultados al select
+                $("#id_domicilio_localidad").html(response.localidades);
+            })
+        }
+    }
+
+
+    function getLocalidades() {
+        document.getElementById("id_domicilio_direccion_div").setAttribute("hidden", "");
+
+        let partidoID = $("#id_domicilio_partido").val();
+        if (partidoID) {
+            document.getElementById("id_domicilio_localidad_div").removeAttribute("hidden");
+            // Eliminamos las opciones anteriores del select
+            $("#id_domicilio_localidad").html("");
+            var request = $.ajax({
+                type: "GET",
+                url: "{% url 'get_localidades' %}",
+                data: {
+                    "domicilio_partido": partidoID,
+                },
+            });
+            request.done(function (response) {
+                // Agregamos los resultados al select
+                $("#id_domicilio_localidad").html(response.localidades);
+            });
+        } else {
+            document.getElementById("id_domicilio_direccion_div").setAttribute("hidden", "");
+            $("#id_domicilio_localidad").html("<option value='' selected='selected'>---------</option>");
+        }
+
+    }
+
+    function direccion() {
+        document.getElementById("id_domicilio_direccion_div").removeAttribute("hidden");
+        document.getElementById("id_estudiante_form_div").removeAttribute("hidden");
+    }
+
+    function cuil() {
+        let paisID = $("#id_pais_documento").val();
+        if (paisID == '9') {
+            document.getElementById("id_cuil_div").removeAttribute("hidden");
+        } else {
+            document.getElementById("id_cuil_div").setAttribute("hidden","");
+        }
+    }
+
+    function genero() {
+        let generoID = $("#id_genero").val();
+        if (generoID == '13') {
+            document.getElementById("id_genero_otro_div").removeAttribute("hidden");
+        } else {
+            document.getElementById("id_genero_otro_div").setAttribute("hidden","");
+        }
+    }
+
+    function sexo() {
+        let sexoID = $("#id_sexo").val();
+        if (sexoID == 'm') {
+            $("#id_genero").val('7')
+        }
+        if (sexoID == 'f') {
+            $("#id_genero").val('1')
+        }
+        if (sexoID == 'n') {
+            $("#id_genero").val('11')
+        }
+    }
+
+    function modalidad(){
+        document.getElementById("id_botones_div").removeAttribute("hidden");
+    }
+
+
+</script>
 
 {% endblock %}

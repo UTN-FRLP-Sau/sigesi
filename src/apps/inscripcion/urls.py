@@ -31,7 +31,8 @@ urlpatterns = [
 
     #De aqui en mas es el nuevo sistema
     path('new/person/', CreatePersona.as_view(), name='crear_persona'),
-    path('new/student/<int:persona_id>/', CrearEstudiante.as_view(), name='crear_estudiante'),
+    #path('new/student/<int:persona_id>/', CrearEstudiante.as_view(), name='crear_estudiante'),
+    #path('new/student/success/', CrearEstudiante.as_view(), name='crear_estudiante_success'),
 
     #URL para Ajax
     path('ajax/new/person/get_provincias', get_provincias, name='get_provincias'),
