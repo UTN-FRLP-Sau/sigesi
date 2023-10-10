@@ -23,7 +23,7 @@ from django.views.generic import TemplateView, View
 
 # Django Locales
 from .forms import EntregarDocumentacionForm, CreatePersonaForm, CreateStudentForm, VerificacionInscripcionForm
-from .models import Documentacion, Persona
+from .models import Documentacion, Persona, Estudiante
 from .decorators import group_required
 
 #Funciones generales
@@ -176,18 +176,23 @@ class CreatePersona(View):
             estudiante = estudiante_form.save(commit=False)  # Guarda la instancia de estudiante sin guardar en la base de datos
             estudiante.persona = persona  # Asigna la persona al estudiante
             estudiante.save()  # Guarda el estudiante en la base de datos
-            email=create_email(
-                user_mail=persona.correo,
-                subject='Confirmación de Inscripción',
-                template_name='inscripcion/confirmacion_correo.html',
-                context={
-                    'nombre': persona.nombres.title(),
-                    'apellido': persona.apellidos.upper(),
-                }
-                )
-            thread = threading.Thread(target=email.send)
-            thread.start()
-            return render(self.request, 'inscripcion/success.html')
+            try:
+                email=create_email(
+                    user_mail=persona.correo,
+                    subject='Confirmación de Inscripción',
+                    template_name='inscripcion/confirmacion_correo.html',
+                    context={
+                        'nombre': persona.nombres.title(),
+                        'apellido': persona.apellidos.upper(),
+                        'id_estudiante': estudiante.pk,
+                    }
+                    )
+                thread = threading.Thread(target=email.send)
+                thread.start()
+                return render(self.request, 'inscripcion/success.html')
+            except:
+                Estudiante.objects.filter(pk=estudiante.pk).delete()
+                Persona.objects.filter(pk=persona.pk).delete()
         contexto = {
             'persona_form': persona_form,
             'estudiante_form': estudiante_form
@@ -207,13 +212,13 @@ class VerificacionInscripcion(View):
         form = self.form_class(request.POST)
         if form.is_valid():
             dni = form.cleaned_data['dni']
-            usuario_id = self.kwargs['usuario_id']
+            id_estudiante = self.kwargs['id_estudiante']
             try:
-                usuario = Persona.objects.get(id=usuario_id)
+                usuario = Persona.objects.get(id=id_estudiante)
                 if usuario.numero_documento == dni:
                     # Verificación exitosa, guardamos en la sesión
                     request.session['dni_verificado'] = True
-                    return HttpResponseRedirect(reverse('paso_2', usuario_id=usuario_id))
+                    return HttpResponseRedirect(reverse('paso_2', id_estudiante=id_estudiante))
                 else:
                     form.add_error('dni', 'El DNI no coincide con el usuario')
             except Persona.DoesNotExist:

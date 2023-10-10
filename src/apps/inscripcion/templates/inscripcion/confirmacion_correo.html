@@ -7,11 +7,12 @@
     <div class=" row justify-content-center align-items-center" style="height: 90vh;">
         <div class="col-10 col-sm-6 col-lg-6" style="background: #EEE; border-radius: 2%; padding: 2.5rem">
 
-        <p>Estimado/a NATALIA, Natalia,</p>
+        <p>Estimado/a {{ apellido }}, {{ nombre }}:</p>
 
         <p>Esperamos que este mensaje te encuentre bien.</p>
 
-        <p>Nos complace informarte que tu preinscripción ha sido recibida y procesada con éxito. Te damos la bienvenida a nuestra institución y agradecemos tu interés en formar parte de nuestra comunidad educativa.</p>
+        <p>Nos complace informarte que tu preinscripción ha sido recibida y procesada con éxito. Te damos la bienvenida a nuestra institución y agradecemos tu interés en formar parte de nuestra
+        comunidad educativa.</p>
 
         <p>Por favor, ten en cuenta que este es un correo electrónico automático generado por nuestro sistema.</p>
 
@@ -22,7 +23,8 @@
         <h4>PDF 1: Identificación, Documento o Pasaporte</h4>
         <ul>
             <li>Si cuentas con DNI argentino: Por favor, proporciona una foto o escaneo de tu DNI en ambas caras.</li>
-            <li>Si no cuentas con DNI argentino: Necesitamos una copia de tu documento de identidad de tu país de origen y la constancia de inicio de trámite de radicación en Argentina. Puedes iniciar este trámite <a href="https://www.migraciones.gov.ar/radex/index.html">enlace</a>.</li>
+            <li>Si no cuentas con DNI argentino: Necesitamos una copia de tu documento de identidad de tu país de origen y la constancia de inicio de trámite de radicación en Argentina.
+            Puedes iniciar este trámite <a href="https://www.migraciones.gov.ar/radex/index.html">enlace</a>.</li>
         </ul>
 
         <h4>PDF 2: Certificado de Estudios Secundarios</h4>
@@ -35,10 +37,12 @@
                 <li>Certificado de alumno regular</li>
                 <li>Certificado de materias adeudadas</li>
             </ul>
-            <li>Si no has finalizado tus estudios en Argentina: Por favor, envía una copia de tu título secundario de tu país de origen. Recuerda que este documento debe estar validado antes del 31 del próximo ciclo lectivo. Puedes iniciar el proceso de validación <a href="https://www.argentina.gob.ar/tema/estudiar/guia-validez-titulos-estudios">aquí</a>.</li>
+            <li>Si no has finalizado tus estudios en Argentina: Por favor, envía una copia de tu título secundario de tu país de origen. Recuerda que este documento debe estar validado
+            antes del 31 del próximo ciclo lectivo. Puedes iniciar el proceso de validación <a href="https://www.argentina.gob.ar/tema/estudiar/guia-validez-titulos-estudios">aquí</a>.</li>
         </ul>
 
-        <p>Por favor, asegúrate de cargar los documentos necesarios en LINK antes de FECHA. Si tienes alguna consulta o necesitas asistencia adicional, no dudes en contactar a nuestro equipo de admisiones.</p>
+        <p>Por favor, asegúrate de cargar los documentos necesarios en <a href="{% url 'verificar_dni' id_estudiante %}">{% url 'verificar_dni' id_estudiante %}</a> antes del 01/12/2023.
+        Si tienes alguna consulta o necesitas asistencia adicional, no dudes en contactar a nuestro equipo de admisiones.</p>
 
         <p>Agradecemos tu colaboración y estamos ansiosos por darte la bienvenida oficialmente a nuestra institución.</p>
 
@@ -51,12 +55,6 @@
             ingreso@frlp.utn.edu.ar
             </strong>
         </p>
-
-    </div>
-
-
-
-                </div>
         </div>
     </div>
 </div>
