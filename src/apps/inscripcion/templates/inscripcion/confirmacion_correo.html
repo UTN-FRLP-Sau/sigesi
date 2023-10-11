@@ -41,7 +41,7 @@
             antes del 31 del próximo ciclo lectivo. Puedes iniciar el proceso de validación <a href="https://www.argentina.gob.ar/tema/estudiar/guia-validez-titulos-estudios">aquí</a>.</li>
         </ul>
 
-        <p>Por favor, asegúrate de cargar los documentos necesarios en <a href="{% url 'verificar_dni' id_estudiante %}">{% url 'verificar_dni' id_estudiante %}</a> antes del 01/12/2023.
+        <p>Por favor, asegúrate de cargar los documentos necesarios en <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'verificar_dni' id_estudiante %}">{{ request.scheme }}://{{ request.get_host }}{% url 'verificar_dni' id_estudiante %}</a> antes del 01/12/2023.
         Si tienes alguna consulta o necesitas asistencia adicional, no dudes en contactar a nuestro equipo de admisiones.</p>
 
         <p>Agradecemos tu colaboración y estamos ansiosos por darte la bienvenida oficialmente a nuestra institución.</p>

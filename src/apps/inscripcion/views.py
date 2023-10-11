@@ -17,6 +17,7 @@ from django.urls import reverse
 from django.template.loader import get_template
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView
+from django.views.generic.edit import UpdateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.views.generic import TemplateView, View
@@ -27,9 +28,9 @@ from .models import Documentacion, Persona, Estudiante
 from .decorators import group_required
 
 #Funciones generales
-def create_email(user_mail, subject, template_name, context):
+def create_email(user_mail, subject, template_name, context, request):
     template = get_template(template_name)
-    content = template.render(context)
+    content = template.render(context=context, request=request)
 
     message = EmailMultiAlternatives(
         subject=subject,
@@ -185,7 +186,8 @@ class CreatePersona(View):
                         'nombre': persona.nombres.title(),
                         'apellido': persona.apellidos.upper(),
                         'id_estudiante': estudiante.pk,
-                    }
+                    },
+                    request=request
                     )
                 thread = threading.Thread(target=email.send)
                 thread.start()
@@ -202,7 +204,7 @@ class CreatePersona(View):
 
 class VerificacionInscripcion(View):
     form_class = VerificacionInscripcionForm
-    template_name = 'verificar_dni.html'
+    template_name = 'inscripcion/verificar_dni.html'
 
     def get(self, request, *args, **kwargs):
         form = self.form_class()
@@ -213,17 +215,36 @@ class VerificacionInscripcion(View):
         if form.is_valid():
             dni = form.cleaned_data['dni']
             id_estudiante = self.kwargs['id_estudiante']
+            print(dni)
+            print(id_estudiante)
             try:
-                usuario = Persona.objects.get(id=id_estudiante)
+                estudiante = Estudiante.objects.get(credencial=id_estudiante)
+                usuario = Persona.objects.get(id=estudiante.persona.id)
                 if usuario.numero_documento == dni:
+                    print('si')
                     # Verificación exitosa, guardamos en la sesión
                     request.session['dni_verificado'] = True
                     return HttpResponseRedirect(reverse('paso_2', id_estudiante=id_estudiante))
                 else:
                     form.add_error('dni', 'El DNI no coincide con el usuario')
             except Persona.DoesNotExist:
+                print(Exception)
                 form.add_error(None, 'El usuario no existe')
         return render(request, self.template_name, {'form': form})
+
+
+class ActualizarUsuarioView(UpdateView):
+    model = Estudiante
+    template_name = 'actualizar_usuario.html'
+    form_class = TuFormularioDeActualizacion # Define tu formulario de actualización aquí
+    # Resto de configuraciones como `success_url`, `fields`, etc.
+
+    def dispatch(self, request, *args, **kwargs):
+        # Verificar si el usuario ha pasado por VerificarDniView
+        if not request.session.get('dni_verificado'):
+            return redirect('verificar_dni', usuario_id=kwargs['pk'])
+        return super().dispatch(request, *args, **kwargs)
+
 
 
 class ConfirmarInscripcion(CreateView):

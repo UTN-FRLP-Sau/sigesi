@@ -190,5 +190,5 @@ class CreateStudentForm(forms.ModelForm):
         }
 
 
-class VerificacionInscripcionForm(forms.ModelForm):
+class VerificacionInscripcionForm(forms.Form):
     dni = forms.CharField(max_length=16, label='Numero de Documento')
