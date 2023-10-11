@@ -14,6 +14,7 @@ from .models import (Pais,
                      Localidad,
                      Estudiante,
                      Persona,
+                     Archivos,
                      ESPECIALIDAD_ESTUDIANTE_CHOICES,
                      TURNO_INGRESO_CHOICES,
                      SEXO_ESTUDIANTE_CHOICES,
@@ -192,3 +193,23 @@ class CreateStudentForm(forms.ModelForm):
 
 class VerificacionInscripcionForm(forms.Form):
     dni = forms.CharField(max_length=16, label='Numero de Documento')
+
+
+class SubirDocumentacion(forms.ModelForm):
+    '''
+    class Archivos(models.Model):
+        tipo = models.CharField(max_length=20, db_column='tipo')
+        path = models.FileField(db_column='ubicacion', upload_to=_generar_ruta_documento)
+        persona = models.ForeignKey(Persona, on_delete=models.DO_NOTHING, db_column='persona')
+    '''
+    class Meta:
+        model = Archivos
+        fields = [#'tipo',
+                  'path',
+                  #'persona',
+                  ]
+        labels = {
+            }
+        help_texts ={
+
+        }

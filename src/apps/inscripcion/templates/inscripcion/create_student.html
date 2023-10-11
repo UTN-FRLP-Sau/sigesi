@@ -6,7 +6,7 @@
 
 <div class="container-fluid">
     <div class=" row justify-content-center align-items-center" style="height: 90vh;">
-        <div class="col-10 col-lg-10 col-xl-6">
+        <div class="col-10 col-lg-10 col-xl-6" style="background: #EEE; border-radius: 2%; padding: 2.5rem; text-align: center">
             <h2 class="fw-bolder text-center">Inscripcion Paso 1</h2>
             <div class="center-block" style="margin-bottom: 5%">
                 <form enctype="multipart/form-data" id="formulario" method="POST">
@@ -178,7 +178,6 @@
         $("#id_sexo").on("change", sexo);
         $("#id_genero").on("change", genero);
         $("#id_modalidad").on("change", modalidad);
-        limpiar();
         bloquear_copy_paste();
 
     });
@@ -196,17 +195,6 @@
         $("#id_correo").on('copy', function(e){
             e.preventDefault();
         })
-    }
-
-    function limpiar() {
-        if ($("#id_domicilio_pais").hasClass("is_valid")) {
-            $("#id_domicilio_pais").val('')
-            $("#id_domicilio_pais").removeClass("is-valid").addClass("is-invalid")
-            }
-        if ($("#id_modalidad").hasClass(".is_valid")) {
-            $("#id_modalidad").val('')
-            $("#id_modalidad").removeClass("is-valid").addClass("is-invalid")
-        }
     }
 
     function getProvincias() {

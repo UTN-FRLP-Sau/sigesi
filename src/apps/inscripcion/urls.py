@@ -12,9 +12,8 @@ from .views import (ConfirmacionInformacion,
                     EntregarDocumentacion,
                     MostrarDocumentacion,
                     ListarDocumentacion,
-                    CreatePersona,
                     VerificacionInscripcion,
-                    CrearEstudiante,
+                    CreatePersonaAndEstudent,
                     ActualizarUsuarioView,
                     confirmar_documentacion,
                     inscriptor_home
@@ -32,9 +31,9 @@ urlpatterns = [
     path('home', inscriptor_home, name='inscriptor_home'),
 
     #De aqui en mas es el nuevo sistema
-    path('new/person/', CreatePersona.as_view(), name='crear_persona'),
+    path('new/person/', CreatePersonaAndEstudent.as_view(), name='crear_persona'),
     path('verificar-dni/<int:id_estudiante>/', VerificacionInscripcion.as_view(), name='verificar_dni'),
-    path('actualizar-usuario/<int:pk>/', ActualizarUsuarioView.as_view(), name='paso_2'),
+    path('actualizar-usuario/<pk>/', ActualizarUsuarioView.as_view(), name='paso_2'),
     #path('new/student/<int:persona_id>/', CrearEstudiante.as_view(), name='crear_estudiante'),
     #path('new/student/success/', CrearEstudiante.as_view(), name='crear_estudiante_success'),
 

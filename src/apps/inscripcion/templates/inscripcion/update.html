@@ -6,16 +6,17 @@
 
 <div class="container-fluid">
     <div class=" row justify-content-center align-items-center" style="height: 90vh;">
-        <div class="col-lg-10 col-xl-6">
+        <div class="col-lg-10 col-xl-6" style="background: #EEE; border-radius: 2%; padding: 2.5rem; text-align: center">
             <h2 class="fw-bolder text-center">Confirmacion de la inscripcion</h2>
             <div class="center-block">
-                {{ form.errors }}
                 <form enctype="multipart/form-data" id="formulario" method="POST">
                     {% csrf_token %}
                     {% bootstrap_form form layout="floating" %}
+                    {% bootstrap_field documento.path layout="floating" %}
+                    {% bootstrap_field certificado.path layout="floating" %}
 
-                    {% bootstrap_button button_type="submit" content="Confirmar" %}
-                    {% bootstrap_button button_type="reset" content="Cancelar" %}
+                    {% bootstrap_button button_type="submit" content="Enviar" %}
+                    {% bootstrap_button button_type="reset" content="Limpiar" %}
                 </form>
             </div>
         </div>

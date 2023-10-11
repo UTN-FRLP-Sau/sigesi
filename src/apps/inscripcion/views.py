@@ -23,7 +23,7 @@ from django.views.generic.list import ListView
 from django.views.generic import TemplateView, View
 
 # Django Locales
-from .forms import EntregarDocumentacionForm, CreatePersonaForm, CreateStudentForm, VerificacionInscripcionForm
+from .forms import EntregarDocumentacionForm, CreatePersonaForm, CreateStudentForm, VerificacionInscripcionForm, SubirDocumentacion
 from .models import Documentacion, Persona, Estudiante
 from .decorators import group_required
 
@@ -158,7 +158,7 @@ def inscriptor_home(request):
 #####################################################################################################
 
 
-class CreatePersona(View):
+class CreatePersonaAndEstudent(View):
     template_name = 'inscripcion/create_student.html'
 
     def get(self, request):
@@ -215,16 +215,13 @@ class VerificacionInscripcion(View):
         if form.is_valid():
             dni = form.cleaned_data['dni']
             id_estudiante = self.kwargs['id_estudiante']
-            print(dni)
-            print(id_estudiante)
             try:
                 estudiante = Estudiante.objects.get(credencial=id_estudiante)
                 usuario = Persona.objects.get(id=estudiante.persona.id)
                 if usuario.numero_documento == dni:
-                    print('si')
                     # Verificación exitosa, guardamos en la sesión
                     request.session['dni_verificado'] = True
-                    return HttpResponseRedirect(reverse('paso_2', id_estudiante=id_estudiante))
+                    return HttpResponseRedirect(reverse('paso_2', kwargs={'pk': id_estudiante}))
                 else:
                     form.add_error('dni', 'El DNI no coincide con el usuario')
             except Persona.DoesNotExist:
@@ -235,15 +232,36 @@ class VerificacionInscripcion(View):
 
 class ActualizarUsuarioView(UpdateView):
     model = Estudiante
-    template_name = 'actualizar_usuario.html'
-    form_class = TuFormularioDeActualizacion # Define tu formulario de actualización aquí
+    template_name = 'inscripcion/update.html'
+    fields=['especialidad','turno','modalidad']
+    #form_class = TuFormularioDeActualizacion # Define tu formulario de actualización aquí
     # Resto de configuraciones como `success_url`, `fields`, etc.
 
     def dispatch(self, request, *args, **kwargs):
         # Verificar si el usuario ha pasado por VerificarDniView
         if not request.session.get('dni_verificado'):
-            return redirect('verificar_dni', usuario_id=kwargs['pk'])
+            id_estudiante = self.kwargs['pk']
+            return HttpResponseRedirect(reverse('verificar_dni', kwargs={'id_estudiante': id_estudiante}))
+        else:
+            pass
+            #request.session['dni_verificado'] = False
         return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Agregar dos instancias del formulario subirDocumentacion al contexto
+        context['documento'] = SubirDocumentacion()
+        context['certificado'] = SubirDocumentacion()
+        return context
+
+
+
+
+
+
+
+
+
 
 
 
