@@ -12,9 +12,29 @@
                 <form enctype="multipart/form-data" id="formulario" method="POST">
                     {% csrf_token %}
                     {% bootstrap_form form layout="floating" %}
-                    {% bootstrap_field documento.path layout="floating" %}
-                    {% bootstrap_field certificado.path layout="floating" %}
 
+                    {% if documento_form %}
+                    {% bootstrap_form documento_form layout="floating" %}
+                    {% elif documento_info=='si' %}
+                    <div class="alert alert-success" role="alert">
+                        PDF1 Identificación: Se encuentra aprobada
+                    </div>
+                    {% elif documento_info=='no' %}
+                    <div class="alert alert-info" role="alert">
+                        PDF1 Identificación: Se encuentra en revisión
+                    </div>
+                    {% endif %}
+
+                    {% if certificado_form %}
+                    {% bootstrap_form certificado_form layout="floating" %}
+                    {% elif certificado_info=='si' %}
+                    <div class="alert alert-success" role="alert">
+                        PDF2 Certificado: Se encuentra aprobada
+                    </div>
+                    {% elif certificado_info=='no' %}
+                    <div class="alert alert-info" role="alert">
+                        PDF2 Certificado: Se encuentra en revisión
+                    </div>
                     {% bootstrap_button button_type="submit" content="Enviar" %}
                     {% bootstrap_button button_type="reset" content="Limpiar" %}
                 </form>

@@ -520,8 +520,8 @@ def _generar_ruta_documento(instance, filename):
     extension = os.path.splitext(filename)[1][1:]
     # Obtener el ultimo ID del modelo Archivos
     last_id = Archivos.objects.last().pk if Archivos.objects.exists() else 0
-    # Generamos la ruta relativa a media_root en funcion del num_documento
-    ruta_relativa = str(instance.persona.num_documento).lower()
+    # Generamos la ruta relativa a media_root en funcion del numero_documento
+    ruta_relativa = str(instance.persona.numero_documento).lower()
     # Obtenemos una instancia de Storage
     #storage = default_storage
     # Validacion y normalizacion de la ruta
@@ -532,14 +532,20 @@ def _generar_ruta_documento(instance, filename):
     return os.path.join(ruta_validada, ruta_relativa, nombre_archivo)
 
 class Archivos(models.Model):
+    '''
+    estado: 0- En revision
+            1- Aprobado
+            2- Rechazado
+    '''
     tipo = models.CharField(max_length=20, db_column='tipo')
     path = models.FileField(db_column='ubicacion', upload_to=_generar_ruta_documento)
     persona = models.ForeignKey(Persona, on_delete=models.DO_NOTHING, db_column='persona')
+    estado = models.IntegerField(default=0, db_column='estado')
 
     class Meta:
         db_table = 'imagenes'
         verbose_name = 'Archivo'
-        verbose_name_plural = 'Archivoss'
+        verbose_name_plural = 'Archivos'
 
     def __str__(self):
         return '({}) - {}, {}'.format(self.id, self.persona.apellidos.upper(), self.persona.nombres.title())

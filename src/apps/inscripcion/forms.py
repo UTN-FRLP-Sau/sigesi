@@ -195,21 +195,30 @@ class VerificacionInscripcionForm(forms.Form):
     dni = forms.CharField(max_length=16, label='Numero de Documento')
 
 
-class SubirDocumentacion(forms.ModelForm):
-    '''
-    class Archivos(models.Model):
-        tipo = models.CharField(max_length=20, db_column='tipo')
-        path = models.FileField(db_column='ubicacion', upload_to=_generar_ruta_documento)
-        persona = models.ForeignKey(Persona, on_delete=models.DO_NOTHING, db_column='persona')
-    '''
+class ActualizarInscripcionForm(forms.ModelForm):
+    class Meta:
+        model = Estudiante
+        fields = ['especialidad',
+                  'turno',
+                  'modalidad',
+                  ]
+        labels = {'especialidad': 'Carrera',
+            'turno': 'Turno',
+            'modalidad': 'Modealidad'
+            }
+        help_texts ={}
+
+class SubirDocumentoForm(forms.ModelForm):
     class Meta:
         model = Archivos
-        fields = [#'tipo',
-                  'path',
-                  #'persona',
-                  ]
-        labels = {
-            }
-        help_texts ={
+        fields = ['path',]
+        labels = {'path': 'PDF1: Identificación, Documento o Pasaporte'}
+        help_texts ={'path': 'Solo se acepta formato PDF'}
 
-        }
+
+class SubirCertificadoForm(forms.ModelForm):
+    class Meta:
+        model = Archivos
+        fields = ['path',]
+        labels = {'path': 'PDF2: Certificado de Estudios Secundarios'}
+        help_texts ={'path': 'Solo se acepta formato PDF'}
