@@ -6,35 +6,33 @@
 
 <div class="container-fluid">
     <div class=" row justify-content-center align-items-center" style="height: 90vh;">
-        <div class="col-lg-10 col-xl-6" style="background: #EEE; border-radius: 2%; padding: 2.5rem; text-align: center">
+        <div class="col-lg-10 col-xl-6 col-xxl-4" style="background: #EEE; border-radius: 2%; padding: 2.5rem; text-align: center">
             <h2 class="fw-bolder text-center">Confirmacion de la inscripcion</h2>
             <div class="center-block">
+                    {% if documento_info %}
+                        {% if documento_info == 'si' %}
+                            <div class="alert alert-success" role="alert"> PDF1 Identificación: Se encuentra aprobada </div>
+                        {% else %}
+                            <div class="alert alert-info" role="alert">PDF1 Identificación: Se encuentra en revisión</div>
+                        {% endif %}
+                    {% endif %}
+                    {% if certificado_info %}
+                        {% if certificado_info == 'si' %}
+                            <div class="alert alert-success" role="alert">PDF2 Certificado: Se encuentra aprobada</div>
+                        {% else %}
+                            <div class="alert alert-info" role="alert">PDF2 Certificado: Se encuentra en revisión</div>
+                        {% endif %}
+                    {% endif%}
                 <form enctype="multipart/form-data" id="formulario" method="POST">
                     {% csrf_token %}
                     {% bootstrap_form form layout="floating" %}
 
                     {% if documento_form %}
-                    {% bootstrap_form documento_form layout="floating" %}
-                    {% elif documento_info=='si' %}
-                    <div class="alert alert-success" role="alert">
-                        PDF1 Identificación: Se encuentra aprobada
-                    </div>
-                    {% elif documento_info=='no' %}
-                    <div class="alert alert-info" role="alert">
-                        PDF1 Identificación: Se encuentra en revisión
-                    </div>
+                        {% bootstrap_form documento_form layout="floating" %}
                     {% endif %}
-
                     {% if certificado_form %}
-                    {% bootstrap_form certificado_form layout="floating" %}
-                    {% elif certificado_info=='si' %}
-                    <div class="alert alert-success" role="alert">
-                        PDF2 Certificado: Se encuentra aprobada
-                    </div>
-                    {% elif certificado_info=='no' %}
-                    <div class="alert alert-info" role="alert">
-                        PDF2 Certificado: Se encuentra en revisión
-                    </div>
+                        {% bootstrap_form certificado_form layout="floating" %}
+                    {% endif %}
                     {% bootstrap_button button_type="submit" content="Enviar" %}
                     {% bootstrap_button button_type="reset" content="Limpiar" %}
                 </form>

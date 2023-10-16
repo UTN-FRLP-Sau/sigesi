@@ -18,14 +18,13 @@ from .validators import validate_file_extension
 
 # Create your models here.
 
-GESTION_ESCUELA_CHOICES = [("privada", "Privada"),
-                           ("publica", "Publica"),
-                           ("mixta", "Mixta"),
-                           ("social/cooperativa", "Social/Cooperativa")]
+GESTION_ESCUELA_CHOICES = [("Privado", "Privado"),
+                           ("Estatal", "Estatal"),
+                           ("Social/cooperativa", "Social/cooperativa")]
 
 AMBITO_ESCUELA_CHOICES = [
-    ("rural", "Rural"),
-    ("urbano", "Urbano")
+    ("Rural", "Rural"),
+    ("Urbano", "Urbano")
 ]
 
 SEXO_ESTUDIANTE_CHOICES = [
@@ -358,9 +357,9 @@ class Escuela(models.Model):
                               choices=AMBITO_ESCUELA_CHOICES,
                               db_column='ambito')
     tecnica = models.BooleanField(db_column='tecnica')
-    nombre = models.CharField(max_length=150,
+    nombre = models.CharField(max_length=200,
                               db_column='nombre')
-    domicilio_calle = models.CharField(max_length=150,
+    domicilio_calle = models.CharField(max_length=200,
                                        db_column='domiciliocalle')
     domicilio_altura = models.IntegerField(db_column='domicilioaltura')
     domicilio_localidad = models.ForeignKey(Localidad,
@@ -484,7 +483,7 @@ class TituloSecundario(models.Model):
 class Estudiante(models.Model):
     credencial = models.AutoField(primary_key=True, db_column='credencial')
     legajo = models.IntegerField(default=0, db_column='legajo')
-    escuela = models.ForeignKey(Escuela, on_delete=models.DO_NOTHING, db_column='escuela')
+    escuela = models.ForeignKey(Escuela, on_delete=models.DO_NOTHING, db_column='escuela', blank=True, null=True)
     anio_egreso = models.IntegerField(db_column='escuelaanioegreso')
     titulo_secundario = models.CharField(max_length=150, db_column='tituloescuela')
     #titulo_secundario = models.ForeignKey(TituloSecundario, db_column='tituloescuela', on_delete=models.DO_NOTHING)

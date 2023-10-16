@@ -74,16 +74,16 @@
                         <hr>
                         <h3>Domicilio de Actual de Residencia</h3>
                         <div class="row conteiner-fluid">
-                            <div class="col-lg-7">
+                            <div class="col-lg-6">
                                 {% bootstrap_field persona_form.domicilio_pais layout='floating'%}
                             </div>
-                            <div id='id_domicilio_provincia_div' class="col-lg-7 hidden-field" hidden>
+                            <div id='id_domicilio_provincia_div' class="col-lg-6 hidden-field" hidden>
                                 {% bootstrap_field persona_form.domicilio_provincia layout='floating' %}
                             </div>
-                            <div id='id_domicilio_partido_div' class="col-lg-7" hidden>
+                            <div id='id_domicilio_partido_div' class="col-lg-6" hidden>
                                 {% bootstrap_field persona_form.domicilio_partido layout='floating' %}
                             </div>
-                            <div id='id_domicilio_localidad_div' class="col-lg-7" hidden>
+                            <div id='id_domicilio_localidad_div' class="col-lg-6" hidden>
                                 {% bootstrap_field persona_form.domicilio_localidad layout='floating' %}
                             </div>
                         </div>
@@ -109,30 +109,43 @@
                         <div id='id_estudiante_form_div' hidden>
                         <!-- ############################################################ -->
                         <hr>
-                        <h3>Estudios Secundarios</h3>
+                        <h3>Contacto de Emergencias</h3>
                         <div class='row'>
-                            <div class="col-lg-7" >
-                                {% bootstrap_field estudiante_form.escuela layout='horizontal' %}
+                            <div class="col-lg-6">
+                                {% bootstrap_field estudiante_form.emergencia_contacto layout='floating'%}
                             </div>
-                            <div class="col-lg-6" >
-                                {% bootstrap_field estudiante_form.titulo_secundario layout='vertical' %}
-                            </div>
-                            <div class="col-lg-6" >
-                                {% bootstrap_field estudiante_form.anio_egreso layout='vertical' %}
+                            <div class="col-lg-6">
+                                {% bootstrap_field estudiante_form.emergencia_telefono layout='floating' %}
                             </div>
                         </div>
                         <!-- ############################################################ -->
                         <hr>
-                        <h3>Contacto de emergencia</h3>
+                        <h3>Estudios Secundarios</h3>
                         <div class='row'>
-                            <div class="col-lg-5" >
-                                {% bootstrap_field estudiante_form.emergencia_telefono layout='vertical' %}
+                            <div class="col-lg-6">
+                                {% bootstrap_field estudiante_form.pais layout='floating'%}
                             </div>
-                            <div class="col-lg-7" >
-                                {% bootstrap_field estudiante_form.emergencia_contacto layout='vertical' %}
+                            <div id='id_provincia_div' class="col-lg-6 hidden-field" hidden>
+                                {% bootstrap_field estudiante_form.provincia layout='floating' %}
+                            </div>
+                            <div id='id_partido_div' class="col-lg-6" hidden>
+                                {% bootstrap_field estudiante_form.partido layout='floating' %}
+                            </div>
+                            <div id='id_localidad_div' class="col-lg-6" hidden>
+                                {% bootstrap_field estudiante_form.localidad layout='floating' %}
+                            </div>
+                            <div id='id_escuela_div' class="col-lg-7" hidden>
+                                {% bootstrap_field estudiante_form.escuela layout='horizontal' %}
+                            </div>
+                            <div id='id_titulo_secundario_div' class="col-lg-6" hidden>
+                                {% bootstrap_field estudiante_form.titulo_secundario layout='vertical' %}
+                            </div>
+                            <div id='id_anio_egreso_div' class="col-lg-6" hidden>
+                                {% bootstrap_field estudiante_form.anio_egreso layout='vertical' %}
                             </div>
                         </div>
                         <!-- ############################################################ -->
+                        <div id='id_inscripcion_div' hidden>
                         <hr>
                         <h3>Inscripcion</h3>
                         <div class='row'>
@@ -150,6 +163,7 @@
                         </div>
                         </div>
 
+                        </div>
                         <div class="row conteiner-fluid" id="id_botones_div" hidden>
                             <div class="col-lg-2">
                                 {% bootstrap_button button_type="submit" content="Siguiente" %}
@@ -170,45 +184,42 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-        $("#id_domicilio_pais").on("change", getProvincias);
-        $("#id_domicilio_provincia").on("change", getPartidos);
-        $("#id_domicilio_partido").on("change", getLocalidades);
-        $("#id_domicilio_localidad").on("change", direccion);
-        $("#id_pais_documento").on("change", cuil);
-        $("#id_sexo").on("change", sexo);
+        recarga_errores();
         $("#id_genero").on("change", genero);
+        $("#id_sexo").on("change", sexo);
+        $("#id_pais_documento").on("change", cuil);
+        $("#id_domicilio_pais").on("change", getDomicilioProvincias);
+        $("#id_domicilio_provincia").on("change", getDomicilioPartidos);
+        $("#id_domicilio_partido").on("change", getDomicilioLocalidades);
+        $("#id_domicilio_localidad").on("change", direccion);
+        $('#id_pais').on("change", getProvincias);
+        $('#id_provincia').on("change", getPartido);
+        $('#id_partido').on("change", getLocalidad);
+        $('#id_localidad').on("change", getEscuela);
+        $('#id_escuela').on("change", titulacion);
+        $('#id_anio_egreso').on("change", inscripcion);
         $("#id_modalidad").on("change", modalidad);
         bloquear_copy_paste();
-
     });
 
     function bloquear_copy_paste() {
-        $("#id_telefono2").on('paste', function(e){
-            e.preventDefault();
-        })
-        $("#id_correo2").on('paste', function(e){
-            e.preventDefault();
-        })
-        $("#id_telefono").on('copy', function(e){
-            e.preventDefault();
-        })
-        $("#id_correo").on('copy', function(e){
-            e.preventDefault();
-        })
+        $("#id_telefono2").on('paste', function(e){e.preventDefault();})
+        $("#id_telefono2").on('copy', function(e){e.preventDefault();})
+        $("#id_correo2").on('paste', function(e){e.preventDefault();})
+        $("#id_correo2").on('copy', function(e){e.preventDefault();})
+        $("#id_telefono").on('paste', function(e){e.preventDefault();})
+        $("#id_telefono").on('copy', function(e){e.preventDefault();})
+        $("#id_correo").on('paste', function(e){e.preventDefault();})
+        $("#id_correo").on('copy', function(e){e.preventDefault();})
     }
 
-    function getProvincias() {
-        document.getElementById("id_domicilio_provincia_div").setAttribute("hidden", "");
-        document.getElementById("id_domicilio_partido_div").setAttribute("hidden", "");
-        document.getElementById("id_domicilio_localidad_div").setAttribute("hidden", "");
-        document.getElementById("id_domicilio_direccion_div").setAttribute("hidden", "");
-
+    function getDomicilioProvincias() {
         let paisID = $("#id_domicilio_pais").val();
         if (paisID == '9') {
             document.getElementById("id_estudiante_form_div").setAttribute("hidden","");
             document.getElementById("id_domicilio_provincia_div").removeAttribute("hidden");
             // Eliminamos las opciones anteriores del select
-            $("#id_domicilio_provincia").html("");
+            //$("#id_domicilio_provincia").html("");
             var request = $.ajax({
                 type: "GET",
                 url: "{% url 'get_provincias' %}",
@@ -218,16 +229,24 @@
             });
             request.done(function (response) {
                 // Agregamos los resultados al select
+                var provinciaDomicilioID = $('#id_domicilio_provincia').val();
                 $("#id_domicilio_provincia").html(response.provincias);
+                if (provinciaDomicilioID) {
+                    $('#id_domicilio_provincia').val(provinciaDomicilioID);
+                }
             });
         } else {
+            document.getElementById("id_domicilio_provincia_div").setAttribute("hidden", "");
+            document.getElementById("id_domicilio_partido_div").setAttribute("hidden", "");
+            document.getElementById("id_domicilio_localidad_div").setAttribute("hidden", "");
+            document.getElementById("id_domicilio_direccion_div").setAttribute("hidden", "");
             document.getElementById("id_estudiante_form_div").removeAttribute("hidden");
             document.getElementById("id_domicilio_provincia_div").setAttribute("hidden", "");
             $("#id_domicilio_provincia").html("<option value='' selected='selected'>---------</option>");
         }
     }
 
-    function getPartidos() {
+    function getDomicilioPartidos() {
         let provinciaID = $("#id_domicilio_provincia").val();
         document.getElementById("id_domicilio_direccion_div").setAttribute("hidden", "");
         //console.log(provinciaID)
@@ -235,7 +254,7 @@
             document.getElementById("id_domicilio_partido_div").removeAttribute("hidden");
             document.getElementById("id_domicilio_localidad_div").setAttribute("hidden", "");
             // Eliminamos las opciones anteriores del select
-            $("#id_domicilio_partido").html("");
+            //$("#id_domicilio_partido").html("");
             var request = $.ajax({
                 type: "GET",
                 url: "{% url 'get_partidos' %}",
@@ -245,13 +264,17 @@
             });
             request.done(function (response) {
                 // Agregamos los resultados al select
+                var partidoDomicilioID = $('#id_domicilio_partido').val();
                 $("#id_domicilio_partido").html(response.partidos);
+                if (partidoDomicilioID) {
+                    $('#id_domicilio_partido').val(partidoDomicilioID);
+                }
             });
         } else {
             document.getElementById("id_domicilio_localidad_div").removeAttribute("hidden");
             document.getElementById("id_domicilio_partido_div").setAttribute("hidden", "");
             // Eliminamos las opciones anteriores del select
-            $("#id_domicilio_localidad").html("");
+            //$("#id_domicilio_localidad").html("");
             var request = $.ajax({
                 type: "GET",
                 url: "{% url 'get_partidos' %}",
@@ -261,20 +284,25 @@
             });
             request.done(function (response) {
                 // Agregamos los resultados al select
+                var localidadDomicilioID = $('#id_domicilio_localidad').val();
                 $("#id_domicilio_localidad").html(response.localidades);
+                $('#id_domicilio_partido').val('');
+                if (localidadDomicilioID) {
+                    $('#id_domicilio_localidad').val(localidadDomicilioID);
+                }
             })
         }
     }
 
 
-    function getLocalidades() {
+    function getDomicilioLocalidades() {
         document.getElementById("id_domicilio_direccion_div").setAttribute("hidden", "");
 
         let partidoID = $("#id_domicilio_partido").val();
         if (partidoID) {
             document.getElementById("id_domicilio_localidad_div").removeAttribute("hidden");
             // Eliminamos las opciones anteriores del select
-            $("#id_domicilio_localidad").html("");
+            //$("#id_domicilio_localidad").html("");
             var request = $.ajax({
                 type: "GET",
                 url: "{% url 'get_localidades' %}",
@@ -284,7 +312,11 @@
             });
             request.done(function (response) {
                 // Agregamos los resultados al select
+                var localidadDomicilioID = $('#id_domicilio_localidad').val();
                 $("#id_domicilio_localidad").html(response.localidades);
+                if (localidadDomicilioID) {
+                    $('#id_domicilio_localidad').val(localidadDomicilioID);
+                }
             });
         } else {
             document.getElementById("id_domicilio_direccion_div").setAttribute("hidden", "");
@@ -311,6 +343,7 @@
         let generoID = $("#id_genero").val();
         if (generoID == '13') {
             document.getElementById("id_genero_otro_div").removeAttribute("hidden");
+            document.getElementById("id_genero_otro").setAttribute("required","");
         } else {
             document.getElementById("id_genero_otro_div").setAttribute("hidden","");
         }
@@ -333,6 +366,203 @@
         document.getElementById("id_botones_div").removeAttribute("hidden");
     }
 
+    function getProvincias() {
+        let paisID = $("#id_pais").val();
+        if (paisID == '9') {
+            document.getElementById("id_inscripcion_div").setAttribute("hidden","");
+            document.getElementById("id_provincia_div").removeAttribute("hidden");
+            var request = $.ajax({
+                type: "GET",
+                url: "{% url 'get_provincias' %}",
+                data: {
+                    "domicilio_pais": paisID,
+                },
+            });
+            request.done(function (response) {
+                // Agregamos los resultados al select
+                var provinciaID = $('#id_provincia').val();
+                $("#id_provincia").html(response.provincias);
+                if (provinciaID) {
+                    $('#id_provincia').val(provinciaID);
+                }
+            });
+        } else {
+            inscripcion();
+            document.getElementById("id_provincia_div").setAttribute("hidden", "");
+            document.getElementById("id_partido_div").setAttribute("hidden", "");
+            document.getElementById("id_localidad_div").setAttribute("hidden", "");
+            document.getElementById("id_escuela_div").setAttribute("hidden", "");
+            document.getElementById("id_titulo_secundario_div").setAttribute("hidden", "");
+            document.getElementById("id_titulo_secundario_div").setAttribute("hidden", "");
+            document.getElementById("id_anio_egreso_div").setAttribute("hidden", "");
+            document.getElementById("id_inscripcion_div").removeAttribute("hidden");
+            //$("#id_domicilio_provincia").html("<option value='' selected='selected'>---------</option>");
+        }
+    }
+
+    function getPartido() {
+        document.getElementById("id_escuela_div").setAttribute("hidden", "");
+        document.getElementById("id_titulo_secundario_div").setAttribute("hidden", "");
+        document.getElementById("id_anio_egreso_div").setAttribute("hidden", "");
+        document.getElementById("id_inscripcion_div").setAttribute("hidden", "");
+        let provinciaID = $("#id_provincia").val();
+        if (provinciaID == '6') {
+            document.getElementById("id_inscripcion_div").setAttribute("hidden","");
+            document.getElementById("id_localidad_div").setAttribute("hidden", "");
+            document.getElementById("id_partido_div").removeAttribute("hidden");
+            var request = $.ajax({
+                type: "GET",
+                url: "{% url 'get_partidos' %}",
+                data: {
+                    "domicilio_provincia": provinciaID,
+                },
+            });
+            request.done(function (response) {
+                // Agregamos los resultados al select
+                var partidoID = $('#id_partido').val();
+                $("#id_partido").html(response.partidos);
+                if (partidoID) {
+                    $('#id_partido').val(partidoID);
+                }
+            });
+        } else {
+            document.getElementById("id_localidad_div").removeAttribute("hidden");
+            document.getElementById("id_partido_div").setAttribute("hidden", "");
+            var request = $.ajax({
+                type: "GET",
+                url: "{% url 'get_partidos' %}",
+                data: {
+                    "domicilio_provincia": provinciaID,
+                },
+            });
+            request.done(function (response) {
+                // Agregamos los resultados al select
+                var localidadID = $('#id_localidad').val();
+                $("#id_localidad").html(response.localidades);
+                $('#id_partido').val('');
+                if (localidadID) {
+                    $('#id_localidad').val(localidadID);
+                }
+            })
+        }
+    }
+
+    function getLocalidad() {
+        document.getElementById("id_escuela_div").setAttribute("hidden", "");
+        document.getElementById("id_titulo_secundario_div").setAttribute("hidden", "");
+        document.getElementById("id_anio_egreso_div").setAttribute("hidden", "");
+        document.getElementById("id_inscripcion_div").setAttribute("hidden", "");
+        
+        let partidoID = $("#id_partido").val();
+        if (partidoID) {
+            document.getElementById("id_localidad_div").removeAttribute("hidden");
+            var request = $.ajax({
+                type: "GET",
+                url: "{% url 'get_localidades' %}",
+                data: {
+                    "domicilio_partido": partidoID,
+                },
+            });
+            request.done(function (response) {
+                // Agregamos los resultados al select
+                var localidadID = $('#id_localidad').val();
+                $("#id_localidad").html(response.localidades);
+                if (localidadID) {
+                    $('#id_localidad').val(localidadID);
+                }
+            });
+        }
+    }
+
+    function getEscuela() {
+        let localidadID = $("#id_localidad").val();
+        if (localidadID) {
+            document.getElementById("id_escuela_div").removeAttribute("hidden");
+            document.getElementById("id_titulo_secundario_div").setAttribute("hidden", "");
+            document.getElementById("id_anio_egreso_div").setAttribute("hidden", "");
+            document.getElementById("id_inscripcion_div").setAttribute("hidden", "");
+            var request = $.ajax({
+                type: "GET",
+                url: "{% url 'get_escuelas' %}",
+                data: {
+                    "escuela_localidad": localidadID,
+                },
+            });
+            request.done(function (response) {
+                // Agregamos los resultados al select
+                var escuelaID = $('#id_escuela').val();
+                $("#id_escuela").html(response.escuelas);
+                if (escuelaID) {
+                    $('#id_escuela').val(escuelaID);
+                }
+            });
+        }
+    }
+
+    function inscripcion() {
+        document.getElementById("id_inscripcion_div").removeAttribute("hidden");
+    }
+
+    function titulacion() {
+        document.getElementById("id_titulo_secundario_div").removeAttribute("hidden");
+        document.getElementById("id_anio_egreso_div").removeAttribute("hidden");
+    }
+
+    function recarga_errores() {
+        var paisDocumentoID = $('#id_pais_documento').val();
+        var paisDomicilioID = $('#id_domicilio_pais').val();
+        var provinciaDomicilioID = $('#id_domicilio_provincia').val();
+        var partidoDomicilioID = $('#id_domicilio_partido').val();
+        var localidadDomicilioID = $('#id_domicilio_localidad').val();
+        var paisID = $('#id_pais').val();
+        var provinciaID = $('#id_provincia').val();
+        var partidoID = $('#id_partido').val();
+        var localidadID = $('#id_localidad').val();
+        var escuelaID = $('#id_escuela').val();
+        var titulo = $('#id_titulo_secundario').val();
+        var modalidadID = $('#id_modalidad').val();
+        var generoID = $('#id_genero').val();
+        
+        if (generoID == '13'){
+            genero();
+        }
+        if (paisDocumentoID == '9'){
+            cuil();
+        }
+        if (paisDomicilioID != '')  {
+            getDomicilioProvincias();
+        }
+        if (provinciaDomicilioID != ''){
+            getDomicilioPartidos();
+        }
+        if (partidoDomicilioID != ''){
+            getDomicilioLocalidades();
+        }
+        if (localidadDomicilioID != ''){
+            direccion();
+        }
+        if (paisID != ''){
+            getProvincias();
+        }
+        if (provinciaID != '') {
+            getPartido();
+        }
+        if (partidoID != '') {
+            getLocalidad();
+        }
+        if (localidadID != '') {
+            getEscuela();
+        }
+        if (escuelaID != '') {
+            titulacion();
+        }
+        if (titulo != '') {
+            inscripcion();
+        }
+        if (modalidadID != ''){
+            modalidad();
+        }
+    }
 
 </script>
 

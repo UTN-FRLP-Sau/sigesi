@@ -21,7 +21,7 @@ from .models import (Pais,
                      Documentacion
 )
 
-
+'''
 class EntregarDocumentacionForm(forms.ModelForm):
     class Meta:
         model = Documentacion
@@ -39,7 +39,7 @@ class EntregarDocumentacionForm(forms.ModelForm):
             'modalidad': 'La modalidad Semi-Presencial solo es para las personas que no residan en La Plata, Berisso o Ensenada',
         }
 
-
+'''
 class NacionalidadModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.nacionalidad
@@ -64,23 +64,23 @@ class CreatePersonaForm(forms.ModelForm):
 
     class Meta:
         model = Persona
-        fields = ['apellidos',#
-                  'nombres',#
+        fields = ['apellidos',
+                  'nombres',
                   'nombre_autopercibido',
                   'sexo',
                   'genero',
                   'genero_otro',
-                  'fecha_nacimiento',#
-                  'pais_nacimiento',#
-                  'nacionalidad',#
-                  'documento_tipo',#
-                  'numero_documento',#
+                  'fecha_nacimiento',
+                  'pais_nacimiento',
+                  'nacionalidad',
+                  'documento_tipo',
+                  'numero_documento',
                   'cuil',
                   'telefono',
                   'telefono2',
                   'correo',
                   'correo2',
-                  'pais_documento',#
+                  'pais_documento',
                   'domicilio_pais',
                   'domicilio_provincia',
                   'domicilio_partido',
@@ -162,10 +162,30 @@ class CreatePersonaForm(forms.ModelForm):
 
 
 class CreateStudentForm(forms.ModelForm):
+    pais = forms.ModelChoiceField(queryset=Pais.objects,
+                                  label='Pais donde curso el secundario',
+                                  required=False
+                                  )
+    provincia = forms.ModelChoiceField(queryset=Provincia.objects,
+                                       label='Provincia donde curso el secundario',
+                                       required=False
+                                       )
+    partido = forms.ModelChoiceField(queryset=PartidoPBA.objects,
+                                     label='Partido donde curso el secundario',
+                                     required=False,
+                                     )
+    localidad = forms.ModelChoiceField(queryset=Localidad.objects,
+                                       label='Localidad donde curso el secundario',
+                                       required=False,
+                                       )
     class Meta:
         model = Estudiante
         fields = [#'credencial',
                   #'legajo',
+                  'pais',
+                  'provincia',
+                  'partido',
+                  'localidad',
                   'escuela',
                   'anio_egreso',
                   'titulo_secundario',
