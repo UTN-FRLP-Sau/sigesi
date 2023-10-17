@@ -18,19 +18,19 @@ from .validators import validate_file_extension
 
 # Create your models here.
 
-GESTION_ESCUELA_CHOICES = [("privada", "Privada"),
-                           ("publica", "Publica"),
-                           ("mixta", "Mixta"),
-                           ("social/cooperativa", "Social/Cooperativa")]
+GESTION_ESCUELA_CHOICES = [("Privado", "Privado"),
+                           ("Estatal", "Estatal"),
+                           ("Social/cooperativa", "Social/cooperativa")]
 
 AMBITO_ESCUELA_CHOICES = [
-    ("rural", "Rural"),
-    ("urbano", "Urbano")
+    ("Rural", "Rural"),
+    ("Urbano", "Urbano")
 ]
 
 SEXO_ESTUDIANTE_CHOICES = [
     ("m", "Masculino"),
-    ("f", "Femenino")
+    ("f", "Femenino"),
+    ("n", "No Binario")
 ]
 
 ESPECIALIDAD_ESTUDIANTE_CHOICES = [
@@ -207,10 +207,38 @@ class TipoDocumento(models.Model):
 
     def get_absolute_url():
         pass
+
+
+class Genero(models.Model):
+    nombre = models.CharField(db_column='nombre', max_length=45, unique=True)
+
+    class Meta:
+        ordering=['nombre']
+        db_table = 'genero'
+        verbose_name = 'Genero'
+        verbose_name_plural = 'Generos'
+
+    def __str__(self):
+        return '{}'.format(self.nombre.title())
+
+    def save(self):
+        self.nombre = self.nombre.lower()
+        super(Genero, self).save()
+
+    def get_absolute_url():
+        pass
 class Persona(models.Model):
     apellidos = models.CharField(max_length=60, db_column='apellidos')
     nombres = models.CharField(max_length=60, db_column='nombres')
+    nombre_autopercibido = models.CharField(max_length=60, db_column='nombreautopercibido', null=True, blank=True)
     fecha_nacimiento = models.DateField(db_column='nacimientofecha')
+    sexo = models.CharField(max_length=1,
+                            db_column='sexo',
+                            choices=SEXO_ESTUDIANTE_CHOICES)
+    genero = models.ForeignKey(Genero,
+                               on_delete=models.DO_NOTHING,
+                               db_column='genero')
+    genero_otro = models.CharField(max_length=100, db_column='genero_otro', null=True, blank=True)
     pais_nacimiento = models.ForeignKey(Pais,
                                         on_delete=models.DO_NOTHING,
                                         related_name='pais_nacimiento',
@@ -223,17 +251,25 @@ class Persona(models.Model):
                                        on_delete=models.DO_NOTHING,
                                        db_column='documentotipo')
     numero_documento = models.CharField(max_length=16, db_column='documentonumero', unique=True)
+    cuil = models.CharField(max_length=13, null=True, blank=True, db_column='cuil')
     pais_documento = models.ForeignKey(Pais,
                                        on_delete=models.DO_NOTHING,
-                                       null=True,
-                                       blank=True,
                                        related_name='pais_documento_emisor',
                                        db_column='documentopaisemisor')
+    domicilio_pais = models.ForeignKey(Pais,
+                                       on_delete=models.DO_NOTHING,
+                                       related_name='pais_domicilio',
+                                       db_column='domiciliopais')
     domicilio_calle = models.CharField(max_length=100,
                                       default=None,
                                       null=True,
                                       blank=True,
                                       db_column='domiciliocalle')
+    domicilio_altura = models.CharField(max_length=10,
+                                      default=None,
+                                      null=True,
+                                      blank=True,
+                                      db_column='domicilioaltura')
     domicilio_piso = models.CharField(max_length=4,
                                       default=None,
                                       null=True,
@@ -283,7 +319,10 @@ class Persona(models.Model):
     def save(self):
         self.apellidos=self.apellidos.lower()
         self.nombres = self.nombres.lower()
+        self.nombre_autopercibido = self.nombre_autopercibido.lower() if self.nombre_autopercibido is not None else None
+        self.genero_otro = self.genero_otro.lower() if self.genero_otro is not None else None
         self.numero_documento = self.numero_documento.lower()
+        self.domicilio_altura = self.domicilio_altura.lower() if self.domicilio_altura is not None else None
         self.domicilio_piso = self.domicilio_piso.lower() if self.domicilio_piso is not None else None
         self.domicilio_departamento = self.domicilio_departamento.lower() if self.domicilio_departamento is not None else None
         self.domicilio_barrio = self.domicilio_barrio.lower() if self.domicilio_barrio is not None else None
@@ -291,6 +330,15 @@ class Persona(models.Model):
         self.domicilio_cp4 = self.domicilio_cp4.lower() if self.domicilio_cp4 is not None else None
         self.telefono = str(self.telefono).lower() if self.telefono is not None else None
         self.correo = self.correo.lower() if self.correo is not None else None
+        #Damos el formato de cuil de la forma XX-XXXXXXXX-X
+        if self.cuil is not None:
+            patron = r'^\d{2}-\d{8}-\d$'
+            cuil = self.cuil
+            cuil = cuil.replace("-","")
+            if re.match(patron, cuil):
+                self.cuil = cuil[:2]+'-'+cuil[2:11]+'-'+cuil[11:]
+        else:
+            self.cuil=None
         super(Persona, self).save()
 
     def get_absolute_url():
@@ -309,9 +357,9 @@ class Escuela(models.Model):
                               choices=AMBITO_ESCUELA_CHOICES,
                               db_column='ambito')
     tecnica = models.BooleanField(db_column='tecnica')
-    nombre = models.CharField(max_length=150,
+    nombre = models.CharField(max_length=200,
                               db_column='nombre')
-    domicilio_calle = models.CharField(max_length=150,
+    domicilio_calle = models.CharField(max_length=200,
                                        db_column='domiciliocalle')
     domicilio_altura = models.IntegerField(db_column='domicilioaltura')
     domicilio_localidad = models.ForeignKey(Localidad,
@@ -390,30 +438,9 @@ class MailEscuela(models.Model):
         pass
 
 
-class Genero(models.Model):
-    nombre = models.CharField(db_column='nombre', max_length=45, unique=True)
-
-    class Meta:
-        ordering=['nombre']
-        db_table = 'genero'
-        verbose_name = 'Genero'
-        verbose_name_plural = 'Generos'
-
-    def __str__(self):
-        return '{}'.format(self.nombre.title())
-
-    def save(self):
-        self.nombre = self.nombre.lower()
-        super(Genero, self).save()
-
-    def get_absolute_url():
-        pass
-
-
 class Docente(models.Model):
     cbu = models.IntegerField(db_column='cbu', unique=True)
 #    comprobante = models.FileField(db_column='comprobante', upload_to=_generar_ruta_documento)
-    genero = models.ForeignKey(Genero, on_delete=models.DO_NOTHING, db_column='genero')
     persona = models.ForeignKey(Persona, on_delete=models.DO_NOTHING, db_column='persona')
 
     class Meta:
@@ -456,18 +483,15 @@ class TituloSecundario(models.Model):
 class Estudiante(models.Model):
     credencial = models.AutoField(primary_key=True, db_column='credencial')
     legajo = models.IntegerField(default=0, db_column='legajo')
-    cuil = models.CharField(max_length=13, null=True, blank=True, db_column='cuil')
-    sexo = models.CharField(max_length=1, db_column='sexo', choices=SEXO_ESTUDIANTE_CHOICES, null=True, blank=True)
-    genero = models.ForeignKey(Genero, on_delete=models.DO_NOTHING, db_column='genero', null=True, blank=True)
-    nombre_autopercibido = models.CharField(max_length=60, db_column='nombreautopercibido', null=True, blank=True)
-    escuela = models.ForeignKey(Escuela, on_delete=models.DO_NOTHING, db_column='escuela', null=True, blank=True)
-    anio_egreso = models.IntegerField(null=True, blank=True, db_column='escuelaanioegreso')
-    titulo_secundario = models.ForeignKey(TituloSecundario, db_column='tituloescuela', null=True, blank=True, on_delete=models.DO_NOTHING)
-    emergencia_telefono = models.CharField(max_length=20, db_column='emergenciatelefono', null=True, blank=True)
-    emergencia_contacto = models.CharField(max_length=60, db_column='emergenciacontacto', null=True, blank=True)
-    especialidad = models.IntegerField(choices=ESPECIALIDAD_ESTUDIANTE_CHOICES, db_column='especialidad', null=True, blank=True)
-    turno = models.CharField(max_length=1, null=True, blank=True, db_column='turno', choices=TURNO_ESTUDIANTE_CHOICES)
-    modalidad =models.IntegerField(db_column='modalidad', null=True, blank=True)
+    escuela = models.ForeignKey(Escuela, on_delete=models.DO_NOTHING, db_column='escuela', blank=True, null=True)
+    anio_egreso = models.IntegerField(db_column='escuelaanioegreso')
+    titulo_secundario = models.CharField(max_length=150, db_column='tituloescuela')
+    #titulo_secundario = models.ForeignKey(TituloSecundario, db_column='tituloescuela', on_delete=models.DO_NOTHING)
+    emergencia_telefono = models.CharField(max_length=20, db_column='emergenciatelefono')
+    emergencia_contacto = models.CharField(max_length=60, db_column='emergenciacontacto')
+    especialidad = models.IntegerField(choices=ESPECIALIDAD_ESTUDIANTE_CHOICES, db_column='especialidad')
+    turno = models.CharField(max_length=1, db_column='turno', choices=TURNO_ESTUDIANTE_CHOICES)
+    modalidad =models.CharField(max_length=1, choices=MODALIDAD_CHOICES, db_column='modalidad')
     persona = models.OneToOneField(Persona, on_delete=models.DO_NOTHING, db_column='persona')
 
     class Meta:
@@ -481,34 +505,46 @@ class Estudiante(models.Model):
 
     def save(self):
         #Guardamos todo en minusculas
-        self.nombre_autopercibido = self.nombre_autopercibido.lower() if self.nombre_autopercibido is not None else None
         self.titulo_secundario = self.titulo_secundario.lower() if self.titulo_secundario is not None else None
         self.emergencia_contacto = self.emergencia_contacto.lower() if self.emergencia_contacto is not None else None
 
-        #Damos el formato de cuil de la forma XX-XXXXXXXX-X
-        if self.cuil is not None:
-            patron = r'^\d{2}-\d{8}-\d$'
-            cuil = self.cuil
-            cuil = cuil.replace("-","")
-            if re.match(patron, cuil):
-                self.cuil = cuil[:2]+'-'+cuil[2:11]+'-'+cuil[11:]
-        else:
-            self.cuil=None
         super(Estudiante, self).save()
 
     def get_absolute_url(self):
         pass
 
 
+def _generar_ruta_documento(instance, filename):
+    # Extraer extension del fichero
+    extension = os.path.splitext(filename)[1][1:]
+    # Obtener el ultimo ID del modelo Archivos
+    last_id = Archivos.objects.last().pk if Archivos.objects.exists() else 0
+    # Generamos la ruta relativa a media_root en funcion del numero_documento
+    ruta_relativa = str(instance.persona.numero_documento).lower()
+    # Obtenemos una instancia de Storage
+    #storage = default_storage
+    # Validacion y normalizacion de la ruta
+    ruta_validada = 'documentos'
+    # Generamos el nombre del archivo con un idenfiticar aleatorio y la extension del archivo original
+    nombre_archivo = '{}_{}.{}'.format(last_id, instance.tipo, extension)
+    # Retornamos la ruta completa
+    return os.path.join(ruta_validada, ruta_relativa, nombre_archivo)
+
 class Archivos(models.Model):
-    tipo = models.IntegerField(db_column='tipo')
+    '''
+    estado: 0- En revision
+            1- Aprobado
+            2- Rechazado
+    '''
+    tipo = models.CharField(max_length=20, db_column='tipo')
     path = models.FileField(db_column='ubicacion', upload_to=_generar_ruta_documento)
     persona = models.ForeignKey(Persona, on_delete=models.DO_NOTHING, db_column='persona')
+    estado = models.IntegerField(default=0, db_column='estado')
 
     class Meta:
         db_table = 'imagenes'
         verbose_name = 'Archivo'
-        verbose_name_plural = 'Archivoss'
+        verbose_name_plural = 'Archivos'
 
     def __str__(self):
         return '({}) - {}, {}'.format(self.id, self.persona.apellidos.upper(), self.persona.nombres.title())

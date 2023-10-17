@@ -40,6 +40,7 @@ ALLOWED_HOSTS = str(env('ALLOWED_HOSTS')).split(',')
 
 CSRF_TRUSTED_ORIGINS = ['https://*ingreso.frlp.utn.edu.ar','https://*.127.0.0.1']
 
+SESSION_COOKIE_AGE = 60*60*1 # 1 hs
 
 # Application definition
 
