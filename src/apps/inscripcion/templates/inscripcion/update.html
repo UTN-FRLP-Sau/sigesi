@@ -42,3 +42,52 @@
 </div>
 
 {% endblock %}
+
+
+{% block content_js %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#id_especialidad').on("change", turno);
+        turno();
+    });
+    function turno(){
+        var especialidad = $('#id_especialidad').val();
+        var turnoSelect = $('#id_turno');
+        // Restaurar todas las opciones de turno
+        turnoSelect.find('option').hide();
+        turnoSelect.find('option[value=""]').show();
+        // Si se selecciona Ing. Civil, ocultar Turno Tarde y Turno Mañana
+        if (especialidad === '31') {
+            turnoSelect.find('option[value="m"]').show();
+            turnoSelect.find('option[value="n"]').show();
+            }
+        // Si se selecciona Ing. en Sistemas de Informacion, ocultar Turno Tarde
+        else if (especialidad === '5') {
+            turnoSelect.find('option[value="m"]').show();
+            turnoSelect.find('option[value="n"]').show();
+            }
+        // Si se selecciona Ing. en Energia Electrica, ocultar Turno Tarde y Mañana
+        else if (especialidad === '7') {
+            turnoSelect.find('option[value="n"]').show();
+            }
+        // Si se selecciona Ing. Mecanica, ocultar Turno Tarde
+        else if (especialidad === '17') {
+            turnoSelect.find('option[value="m"]').show();
+            turnoSelect.find('option[value="n"]').show();
+            }
+        // Si se selecciona Ing. Quimica, ocultar Turno Tarde y Mañana
+        else if (especialidad === '27') {
+            turnoSelect.find('option[value="n"]').show();
+            }
+        // Si se selecciona Ing. Industrial, ocultar Turno Tarde y Mañana
+        else if (especialidad === '24') {
+            turnoSelect.find('option[value="m"]').show();
+            turnoSelect.find('option[value="n"]').show();
+            }
+        // Asegúrate de que se ejecute la función cuando se cargue la página
+        filtrarTurnos();
+        // Agrega un evento change para el campo de especialidad
+        $('#id_especialidad').change(filtrarTurnos);
+        };
+</script>
+{% endblock %}

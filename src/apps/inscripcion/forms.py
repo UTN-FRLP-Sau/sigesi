@@ -204,7 +204,7 @@ class CreateStudentForm(forms.ModelForm):
             'emergencia_telefono': 'Telefono de Emergencia',
             'especialidad': 'Carrera',
             'turno': 'Turno',
-            'modalidad': 'Modealidad'
+            'modalidad': 'Modalidad'
             }
         help_texts ={
 

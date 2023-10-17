@@ -137,11 +137,13 @@
                             <div id='id_escuela_div' class="col-lg-7" hidden>
                                 {% bootstrap_field estudiante_form.escuela layout='horizontal' %}
                             </div>
+                        <div class='row'>
                             <div id='id_titulo_secundario_div' class="col-lg-6" hidden>
                                 {% bootstrap_field estudiante_form.titulo_secundario layout='vertical' %}
                             </div>
                             <div id='id_anio_egreso_div' class="col-lg-6" hidden>
                                 {% bootstrap_field estudiante_form.anio_egreso layout='vertical' %}
+                            </div>
                             </div>
                         </div>
                         <!-- ############################################################ -->
@@ -149,8 +151,11 @@
                         <hr>
                         <h3>Inscripcion</h3>
                         <div class='row'>
-                        <p class='warning'>Tenga en cuenta que el turno y la modalidad se encuentras sujetos a
-                            disponibilidad y capacidad</p>
+                        <div class="alert alert-info col-lg-6 mx-auto" role="alert">
+                        Tenga en cuenta que el turno y la modalidad se encuentras sujetos a disponibilidad y capacidad
+                        </div>
+                        </div>
+                        <div class='row'>
                             <div class="col-lg-6" >
                                 {% bootstrap_field estudiante_form.especialidad layout='vertical' %}
                             </div>
@@ -199,8 +204,47 @@
         $('#id_escuela').on("change", titulacion);
         $('#id_anio_egreso').on("change", inscripcion);
         $("#id_modalidad").on("change", modalidad);
+        $("#id_especialidad").on("change", turno);
+        $('#id_turno').find('option').hide();
         bloquear_copy_paste();
     });
+
+    function turno() {
+        $('#id_especialidad').change(function(){
+            var especialidad = $(this).val();
+            var turnoSelect = $('#id_turno');
+            // Restaurar todas las opciones
+            //turnoSelect.find('option').hide();
+            // Si se selecciona Ing. Civil, ocultar Turno Tarde
+            if (especialidad === '31') {
+                turnoSelect.find('option[value="m"]').show();
+                turnoSelect.find('option[value="n"]').show();
+                }
+            // Si se selecciona Ing. en Sistemas de Informacion, ocultar Turno Tarde
+            else if (especialidad === '5') {
+                turnoSelect.find('option[value="m"]').show();
+                turnoSelect.find('option[value="n"]').show();
+                }
+            // Si se selecciona Ing. en Energia Electrica, ocultar Turno Tarde y Mañana
+            else if (especialidad === '7') {
+                turnoSelect.find('option[value="n"]').show();
+                }
+            // Si se selecciona Ing. Mecanica, ocultar Turno Tarde
+            else if (especialidad === '17') {
+                turnoSelect.find('option[value="m"]').show();
+                turnoSelect.find('option[value="n"]').show();
+                }
+            // Si se selecciona Ing. Quimica, ocultar Turno Tarde y Mañana
+            else if (especialidad === '27') {
+                turnoSelect.find('option[value="n"]').show();
+                }
+            // Si se selecciona Ing. Industrial, ocultar Turno Tarde y Mañana
+            else if (especialidad === '24') {
+                turnoSelect.find('option[value="m"]').show();
+                turnoSelect.find('option[value="n"]').show();
+                }
+            });
+        }
 
     function bloquear_copy_paste() {
         $("#id_telefono2").on('paste', function(e){e.preventDefault();})
@@ -371,6 +415,8 @@
         if (paisID == '9') {
             document.getElementById("id_inscripcion_div").setAttribute("hidden","");
             document.getElementById("id_provincia_div").removeAttribute("hidden");
+            document.getElementById("id_titulo_secundario_div").setAttribute("hidden");
+            document.getElementById("id_anio_egreso_div").setAttribute("hidden");
             var request = $.ajax({
                 type: "GET",
                 url: "{% url 'get_provincias' %}",
@@ -392,9 +438,8 @@
             document.getElementById("id_partido_div").setAttribute("hidden", "");
             document.getElementById("id_localidad_div").setAttribute("hidden", "");
             document.getElementById("id_escuela_div").setAttribute("hidden", "");
-            document.getElementById("id_titulo_secundario_div").setAttribute("hidden", "");
-            document.getElementById("id_titulo_secundario_div").setAttribute("hidden", "");
-            document.getElementById("id_anio_egreso_div").setAttribute("hidden", "");
+            document.getElementById("id_titulo_secundario_div").removeAttribute("hidden");
+            document.getElementById("id_anio_egreso_div").removeAttribute("hidden");
             document.getElementById("id_inscripcion_div").removeAttribute("hidden");
             //$("#id_domicilio_provincia").html("<option value='' selected='selected'>---------</option>");
         }
