@@ -18,13 +18,15 @@ from .validators import validate_file_extension
 
 # Create your models here.
 
-GESTION_ESCUELA_CHOICES = [("Privado", "Privado"),
-                           ("Estatal", "Estatal"),
-                           ("Social/cooperativa", "Social/cooperativa")]
+GESTION_ESCUELA_CHOICES = [("privado", "Privado"),
+                           ("estatal", "Estatal"),
+                           ("social/cooperativa", "Social/Cooperativa")]
 
 AMBITO_ESCUELA_CHOICES = [
-    ("Rural", "Rural"),
-    ("Urbano", "Urbano")
+    ("rural", "Rural"),
+    ("urbano", "Urbano"),
+    ("rural agrupado", "Rural Agrupado"),
+    ("Rural disperso", "Rural Disperso")
 ]
 
 SEXO_ESTUDIANTE_CHOICES = [
