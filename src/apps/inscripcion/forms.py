@@ -57,7 +57,7 @@ class EntregarDocumentacionForm(forms.ModelForm):
             'turno': '¿En qué turno quiero cursar?'
         }
         help_texts ={
-            'modalidad': 'La modalidad Semi-Presencial solo es para las personas que no residan en La Plata, Berisso o Ensenada',
+            'modalidad': 'La modalidad Semi-Presencial solo es para las personas que no residan en La Plata, Berisso y Ensenada',
         }
 
 '''
