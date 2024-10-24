@@ -13,7 +13,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.template.loader import get_template
 from django.views.generic.edit import UpdateView
-from django.views.generic import View
+from django.views.generic import View, TemplateView
 
 # Django Locales
 from .forms import CreatePersonaForm, CreateStudentForm, VerificacionInscripcionForm, SubirDocumentoForm, SubirCertificadoForm, ActualizarInscripcionForm
@@ -36,6 +36,10 @@ def create_email(user_mail, subject, template_name, context, request):
 
     message.attach_alternative(content, 'text/html')
     return message
+
+class InscripcionCerrada(TemplateView):
+    template_name = "inscripcion/inscripcion_cerrada.html"
+
 
 '''
 # Create your views here.
@@ -143,7 +147,6 @@ def inscriptor_home(request):
         'porcientos': porcientos,
     }
     return render(request, 'usuario/home.html', context)
-
 '''
 #####################################################################################################
 #####################################################################################################
@@ -178,6 +181,9 @@ class CreatePersonaAndEstudent(View):
                         'nombre': persona.nombres.title(),
                         'apellido': persona.apellidos.upper(),
                         'id_estudiante': estudiante.pk,
+                        'carrera': estudiante.especialidad,
+                        'turno': estudiante.turno,
+                        'modalidad': estudiante.modalidad
                     },
                     request=request
                     )
@@ -235,9 +241,8 @@ class ActualizarUsuarioView(UpdateView):
             id_estudiante = self.kwargs['pk']
             return HttpResponseRedirect(reverse('verificar_dni', kwargs={'id_estudiante': id_estudiante}))
         else:
+            #request.session['dni_verificado']=False
             id_estudiante = self.kwargs['pk']
-            pass
-            #request.session['dni_verificado'] = False
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -326,7 +331,8 @@ class ActualizarUsuarioView(UpdateView):
                 estudiante.save()
                 return self.form_valid(form_certificado)
             else:
+                request.session['dni_verificado'] = True
                 return self.form_invalid(form_certificado)
 
     def form_valid(self, form):
-        return render(self.request, 'inscripcion/success.html')
+        return render(self.request, 'inscripcion/success2.html')

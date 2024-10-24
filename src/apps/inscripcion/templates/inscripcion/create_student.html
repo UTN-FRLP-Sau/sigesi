@@ -193,6 +193,7 @@
         $("#id_genero").on("change", genero);
         $("#id_sexo").on("change", sexo);
         $("#id_pais_documento").on("change", cuil);
+        $("#id_pais_nacimiento").on("change", presetNacionalidad);//Falta esta funcion q deberia setear al nacionalida igual al pais de nacimiento
         $("#id_domicilio_pais").on("change", getDomicilioProvincias);
         $("#id_domicilio_provincia").on("change", getDomicilioPartidos);
         $("#id_domicilio_partido").on("change", getDomicilioLocalidades);
@@ -206,15 +207,23 @@
         $("#id_modalidad").on("change", modalidad);
         $("#id_especialidad").on("change", turno);
         $('#id_turno').find('option').hide();
+        $('#id_turno').find('option[value=""]').show();
         bloquear_copy_paste();
     });
 
+
+    function presetNacionalidad() {
+        var paisNacimiento = $('#id_pais_nacimiento').val();
+        console.log(paisNacimiento)
+        $("#id_nacionalidad").val(paisNacimiento)
+    }
+
     function turno() {
-        $('#id_especialidad').change(function(){
             var especialidad = $(this).val();
             var turnoSelect = $('#id_turno');
             // Restaurar todas las opciones
-            //turnoSelect.find('option').hide();
+            turnoSelect.find('option').hide();
+            turnoSelect.find('option[value=""]').show();
             // Si se selecciona Ing. Civil, ocultar Turno Tarde
             if (especialidad === '31') {
                 turnoSelect.find('option[value="m"]').show();
@@ -243,7 +252,6 @@
                 turnoSelect.find('option[value="m"]').show();
                 turnoSelect.find('option[value="n"]').show();
                 }
-            });
         }
 
     function bloquear_copy_paste() {
@@ -390,6 +398,7 @@
             document.getElementById("id_genero_otro").setAttribute("required","");
         } else {
             document.getElementById("id_genero_otro_div").setAttribute("hidden","");
+            document.getElementById("id_genero_otro").removeAttribute("required");
         }
     }
 
@@ -415,8 +424,8 @@
         if (paisID == '9') {
             document.getElementById("id_inscripcion_div").setAttribute("hidden","");
             document.getElementById("id_provincia_div").removeAttribute("hidden");
-            document.getElementById("id_titulo_secundario_div").setAttribute("hidden");
-            document.getElementById("id_anio_egreso_div").setAttribute("hidden");
+            document.getElementById("id_titulo_secundario_div").setAttribute("hidden","");
+            document.getElementById("id_anio_egreso_div").setAttribute("hidden","");
             var request = $.ajax({
                 type: "GET",
                 url: "{% url 'get_provincias' %}",
@@ -497,7 +506,7 @@
         document.getElementById("id_titulo_secundario_div").setAttribute("hidden", "");
         document.getElementById("id_anio_egreso_div").setAttribute("hidden", "");
         document.getElementById("id_inscripcion_div").setAttribute("hidden", "");
-        
+
         let partidoID = $("#id_partido").val();
         if (partidoID) {
             document.getElementById("id_localidad_div").removeAttribute("hidden");
@@ -567,7 +576,7 @@
         var titulo = $('#id_titulo_secundario').val();
         var modalidadID = $('#id_modalidad').val();
         var generoID = $('#id_genero').val();
-        
+
         if (generoID == '13'){
             genero();
         }

@@ -16,7 +16,8 @@ from .views import (#ConfirmacionInformacion,
                     CreatePersonaAndEstudent,
                     ActualizarUsuarioView,
                     #confirmar_documentacion,
-                    #inscriptor_home
+                    #inscriptor_home,
+                    InscripcionCerrada
                     )
 from .ajax import get_provincias, get_partidos, get_localidades, get_escuelas
 
@@ -31,9 +32,11 @@ urlpatterns = [
     #path('home', inscriptor_home, name='inscriptor_home'),
 
     #De aqui en mas es el nuevo sistema
-    path('new/person/', CreatePersonaAndEstudent.as_view(), name='crear_persona'),
+    #path('new/persona/', CreatePersonaAndEstudent.as_view(), name='crear_persona'),
+    path('new/persona/', InscripcionCerrada.as_view(), name='crear_persona'),
+    path('verificar-doc/<int:id_estudiante>/', VerificacionInscripcion.as_view(), name='verificar_doc'),
     path('verificar-dni/<int:id_estudiante>/', VerificacionInscripcion.as_view(), name='verificar_dni'),
-    path('actualizar-usuario/<pk>/', ActualizarUsuarioView.as_view(), name='paso_2'),
+    path('actualizar-doc/<pk>/', ActualizarUsuarioView.as_view(), name='paso_2'),
     #path('new/student/<int:persona_id>/', CrearEstudiante.as_view(), name='crear_estudiante'),
     #path('new/student/success/', CrearEstudiante.as_view(), name='crear_estudiante_success'),
 
