@@ -19,7 +19,9 @@ from django.views.generic import View, TemplateView
 from .forms import CreatePersonaForm, CreateStudentForm, VerificacionInscripcionForm, SubirDocumentoForm, SubirCertificadoForm, ActualizarInscripcionForm
 from .models import Persona, Estudiante, Archivos
 
-#Funciones generales
+# Funciones generales
+
+
 def create_email(user_mail, subject, template_name, context, request):
     template = get_template(template_name)
     content = template.render(context=context, request=request)
@@ -37,9 +39,12 @@ def create_email(user_mail, subject, template_name, context, request):
     message.attach_alternative(content, 'text/html')
     return message
 
+<<<<<<< HEAD
 class InscripcionCerrada(TemplateView):
     template_name = "inscripcion/inscripcion_cerrada.html"
 
+=======
+>>>>>>> 95dc36e8cb94c2d2a2c0795044e8318ddf45e85b
 
 '''
 # Create your views here.
@@ -167,13 +172,15 @@ class CreatePersonaAndEstudent(View):
         persona_form = CreatePersonaForm(request.POST)
         estudiante_form = CreateStudentForm(request.POST)
         if persona_form.is_valid() and estudiante_form.is_valid():
-            persona = persona_form.save(commit=False)  # Guarda la instancia de persona sin guardar en la base de datos
+            # Guarda la instancia de persona sin guardar en la base de datos
+            persona = persona_form.save(commit=False)
             persona.save()  # Ahora persona tiene un ID asignado
-            estudiante = estudiante_form.save(commit=False)  # Guarda la instancia de estudiante sin guardar en la base de datos
+            # Guarda la instancia de estudiante sin guardar en la base de datos
+            estudiante = estudiante_form.save(commit=False)
             estudiante.persona = persona  # Asigna la persona al estudiante
             estudiante.save()  # Guarda el estudiante en la base de datos
             try:
-                email=create_email(
+                email = create_email(
                     user_mail=persona.correo,
                     subject='Confirmación de Inscripción',
                     template_name='inscripcion/confirmacion_correo.html',
@@ -186,7 +193,7 @@ class CreatePersonaAndEstudent(View):
                         'modalidad': estudiante.modalidad
                     },
                     request=request
-                    )
+                )
                 thread = threading.Thread(target=email.send)
                 thread.start()
                 return render(self.request, 'inscripcion/success.html')
@@ -198,7 +205,6 @@ class CreatePersonaAndEstudent(View):
             'estudiante_form': estudiante_form
         }
         return render(request, self.template_name, contexto)
-    
 
 
 class VerificacionInscripcion(View):
@@ -232,17 +238,22 @@ class VerificacionInscripcion(View):
 class ActualizarUsuarioView(UpdateView):
     model = Estudiante
     template_name = 'inscripcion/update.html'
-    fields=['especialidad', 'turno', 'modalidad']
-    #form_class = ActualizarInscripcionForm
+    fields = ['especialidad', 'turno', 'modalidad']
+    # form_class = ActualizarInscripcionForm
 
     def dispatch(self, request, *args, **kwargs):
         # Verificar si el usuario ha pasado por VerificarDniView
         if not request.session.get('dni_verificado'):
             id_estudiante = self.kwargs['pk']
             return HttpResponseRedirect(reverse('verificar_dni', kwargs={'id_estudiante': id_estudiante}))
+<<<<<<< HEAD
         else:
             #request.session['dni_verificado']=False
             id_estudiante = self.kwargs['pk']
+=======
+        # else:
+            # request.session['dni_verificado'] = False
+>>>>>>> 95dc36e8cb94c2d2a2c0795044e8318ddf45e85b
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -253,33 +264,38 @@ class ActualizarUsuarioView(UpdateView):
         if archivos.exists():
             documento = archivos.filter(tipo='Identificacion').last()
             certificado = archivos.filter(tipo='Certificado').last()
-            if documento and documento.estado==2:
-                context['documento_form'] = SubirDocumentoForm(prefix='documento')
+            if documento and documento.estado == 2:
+                context['documento_form'] = SubirDocumentoForm(
+                    prefix='documento')
                 context['documento_info'] = False
-            elif documento and documento.estado==1:
+            elif documento and documento.estado == 1:
                 context['documento_form'] = False
                 context['documento_info'] = 'si'
-            elif documento and documento.estado==0:
+            elif documento and documento.estado == 0:
                 context['documento_form'] = False
                 context['documento_info'] = 'no'
-            if certificado and certificado.estado==2:
+            if certificado and certificado.estado == 2:
                 context['certificado_info'] = False
-                context['certificado_form'] = SubirCertificadoForm(prefix='certificado')
-            elif certificado and certificado.estado==1:
+                context['certificado_form'] = SubirCertificadoForm(
+                    prefix='certificado')
+            elif certificado and certificado.estado == 1:
                 context['certificado_form'] = False
                 context['certificado_info'] = 'si'
-            elif certificado and certificado.estado==0:
+            elif certificado and certificado.estado == 0:
                 context['certificado_form'] = False
                 context['certificado_info'] = 'no'
         else:
             context['documento_form'] = SubirDocumentoForm(prefix='documento')
-            context['certificado_form'] = SubirCertificadoForm(prefix='certificado')
+            context['certificado_form'] = SubirCertificadoForm(
+                prefix='certificado')
         return context
 
     def post(self, request, *args, **kwargs):
         # Obtener las instacioas de los formualrios
-        form_documento = SubirDocumentoForm(request.POST, request.FILES, prefix='documento')
-        form_certificado = SubirCertificadoForm(request.POST, request.FILES, prefix='certificado')
+        form_documento = SubirDocumentoForm(
+            request.POST, request.FILES, prefix='documento')
+        form_certificado = SubirCertificadoForm(
+            request.POST, request.FILES, prefix='certificado')
         # Obtener la instancia del Estudiante que se está actualizando
         estudiante = self.get_object()
         # Obtener los datos del formulario
@@ -291,19 +307,21 @@ class ActualizarUsuarioView(UpdateView):
         if archivos.exists():
             documento = archivos.filter(tipo='Identificacion').last()
             certificado = archivos.filter(tipo='Certificado').last()
-            if documento and documento.estado==2:
+            if documento and documento.estado == 2:
                 if form_documento.is_valid():
                     # Guardar los datos del formulario
-                    documento = form_documento.save(commit=False)  # Guarda la instancia sin guardar en la base de datos
+                    # Guarda la instancia sin guardar en la base de datos
+                    documento = form_documento.save(commit=False)
                     documento.tipo = 'Identificacion'
                     documento.persona = estudiante.persona  # Asigna la persona
-                    documento.save() # Guarda en la base de datos
-            if certificado and certificado.estado==2:
+                    documento.save()  # Guarda en la base de datos
+            if certificado and certificado.estado == 2:
                 if form_certificado.is_valid():
-                    certificado = form_certificado.save(commit=False)  # Guarda la instancia sin guardar en la base de datos
+                    # Guarda la instancia sin guardar en la base de datos
+                    certificado = form_certificado.save(commit=False)
                     certificado.tipo = 'Certificado'
-                    certificado.persona = estudiante.persona # Asigna la persona
-                    certificado.save() # Guarda en la base de datos
+                    certificado.persona = estudiante.persona  # Asigna la persona
+                    certificado.save()  # Guarda en la base de datos
             # Actualizar los campos del estudiante
             estudiante.especialidad = especialidad
             estudiante.turno = turno
@@ -312,27 +330,44 @@ class ActualizarUsuarioView(UpdateView):
             estudiante.save()
             return self.form_valid(form_certificado)
         else:
-            if form_documento.is_valid() and form_certificado.is_valid():# and form.is_valid():
+            if form_documento.is_valid() and form_certificado.is_valid():  # and form.is_valid():
                 estudiante = Estudiante.objects.get(pk=self.kwargs['pk'])
                 # Guardar los datos del formulario
-                documento = form_documento.save(commit=False)  # Guarda la instancia sin guardar en la base de datos
+                # Guarda la instancia sin guardar en la base de datos
+                documento = form_documento.save(commit=False)
                 documento.tipo = 'Identificacion'
                 documento.persona = estudiante.persona  # Asigna la persona
-                documento.save() # Guarda en la base de datos
-                certificado = form_certificado.save(commit=False)  # Guarda la instancia sin guardar en la base de datos
+                documento.save()  # Guarda en la base de datos
+                # Guarda la instancia sin guardar en la base de datos
+                certificado = form_certificado.save(commit=False)
                 certificado.tipo = 'Certificado'
-                certificado.persona = estudiante.persona # Asigna la persona
-                certificado.save() # Guarda en la base de datos
+                certificado.persona = estudiante.persona  # Asigna la persona
+                certificado.save()  # Guarda en la base de datos
                 # Actualizar los campos del estudiante
                 estudiante.especialidad = especialidad
                 estudiante.turno = turno
                 estudiante.modalidad = modalidad
                 # Guardar los cambios en la base de datos
                 estudiante.save()
-                return self.form_valid(form_certificado)
+                return self.form_valid(form_certificado, form_documento)
             else:
+<<<<<<< HEAD
                 request.session['dni_verificado'] = True
                 return self.form_invalid(form_certificado)
 
     def form_valid(self, form):
         return render(self.request, 'inscripcion/success2.html')
+=======
+                # request.session['dni_verificado'] = True
+                return self.form_invalid(form_certificado, form_documento)
+
+    def form_valid(self, form_certificado, form_documento):
+        return render(self.request, 'inscripcion/success.html')
+
+    def form_invalid(self, form_certificado, form_documento):
+        # Lógica para el caso de formularios no válidos
+        # Devolver el contexto con los formularios y los errores de validación
+        context = self.get_context_data(
+            form_certificado=form_certificado, form_documento=form_documento)
+        return self.render_to_response(context)
+>>>>>>> 95dc36e8cb94c2d2a2c0795044e8318ddf45e85b

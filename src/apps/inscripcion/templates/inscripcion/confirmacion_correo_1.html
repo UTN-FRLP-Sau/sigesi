@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% load django_bootstrap5 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
@@ -65,3 +66,72 @@
         </div>
     </div>
 </div>
+=======
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+<div class="container-fluid">
+    <div class=" row justify-content-center align-items-center">
+        <div class="col-10 col-sm-6 col-lg-6" style="background: #EEE; border-radius: 2%; padding: 2.5rem">
+
+        <p>Estimado/a {{ apellido }}, {{ nombre }}:</p>
+
+        <p>Esperamos que este mensaje te encuentre bien.</p>
+
+        <p>Nos complace informarte que tu preinscripción ha sido recibida y procesada con éxito. Te damos la bienvenida a nuestra institución y agradecemos tu interés en formar parte de nuestra
+        comunidad educativa.
+
+        <P>Detalles de inscripción (En el enlace para cargar documentación, es posible actualizar estos datos):</p>
+            <ul>
+                <li>Carrera: <b>{{carrera}}</b></li>
+                <li>Turno: <b>{{turno}}</b></li>
+                <li>Modalidad: <b>{{modalidad}}</b></li>
+            </ul>
+
+        <p>Por favor, ten en cuenta que este es un correo electrónico automático generado por nuestro sistema.</p>
+
+        <h3>Requisitos para el Paso 2</h3>
+
+        <p>Para continuar con el proceso de inscripción, te solicitamos que completes el Paso 2, que consiste en la entrega de la siguiente documentación:</p>
+
+        <h4>PDF 1: Identificación, Documento o Pasaporte</h4>
+        <ul>
+            <li>Si cuentas con DNI argentino: Por favor, proporciona una foto o escaneo de tu DNI en ambas caras.</li>
+            <li>Si no cuentas con DNI argentino: Necesitamos una copia de tu documento de identidad de tu país de origen y la constancia de inicio de trámite de radicación en Argentina.
+            Puedes iniciar este trámite <a href="https://www.migraciones.gov.ar/radex/index.html">enlace</a>.</li>
+        </ul>
+
+        <h4>PDF 2: Certificado de Estudios Secundarios</h4>
+        <ul>
+            <li>Si has finalizado, o estas cursando tus estudios en Argentina: Adjunta el certificado correspondiente, el cual puede ser uno de los siguientes documentos:</li>
+            <ul>
+                <li>Título</li>
+                <li>Analítico</li>
+                <li>Certificado de título en trámite</li>
+                <li>Certificado de alumno regular</li>
+                <li>Certificado de materias adeudadas</li>
+            </ul>
+            <li>Si no has finalizado tus estudios en Argentina o estas cursando en otro país: Por favor, envía una copia de tu título secundario de tu país de origen. Recuerda que este documento debe estar validado
+            antes del 31 del próximo ciclo lectivo. Puedes iniciar el proceso de validación <a href="https://www.argentina.gob.ar/tema/estudiar/guia-validez-titulos-estudios">aquí</a>.</li>
+        </ul>
+
+        <p>Por favor, asegúrate de cargar los documentos necesarios en <a href="{{url}}">{{ url }}</a> antes del 01/08/2024.
+        Si tienes alguna consulta o necesitas asistencia adicional, no dudes en contactar a nuestro equipo de admisiones.</p>
+
+        <p>Agradecemos tu colaboración y estamos ansiosos por darte la bienvenida oficialmente a nuestra institución.</p>
+
+        <p>Saludos cordiales,</p>
+        <p style="text-align: right">
+            <strong>
+            Inscripciones <br>
+            Seminario de Ingreso <br>
+            Regional La Plata - UTN <br>
+            ingreso@frlp.utn.edu.ar
+            </strong>
+        </p>
+        </div>
+    </div>
+</div>
+>>>>>>> 95dc36e8cb94c2d2a2c0795044e8318ddf45e85b
