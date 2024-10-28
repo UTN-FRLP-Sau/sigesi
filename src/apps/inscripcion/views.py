@@ -39,12 +39,9 @@ def create_email(user_mail, subject, template_name, context, request):
     message.attach_alternative(content, 'text/html')
     return message
 
-<<<<<<< HEAD
 class InscripcionCerrada(TemplateView):
     template_name = "inscripcion/inscripcion_cerrada.html"
 
-=======
->>>>>>> 95dc36e8cb94c2d2a2c0795044e8318ddf45e85b
 
 '''
 # Create your views here.
@@ -246,14 +243,9 @@ class ActualizarUsuarioView(UpdateView):
         if not request.session.get('dni_verificado'):
             id_estudiante = self.kwargs['pk']
             return HttpResponseRedirect(reverse('verificar_dni', kwargs={'id_estudiante': id_estudiante}))
-<<<<<<< HEAD
         else:
             #request.session['dni_verificado']=False
             id_estudiante = self.kwargs['pk']
-=======
-        # else:
-            # request.session['dni_verificado'] = False
->>>>>>> 95dc36e8cb94c2d2a2c0795044e8318ddf45e85b
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -351,23 +343,21 @@ class ActualizarUsuarioView(UpdateView):
                 estudiante.save()
                 return self.form_valid(form_certificado, form_documento)
             else:
-<<<<<<< HEAD
                 request.session['dni_verificado'] = True
                 return self.form_invalid(form_certificado)
 
     def form_valid(self, form):
         return render(self.request, 'inscripcion/success2.html')
-=======
                 # request.session['dni_verificado'] = True
-                return self.form_invalid(form_certificado, form_documento)
+#                return self.form_invalid(form_certificado, form_documento)
 
-    def form_valid(self, form_certificado, form_documento):
-        return render(self.request, 'inscripcion/success.html')
+#    def form_valid(self, form_certificado, form_documento):
+#        return render(self.request, 'inscripcion/success.html')
 
-    def form_invalid(self, form_certificado, form_documento):
-        # Lógica para el caso de formularios no válidos
-        # Devolver el contexto con los formularios y los errores de validación
-        context = self.get_context_data(
-            form_certificado=form_certificado, form_documento=form_documento)
-        return self.render_to_response(context)
->>>>>>> 95dc36e8cb94c2d2a2c0795044e8318ddf45e85b
+#    def form_invalid(self, form_certificado, form_documento):
+#        # Lógica para el caso de formularios no válidos
+#        # Devolver el contexto con los formularios y los errores de validación
+#        context = self.get_context_data(
+#            form_certificado=form_certificado, form_documento=form_documento)
+#        return self.render_to_response(context)
+
