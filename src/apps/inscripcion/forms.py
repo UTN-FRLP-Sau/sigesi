@@ -15,6 +15,7 @@ from .models import (Pais,
                      Estudiante,
                      Persona,
                      Archivos,
+                     Escuela,
                      ESPECIALIDAD_ESTUDIANTE_CHOICES,
                      TURNO_INGRESO_CHOICES,
                      SEXO_ESTUDIANTE_CHOICES,
@@ -226,15 +227,15 @@ class CreateStudentForm(forms.ModelForm):
                                   label='Pais donde curso el secundario',
                                   required=False
                                   )
-    provincia = forms.ModelChoiceField(queryset=Provincia.objects.none(),
+    provincia = forms.ModelChoiceField(queryset=Provincia.objects,
                                        label='Provincia donde curso el secundario',
                                        required=False
                                        )
-    partido = forms.ModelChoiceField(queryset=PartidoPBA.objects.none(),
+    partido = forms.ModelChoiceField(queryset=PartidoPBA.objects,
                                      label='Partido donde curso el secundario',
                                      required=False,
                                      )
-    localidad = forms.ModelChoiceField(queryset=Localidad.objects.none(),
+    localidad = forms.ModelChoiceField(queryset=Localidad.objects,
                                        label='Localidad donde curso el secundario',
                                        required=False,
                                        )
@@ -256,7 +257,7 @@ class CreateStudentForm(forms.ModelForm):
             'turno',
             'modalidad',
             # 'persona'
-        ]
+        ] 
         labels = {
             'escuela': 'Escuela',
             'anio_egreso': 'En que año egresaste del secundario',
@@ -270,13 +271,24 @@ class CreateStudentForm(forms.ModelForm):
         help_texts = {
         }
 
+
     def __init__(self, *args, **kwargs):
         super(CreateStudentForm, self).__init__(*args, **kwargs)
         self.fields['pais'].queryset = Pais.objects
-        self.fields['provincia'].queryset = Provincia.objects.none()
-        self.fields['partido'].queryset = PartidoPBA.objects.none()
-        self.fields['localidad'].queryset = Localidad.objects.none()
-        self.fields['escuela'].queryset = Localidad.objects.none()
+        self.fields['provincia'].queryset = Provincia.objects
+        self.fields['partido'].queryset = PartidoPBA.objects
+        self.fields['localidad'].queryset = Localidad.objects
+        self.fields['escuela'].queryset = Escuela.objects
+        print('se inicia')
+
+    def clean(self):
+        # Limpiamos los datos del formulariodef clean(self):
+        cleaned_data = super().clean()
+
+        print(cleaned_data['pais'])
+        # retornamos la info limpia
+        return cleaned_data
+
 
 
 class VerificacionInscripcionForm(forms.Form):
