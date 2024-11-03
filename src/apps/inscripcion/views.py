@@ -60,9 +60,7 @@ class CreatePersonaAndEstudent(View):
     def post(self, request):
         persona_form = CreatePersonaForm(request.POST)
         estudiante_form = CreateStudentForm(request.POST)
-        print('hola')
         if persona_form.is_valid() and estudiante_form.is_valid():
-            print('hola')
             # Guarda la instancia de persona sin guardar en la base de datos
             persona = persona_form.save(commit=False)
             persona.save()  # Ahora persona tiene un ID asignado

@@ -37,8 +37,6 @@ def validar_cuil(dni, cuil, *args, **kwargs):
     if not cuil[2:10].isdigit():
         return (False, 4)
     if cuil[2:10] != dni:
-        print(cuil[2:10])
-        print(dni)
         return (False, 5)
     return (True, 0)
 
@@ -73,17 +71,17 @@ class CreatePersonaForm(forms.ModelForm):
     correo2 = forms.EmailField(max_length=255, label='Confirmar Correo')
     telefono2 = forms.IntegerField(label='Confirmar Telefono')
     nacionalidad = NacionalidadModelChoiceField(queryset=Pais.objects.all())
-    domicilio_provincia = forms.ModelChoiceField(queryset=Provincia.objects.none(),
+    domicilio_provincia = forms.ModelChoiceField(queryset=Provincia.objects.all(),
                                                  label='Provincia',
                                                  required=False
                                                  )
-    domicilio_partido = forms.ModelChoiceField(queryset=PartidoPBA.objects.none(),
+    domicilio_partido = forms.ModelChoiceField(queryset=PartidoPBA.objects.all(),
                                                label='Partido',
                                                required=False,
                                                )
-    domicilio_localidad = forms.ModelChoiceField(queryset=Localidad.objects.none(),
+    domicilio_localidad = forms.ModelChoiceField(queryset=Localidad.objects.all(),
                                                  label='Localidad',
-                                                 required=False,
+                                                 required=False
                                                  )
 
     class Meta:
@@ -157,9 +155,11 @@ class CreatePersonaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CreatePersonaForm, self).__init__(*args, **kwargs)
-        self.fields['domicilio_provincia'].queryset = Provincia.objects.none()
-        self.fields['domicilio_partido'].queryset = PartidoPBA.objects.none()
-        self.fields['domicilio_localidad'].queryset = Localidad.objects.none()
+        #self.fields['domicilio_provincia'].queryset = Provincia.objects.none()
+        #self.fields['domicilio_partido'].queryset = PartidoPBA.objects.none()
+        #self.fields['domicilio_localidad'].queryset = Localidad.objects.none()
+        #print(self.fields['domicilio_provincia'].queryset)
+        #print('inicio')
 
     def to_python(self, value):
         if value in self.empty_values:
@@ -227,16 +227,20 @@ class CreateStudentForm(forms.ModelForm):
                                   label='Pais donde curso el secundario',
                                   required=False
                                   )
-    provincia = forms.ModelChoiceField(queryset=Provincia.objects,
+    provincia = forms.ModelChoiceField(queryset=Provincia.objects.all(),
                                        label='Provincia donde curso el secundario',
                                        required=False
                                        )
-    partido = forms.ModelChoiceField(queryset=PartidoPBA.objects,
+    partido = forms.ModelChoiceField(queryset=PartidoPBA.objects.all(),
                                      label='Partido donde curso el secundario',
                                      required=False,
                                      )
-    localidad = forms.ModelChoiceField(queryset=Localidad.objects,
+    localidad = forms.ModelChoiceField(queryset=Localidad.objects.all(),
                                        label='Localidad donde curso el secundario',
+                                       required=False,
+                                       )
+    escuela = forms.ModelChoiceField(queryset=Escuela.objects.all(),
+                                     label='Escuela',
                                        required=False,
                                        )
 
@@ -274,11 +278,11 @@ class CreateStudentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CreateStudentForm, self).__init__(*args, **kwargs)
-        self.fields['pais'].queryset = Pais.objects
-        self.fields['provincia'].queryset = Provincia.objects
-        self.fields['partido'].queryset = PartidoPBA.objects
-        self.fields['localidad'].queryset = Localidad.objects
-        self.fields['escuela'].queryset = Escuela.objects
+        #self.fields['pais'].queryset = Pais.objects
+        #self.fields['provincia'].queryset = Provincia.objects.none()
+        #self.fields['partido'].queryset = PartidoPBA.objects.none()
+        #self.fields['localidad'].queryset = Localidad.objects.none()
+        #self.fields['escuela'].queryset = Escuela.objects.none()
 
     def clean(self):
         # Limpiamos los datos del formulariodef clean(self):

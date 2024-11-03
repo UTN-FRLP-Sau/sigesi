@@ -33,6 +33,7 @@ urlpatterns = [
 
     #De aqui en mas es el nuevo sistema
     path('nueva/preinscripcion/', CreatePersonaAndEstudent.as_view(), name='crear_persona'),
+    #path('nueva/preinscripcion/', InscripcionCerrada.as_view(), name='crear_persona'),
     path('verificar-doc/<int:id_estudiante>/', VerificacionInscripcion.as_view(), name='verificar_doc'),
     path('verificar-dni/<int:id_estudiante>/', VerificacionInscripcion.as_view(), name='verificar_dni'),
     path('actualizar-doc/<pk>/', ActualizarInscripcionView.as_view(), name='paso_2'),
