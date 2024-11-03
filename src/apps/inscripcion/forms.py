@@ -279,13 +279,10 @@ class CreateStudentForm(forms.ModelForm):
         self.fields['partido'].queryset = PartidoPBA.objects
         self.fields['localidad'].queryset = Localidad.objects
         self.fields['escuela'].queryset = Escuela.objects
-        print('se inicia')
 
     def clean(self):
         # Limpiamos los datos del formulariodef clean(self):
         cleaned_data = super().clean()
-
-        print(cleaned_data['pais'])
         # retornamos la info limpia
         return cleaned_data
 

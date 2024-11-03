@@ -8,6 +8,7 @@
     <div class=" row justify-content-center align-items-center" style="height: 90vh;">
         <div class="col-lg-10 col-xl-6 col-xxl-4" style="background: #EEE; border-radius: 2%; padding: 2.5rem; text-align: center">
             <h2 class="fw-bolder text-center">Confirmacion de la inscripcion</h2>
+            <h5 class="fw-bolder text-center">Aspirante: {{estudiante.persona.apellidos.upper}}, {{estudiante.persona.nombres.title}}</h5>
             <div class="center-block">
                     {% if documento_info %}
                         {% if documento_info == 'si' %}

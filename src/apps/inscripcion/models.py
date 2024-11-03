@@ -542,6 +542,15 @@ class Estudiante(models.Model):
         ) if self.emergencia_contacto is not None else None
 
         super(Estudiante, self).save()
+        
+    def get_turno_display(self):
+        return dict(TURNO_INGRESO_CHOICES).get(self.turno, "")
+    
+    def get_especialidad_display(self):
+        return dict(ESPECIALIDAD_ESTUDIANTE_CHOICES).get(self.especialidad, "")
+    
+    def get_modalidad_display(self):
+        return dict(MODALIDAD_CHOICES).get(self.modalidad, "")
 
     def get_absolute_url(self):
         pass

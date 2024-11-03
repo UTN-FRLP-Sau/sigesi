@@ -16,9 +16,9 @@
 
         <P>Detalles de inscripción (En el enlace para cargar documentación, es posible actualizar estos datos):</p>
             <ul>
-                <li>Carrera: <b>{{carrera.get_especialidad_display}}</b></li>
-                <li>Turno: <b>{{turno.get_turno_display }}</b></li>
-                <li>Modalidad: <b>{{modalidad.get_modalidad_display }}</b></li>
+                <li>Carrera: <b>{{carrera}}</b></li>
+                <li>Turno: <b>{{turno }}</b></li>
+                <li>Modalidad: <b>{{modalidad }}</b></li>
             </ul>
 
         <p>Por favor, ten en cuenta que este es un correo electrónico automático generado por nuestro sistema.</p>
@@ -45,10 +45,10 @@
                 <li>Certificado de materias adeudadas</li>
             </ul>
             <li>Si no has finalizado tus estudios en Argentina o estas cursando en otro país: Por favor, envía una copia de tu título secundario de tu país de origen. Recuerda que este documento debe estar validado
-            antes del 31 del próximo ciclo lectivo. Puedes iniciar el proceso de validación <a href="https://www.argentina.gob.ar/tema/estudiar/guia-validez-titulos-estudios">aquí</a>.</li>
+            antes del 31 de agosto del próximo ciclo lectivo. Puedes iniciar el proceso de validación <a href="https://www.argentina.gob.ar/tema/estudiar/guia-validez-titulos-estudios">aquí</a>.</li>
         </ul>
 
-        <p>Por favor, asegúrate de cargar los documentos necesarios en <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'verificar_dni' id_estudiante %}">{{ request.scheme }}://{{ request.get_host }}{% url 'verificar_dni' id_estudiante %}</a> antes del 01/08/2024.
+        <p>Por favor, asegúrate de cargar los documentos necesarios en <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'verificar_dni' id_estudiante %}">{{ request.scheme }}://{{ request.get_host }}{% url 'verificar_dni' id_estudiante %}</a> antes del 8 de Diciembre del 2024.
         Si tienes alguna consulta o necesitas asistencia adicional, no dudes en contactar a nuestro equipo de admisiones.</p>
 
         <p>Agradecemos tu colaboración y estamos ansiosos por darte la bienvenida oficialmente a nuestra institución.</p>
