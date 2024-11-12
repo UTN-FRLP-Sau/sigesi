@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load bootstrap_icons %}
+
+
+{% block content %}
+
+
+<div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>Listado de inscriptos en:</h1>
+                    <!-- Selector de curso -->
+                    <form class="row g-2" method="get" action="{% url 'curso-list' %}">
+                        <select class='form-select form-select-lg mb-3' name="curso_id" id="curso_id" onchange="this.form.submit()">
+                            <option value="">--Estudiantes sin curso--</option>
+                            {% for curso in cursos %}
+                                <option value="{{ curso.id }}" {% if curso.id|stringformat:"s" == request.GET.curso_id %}selected{% endif %}>
+                                    {{ curso.nombre }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+            </div>
+            <div style='display: flex; justify-content: center; align-items: center;'>
+                <div class="btn-group" role="group">
+                    <a class="btn btn-primary btn-sm" href="#" role="button" target="_blank">Nueva Actividad</a>
+                    <a class="btn btn-info btn-sm" href="#" role="button">Notificar Inscriptos</a>
+                    <form action="#" method="post" style="display: inline">
+                        {% csrf_token %}<button class="btn btn-success btn-sm" type="submit">Abrir Inscripcion</button>
+                    </form>
+                    <form action="#" method="post" style="display: inline">
+                        {% csrf_token %}<button class="btn btn-danger btn-sm" type="submit">Cerrar Inscripcion</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th><input type="text" id="filterNombre" class="form-control" placeholder="Nombre"></th>
+                            <th><input type="text" id="filterApellido" class="form-control" placeholder="Apellido"></th>
+                            <th><input type="text" id="filterCorreo" class="form-control" placeholder="Correo"></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Correo</th>
+                            <th>Carrera</th>
+                            <th>Turno</th>
+                            <th>Modalidad</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inscriptosTableBody">
+                        {% for estudiante in estudiantes %}
+                        <tr>
+                            <td>{{ estudiante.persona.nombres }}</td>
+                            <td>{{ estudiante.persona.apellidos }}</td>
+                            <td>{{ estudiante.persona.correo }}</td>
+                            <td>{{ estudiante.get_especialidad_display }}</td>
+                            <td>{{ estudiante.get_turno_display }}</td>
+                            <td>{{ estudiante.get_modalidad_display }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block content_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input[id^="filter"]');
+            const tableBody = document.getElementById('inscriptosTableBody');
+            const rows = tableBody.getElementsByTagName('tr');
+
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    const filterValues = Array.from(inputs).map(input => input.value.toLowerCase());
+                    
+                    for (let i = 0; i < rows.length; i++) {
+                        let shouldHide = false;
+                        const cells = rows[i].getElementsByTagName('td');
+                        
+                        for (let j = 0; j < filterValues.length; j++) {
+                            const cell = cells[j];
+                            if (cell) {
+                                const cellText = cell.textContent.toLowerCase();
+                                if (!cellText.includes(filterValues[j])) {
+                                    shouldHide = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        rows[i].style.display = shouldHide ? 'none' : '';
+                    }
+                });
+            });
+        });
+        
+        function setDeleteFormAction(url) {
+            document.getElementById('deleteForm').action = url;
+        }
+
+</script>
+
+{% endblock %}

@@ -8,16 +8,16 @@
 import threading
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.template.loader import get_template
 from django.views.generic.edit import UpdateView
-from django.views.generic import View, TemplateView
+from django.views.generic import View, TemplateView, ListView
 
 # Django Locales
 from .forms import CreatePersonaForm, CreateStudentForm, VerificacionInscripcionForm, SubirDocumentoForm, SubirCertificadoForm, ActualizarInscripcionForm
-from .models import Persona, Estudiante, Archivos
+from .models import Persona, Estudiante, Archivos, Inscripcion, Curso
 
 # Funciones generales
 
@@ -214,3 +214,52 @@ class ActualizarInscripcionView(UpdateView):
             'documento_form': form_documento,
             'certificado_form': form_certificado,
         })
+
+
+def cambiar_curso(request, estudiante_id):
+    curso_id = request.POST.get('curso_id')
+    estudiante = Estudiante.objects.get(pk=estudiante_id)
+
+    # Actualiza o crea la inscripción
+    inscripcion, created = Inscripcion.objects.get_or_create(
+        estudiante=estudiante, defaults={
+            'curso_id': curso_id, 'estado': 'Activo'}
+    )
+    if not created:
+        inscripcion.curso_id = curso_id
+        inscripcion.save()
+
+    return JsonResponse({'status': 'ok'})
+
+
+class EstudianteListView(ListView):
+    model = Estudiante
+    template_name = 'estudiantes/list.html'  # Ruta al template
+    # Nombre para acceder a la lista de cursos en el template
+    context_object_name = 'estudiantes'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Todos los cursos para el selector
+        context['cursos'] = Curso.objects.all()
+
+        # Obtener el curso seleccionado, si existe en los parámetros de la URL
+        curso_id = self.request.GET.get('curso_id')
+        if curso_id:
+            curso = Curso.objects.get(id=curso_id)
+            # Filtra las inscripciones y estudiantes basándose en el curso
+            inscripciones = Inscripcion.objects.filter(curso=curso)
+            context['estudiantes'] = [
+                inscripcion.estudiante for inscripcion in inscripciones]
+        else:
+            # Si no se selecciona un curso, muestra estudiantes no inscritos
+            inscritos_ids = Inscripcion.objects.values_list(
+                'estudiante_id', flat=True)
+            context['estudiantes'] = Estudiante.objects.exclude(credencial__in=inscritos_ids)
+
+        return context
+
+
+class AdminHome(TemplateView):
+    template_name = "admin/home.html"

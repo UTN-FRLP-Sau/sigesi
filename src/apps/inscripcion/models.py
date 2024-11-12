@@ -3,7 +3,7 @@
 # Librerias Standars
 import os
 from uuid import uuid4
-from datetime import date
+from datetime import date, datetime
 import re
 
 # Librerias de Terceros
@@ -13,6 +13,7 @@ from django.db import models
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
+from django.views.generic import ListView
 
 # Django Locales
 from .validators import validate_file_extension
@@ -915,3 +916,61 @@ class Documentacion(models.Model):
 
     def get_absolute_url(self):
         return reverse("documentacion_mostrar", kwargs={"pk": self.pk})
+
+
+def generar_choices():
+    from datetime import datetime
+    meses_esp = {
+        "January": "Enero", "February": "Febrero", "March": "Marzo", "April": "Abril",
+        "May": "Mayo", "June": "Junio", "July": "Julio", "August": "Agosto",
+        "September": "Septiembre", "October": "Octubre", "November": "Noviembre", "December": "Diciembre"
+    }
+    choices = []
+    anio_actual = datetime.now().year
+    for anio in range(anio_actual, anio_actual + 2):
+        for mes in range(1, 13):
+            mes_nombre = meses_esp[datetime(
+                1900, mes, 1).strftime('%B')].capitalize()
+            choices.append((f"{mes:02d}_{anio}", f"{mes_nombre} {anio}"))
+    return choices
+
+
+class Curso(models.Model):
+    # Define los choices generados dinámicamente
+    MESES_ANIOS_CHOICES = generar_choices()
+
+    nombre = models.CharField(max_length=50)
+    año = models.IntegerField()
+    inscripcion_inicio = models.DateField(auto_now=False, auto_now_add=False)
+    inscripcion_cierre = models.DateField(auto_now=False, auto_now_add=False)
+    fecha_finalizacion = models.DateField(auto_now=False, auto_now_add=False)
+    periodo_inicio = models.CharField(max_length=7, choices=MESES_ANIOS_CHOICES)
+    periodo_cierre = models.CharField(max_length=7, choices=MESES_ANIOS_CHOICES)
+    modalidad = models.ManyToManyField(ModalidadCursado)
+    
+    class Meta:
+        verbose_name = 'Curso'
+        verbose_name_plural = 'Cursos'
+
+    def __str__(self):
+        return '{}'.format(self.nombre.title())
+
+
+class Inscripcion(models.Model):
+    ESTADOS_CHOICES = [
+        ("inscripto", "Inscripto"),
+        ("libre", "Libre"),
+        ("aprobado", "Aprobado"),
+        ("desaprobado", "Desaprobado"),
+    ]
+    estudiante = models.ForeignKey('Estudiante', related_name='estudiante', on_delete=models.CASCADE)
+    curso = models.ForeignKey('Curso', related_name='curso', on_delete=models.CASCADE)
+    modalidad = models.ForeignKey('ModalidadCursado', related_name='modalidad', on_delete=models.CASCADE)
+    estado = models.CharField(max_length=11, choices=ESTADOS_CHOICES)
+    
+    class Meta:
+        verbose_name = 'Inscripcion'
+        verbose_name_plural = 'Inscripciones'
+
+    def __str__(self):
+        return '{}({})({})'.format(self.estudiante.persona.apellidos.upper(), self.curso.nombre.title(), self.modalidad.nombre.title())

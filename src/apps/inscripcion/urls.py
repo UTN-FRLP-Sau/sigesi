@@ -17,7 +17,10 @@ from .views import (#ConfirmacionInformacion,
                     ActualizarInscripcionView,
                     #confirmar_documentacion,
                     #inscriptor_home,
-                    InscripcionCerrada
+                    InscripcionCerrada,
+                    cambiar_curso,
+                    EstudianteListView,
+                    AdminHome
                     )
 from .ajax import get_provincias, get_partidos, get_localidades, get_escuelas
 
@@ -39,10 +42,16 @@ urlpatterns = [
     path('actualizar-doc/<pk>/', ActualizarInscripcionView.as_view(), name='paso_2'),
     #path('new/student/<int:persona_id>/', CrearEstudiante.as_view(), name='crear_estudiante'),
     #path('new/student/success/', CrearEstudiante.as_view(), name='crear_estudiante_success'),
+    
+    path('cursos/', EstudianteListView.as_view(), name='curso-list'),
+    path('home/', AdminHome.as_view(), name='inscriptor_home'),
 
     #URL para Ajax
     path('ajax/new/person/get_provincias', get_provincias, name='get_provincias'),
     path('ajax/new/person/get_partidos', get_partidos, name='get_partidos'),
     path('ajax/new/person/get_localidades', get_localidades, name='get_localidades'),
     path('ajax/new/person/get_escuelas', get_escuelas, name='get_escuelas'),
+    
+    #URL Para Ajax del Admin
+    path('cambiar_curso/<int:estudiante_id>/', cambiar_curso, name='cambiar_curso'),
 ]
