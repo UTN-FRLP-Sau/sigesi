@@ -137,3 +137,7 @@ src/static/landing/fonts/*
 .prettierignore
 src/sigesi.sqlite3
 src/datos.json
+src/cambios/info.html
+src/cambios/success.html
+src/cambios/urls.py
+src/cambios/views.py
