@@ -28,6 +28,8 @@
                     {% csrf_token %}
                     {% bootstrap_form form layout="floating" %}
 
+                    {% bootstrap_form inscripcion_form layout="floating" %}
+
                     {% if documento_form %}
                         {% bootstrap_form documento_form layout="floating" %}
                     {% endif %}

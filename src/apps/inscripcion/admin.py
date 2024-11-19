@@ -26,12 +26,19 @@ from apps.inscripcion.models import (
                                     EvaluacionUnidad,
                                     Parcial,
                                     EvaluacionDiaria,
-                                    Documentacion
+                                    Documentacion,
+                                    Curso,
+                                    Inscripcion,
+                                    Turno
 )
 
 # Register your models here.
 
 admin.site.register(PartidoPBA)
+admin.site.register(Curso)
+admin.site.register(Turno)
+admin.site.register(Inscripcion)
+admin.site.register(ModalidadCursado)
 admin.site.register(Pais)
 admin.site.register(Provincia)
 admin.site.register(Localidad)

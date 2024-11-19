@@ -1,23 +1,29 @@
 # future
 
 # Librerias Standars
+from datetime import date
 
 # Librerias de Terceros
 
 # Django
+from .forms import InscripcionForm, SubirDocumentoForm, SubirCertificadoForm
+from .models import Inscripcion, Archivos
+from django.shortcuts import render, redirect
 import threading
 from django.conf import settings
+from django.contrib import messages
 from django.core.mail import EmailMultiAlternatives
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.template.loader import get_template
-from django.views.generic.edit import UpdateView
-from django.views.generic import View, TemplateView
+from django.views.generic.edit import UpdateView, CreateView, FormView
+
+from django.views.generic import View, TemplateView, ListView
 
 # Django Locales
-from .forms import CreatePersonaForm, CreateStudentForm, VerificacionInscripcionForm, SubirDocumentoForm, SubirCertificadoForm, ActualizarInscripcionForm
-from .models import Persona, Estudiante, Archivos
+from .forms import CreatePersonaForm, CreateStudentForm, VerificacionInscripcionForm, SubirDocumentoForm, SubirCertificadoForm, ActualizarInscripcionForm, InscripcionForm
+from .models import Persona, Estudiante, Archivos, Curso, ESPECIALIDAD_ESTUDIANTE_CHOICES, Turno, ModalidadCursado
 
 # Funciones generales
 
@@ -46,6 +52,9 @@ class InscripcionCerrada(TemplateView):
 #####################################################################################################
 #####################################################################################################
 
+
+class ConfirmacionInformacion(TemplateView):
+    template_name = "admin/home.html"
 
 class CreatePersonaAndEstudent(View):
     template_name = 'inscripcion/create_student.html'
@@ -124,6 +133,112 @@ class VerificacionInscripcion(View):
         return render(request, self.template_name, {'form': form})
 
 
+class ReenvioLinkdocumentacion(View):
+    form_class = VerificacionInscripcionForm
+    template_name = 'inscripcion/verificar_dni.html'
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            dni = form.cleaned_data['dni']
+            try:
+                persona = Estudiante.objects.get(numero_documento=dni)
+                estudiante = Estudiante.objects.get(persona=persona)
+                email = create_email(
+                    user_mail=persona.correo,
+                    subject='Re-Confirmación de Inscripción',
+                    template_name='inscripcion/confirmacion_correo.html',
+                    context={
+                        'nombre': persona.nombres.title(),
+                        'apellido': persona.apellidos.upper(),
+                        'id_estudiante': estudiante.pk,
+                        'carrera': estudiante.get_especialidad_display(),
+                        'turno': estudiante.get_turno_display(),
+                        'modalidad': estudiante.get_modalidad_display()
+                    },
+                    request=request
+                )
+                thread = threading.Thread(target=email.send)
+                thread.start()
+                return render(self.request, 'inscripcion/success.html')
+            except Persona.DoesNotExist:
+                form.add_error(None, 'El usuario no existe')
+        return render(request, self.template_name, {'form': form})
+
+
+class CursosView(ListView):
+    model = Curso
+    template_name = 'cursos/lista_cursos.html'
+    context_object_name = 'cursos'
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Verificar si el usuario ha pasado por VerificarDniView
+        if not request.session.get('dni_verificado'):
+            id_inscripcion = self.kwargs['pk']
+            return HttpResponseRedirect(reverse('verificar_dni', kwargs={'id_estudiante': id_inscripcion}))
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        #Obtengo al Estudiante por su credencial en la url
+        estudiante = Estudiante.objects.get(pk=self.kwargs['pk'])
+        hoy = date.today() #hoy
+        cursos_disponibles = Curso.objects.filter(inscripcion_inicio__lte=hoy, inscripcion_cierre__gte=hoy)
+        inscripciones_disponibles = Inscripcion.objects.filter(curso__inscripcion_inicio__lte=hoy, curso__inscripcion_cierre__gte=hoy)
+
+        # Cursos en los que el usuario ya está inscrito
+        cursos_inscriptos = inscripciones_disponibles.filter(estudiante=estudiante)
+
+        # Cursos en los que el usuario puede inscribirse (excluyendo los inscriptos)
+        cursos_habilitados = cursos_disponibles.exclude(
+            id__in=cursos_inscriptos.values('id'))
+
+        # Documentacion
+        archivos = Archivos.objects.filter(persona=estudiante.persona)
+        if archivos.exists():
+            documento = archivos.filter(tipo='Identificacion').last()
+            certificado = archivos.filter(tipo='Certificado').last()
+            if documento and documento.estado == 2:
+                context['documento_form'] = SubirDocumentoForm(prefix='documento')
+                context['documento_info'] = False
+                context['documentacion'] = False
+            elif documento and documento.estado == 1:
+                context['documento_form'] = False
+                context['documento_info'] = 'si'
+                context['documentacion'] = True
+            elif documento and documento.estado == 0:
+                context['documento_form'] = False
+                context['documento_info'] = 'no'
+                context['documentacion'] = True
+            if certificado and certificado.estado == 2:
+                context['certificado_info'] = False
+                context['certificado_form'] = SubirCertificadoForm(prefix='certificado')
+                context['documentacion'] = False
+            elif certificado and certificado.estado == 1:
+                context['certificado_form'] = False
+                context['certificado_info'] = 'si'
+                context['documentacion'] = True
+            elif certificado and certificado.estado == 0:
+                context['certificado_form'] = False
+                context['certificado_info'] = 'no'
+                context['documentacion'] = True
+        else:
+            context['documento_form'] = SubirDocumentoForm(prefix='documento')
+            context['certificado_form'] = SubirCertificadoForm(prefix='certificado')
+            context['documentacion'] = False
+
+        context['cursos_inscriptos'] = cursos_inscriptos
+        context['estudiante'] = estudiante
+        context['ESPECIALIDAD_ESTUDIANTE_CHOICES'] = ESPECIALIDAD_ESTUDIANTE_CHOICES
+        context['cursos_disponibles'] = cursos_habilitados
+        return context
+
+
+
 class ActualizarInscripcionView(UpdateView):
     model = Estudiante
     template_name = 'inscripcion/update.html'
@@ -144,6 +259,7 @@ class ActualizarInscripcionView(UpdateView):
         # Agregar dos instancias del formulario subirDocumentacion al contexto
         estudiante = Estudiante.objects.get(pk=self.kwargs['pk'])
         context['estudiante'] = estudiante
+        context['inscripcion_form'] = InscripcionForm(prefix='inscripcion')
         archivos = Archivos.objects.filter(persona=estudiante.persona)
         if archivos.exists():
             documento = archivos.filter(tipo='Identificacion').last()
@@ -214,3 +330,105 @@ class ActualizarInscripcionView(UpdateView):
             'documento_form': form_documento,
             'certificado_form': form_certificado,
         })
+
+
+class CreateInscripcionView(FormView):
+    template_name = 'cursos/lista_cursos.html'  # Archivo del template
+    form_class = InscripcionForm
+
+    def form_valid(self, form):
+        # Obtener datos adicionales del estudiante y el curso
+        estudiante_id = self.request.POST.get('estudiante_id')
+        curso_id = self.request.POST.get('curso_id')
+
+        estudiante = Estudiante.objects.get(pk=estudiante_id)
+        curso = Curso.objects.get(pk=curso_id)
+
+        # Asignar estudiante y curso al formulario antes de guardar
+        inscripcion = form.save(commit=False)
+        inscripcion.estudiante = estudiante
+        inscripcion.curso = curso
+        inscripcion.estado = 'inscripto'  # Estado inicial por defecto
+        inscripcion.save()
+
+        # Redirigir tras éxito
+        # Define la URL o vista correspondiente
+        return HttpResponseRedirect(reverse('paso_2', kwargs={'pk': estudiante_id}))
+
+    def form_invalid(self, form):
+        estudiante_id = self.request.POST.get('estudiante_id')
+        # Manejo de errores en el formulario
+        return HttpResponseRedirect(reverse('paso_2', kwargs={'pk': estudiante_id}))
+
+
+class UpdateInscripcionView(FormView):
+    template_name = 'cursos/lista_cursos.html'  # Archivo del template
+    form_class = InscripcionForm
+
+    def form_valid(self, form):
+        # Obtener el id de la inscripcion y el estudiante
+        estudiante_id = self.request.POST.get('estudiante_id')
+        inscripcion_id = self.request.POST.get('inscripcion_id')
+
+        # Obtener la inscripcion
+        inscripcion = Inscripcion.objects.get(pk=inscripcion_id)
+
+        # Actualizar los datos de la inscripcion segun el formulario
+        turno = Turno.objects.get(pk=form.cleaned_data.get('curso'))
+        modalidad = ModalidadCursado.objects.get(pk=form.cleaned_data.get('modalidad'))
+        inscripcion.especialidad = form.cleaned_data.get('especialidad', inscripcion.estado)
+        inscripcion.turno = turno
+        inscripcion.modalida = modalidad
+        inscripcion.save()
+
+        # Redirigir tras éxito
+        # Define la URL o vista correspondiente
+        return HttpResponseRedirect(reverse('paso_2', kwargs={'pk': estudiante_id}))
+
+    def form_invalid(self, form):
+        estudiante_id = self.request.POST.get('estudiante_id')
+        # Manejo de errores en el formulario
+        return HttpResponseRedirect(reverse('paso_2', kwargs={'pk': estudiante_id}))
+
+
+class SubirDoc(FormView):
+    template_name = 'cursos/lista_cursos.html'  # Archivo del template
+    
+    def post(self, request, *args, **kwargs):
+    
+        estudiante_id = self.request.POST.get('estudiante_id')
+        estudiante = Estudiante.objects.get(pk=int(estudiante_id))
+
+        documento_form = SubirDocumentoForm(request.POST, request.FILES, prefix='documento')
+        certificado_form = SubirCertificadoForm(request.POST, request.FILES, prefix='certificado')
+
+        archivos = Archivos.objects.filter(persona=estudiante.persona)
+
+        # Guardar documento si es válido y necesario
+        print(estudiante)
+        if not archivos.filter(tipo='Identificacion', estado__in=[0, 1]).exists() and documento_form.is_valid():
+            documento = documento_form.save(commit=False)
+            documento.tipo = 'Identificacion'
+            documento.persona = estudiante.persona
+            documento.save()
+
+        # Guardar certificado si es válido y necesario
+        if not archivos.filter(tipo='Certificado', estado__in=[0, 1]).exists() and certificado_form.is_valid():
+            certificado = certificado_form.save(commit=False)
+            certificado.tipo = 'Certificado'
+            certificado.persona = estudiante.persona
+            certificado.save()
+            
+        # Redirigir a una página de éxito o mensaje de éxito si ambos formularios son válidos
+        if documento_form.is_valid() and certificado_form.is_valid():
+            messages.error(
+                request, 'Documentacion presentada exitosamente')
+            return HttpResponseRedirect(reverse('paso_2', kwargs={'pk': estudiante_id}))
+
+        # Si alguno de los formularios es inválido, devolver a la misma vista con los errores
+        messages.error(request, "Verifica que el archivo que quieres subir sea un PDF.")
+        return HttpResponseRedirect(reverse('paso_2', kwargs={'pk': estudiante_id}))
+
+    def form_invalid(self, form):
+        # Manejo de errores en el formulario
+        return self.render_to_response(self.get_context_data(form=form))
