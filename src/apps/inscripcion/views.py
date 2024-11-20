@@ -211,9 +211,11 @@ class CursosView(ListView):
 
         # Cursos en los que el usuario ya está inscrito
         cursos_inscriptos = inscripciones_disponibles.filter(estudiante=estudiante)
+        cursos_inscriptos_idlist = inscripciones_disponibles.filter(estudiante=estudiante).values_list('curso', flat=True)
 
         # Cursos en los que el usuario puede inscribirse (excluyendo los inscriptos)
-        cursos_habilitados = inscripciones_disponibles.exclude(id__in=cursos_inscriptos.values('id'))
+        cursos_habilitados = cursos_disponibles.exclude(
+            id__in=cursos_inscriptos_idlist)
 
 
         # Documentacion
