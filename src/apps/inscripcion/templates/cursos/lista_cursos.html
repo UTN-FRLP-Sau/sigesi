@@ -62,6 +62,7 @@
               <th>Especialidad</th>
               <th>Modalidad</th>
               <th>Turno</th>
+              <th>Estado</th>
               <th></th>
             </tr>
           </thead>
@@ -70,9 +71,10 @@
               <tr>
                 <td style="vertical-align: middle;">{{ inscripcion.curso.nombre.title}}</td>
                 <td style="vertical-align: middle;">{{ inscripcion.curso.periodo_inicio|formatear_fecha }} - {{ inscripcion.curso.periodo_cierre|formatear_fecha }}</td>
-                <td style="vertical-align: middle;">{{ inscripcion.especialidad_display }}</td>
+                <td style="vertical-align: middle;">{{ inscripcion.especialidad.nombre }}</td>
                 <td style="vertical-align: middle;">{{ inscripcion.modalidad }}</td>
                 <td style="vertical-align: middle;">{{ inscripcion.turno }}</td>
+                <td style="vertical-align: middle;">{{ inscripcion.estado }}</td>
                 <td style="vertical-align: middle;">
                 <!-- Botón que expande el formulario -->
                 <button class="btn btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#formularioInscripcion{{ inscripcion.pk }}" aria-expanded="false" aria-controls="formularioCurso{{ curso.pk }}">
@@ -196,7 +198,7 @@
     {% if not documentacion %}
     <h3 class='text-center'>Antes de poder inscribirse, debera presentar la documentacion</h1>
     {% endif %}
-
+    <a class="btn btn-danger" href="{% url 'home' %}" role="button"> Salir </a>
   </div>
 </div>
 {% endblock %}

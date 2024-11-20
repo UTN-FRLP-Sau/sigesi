@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+<div class="container-fluid">
+    <div class=" row justify-content-center align-items-center" style="height: 90vh;">
+        <div class="col-lg-10 col-xl-6 col-xxl-4" style="background: #EEE; border-radius: 2%; padding: 2.5rem; text-align: center">
+            {% comment %} <h2 class="fw-bolder text-center">Confirmacion de la inscripcion</h2> {% endcomment %}
+            <div class="center-block">
+                    <a href="{% url 'admin:inscripcion_estudiante_changelist' %}" class="btn btn-secondary" type="button">Estudiantes</a>
+                    <a href="{% url 'admin-estudiantes_list' %}" class="btn btn-secondary" type="button">Cursos</a>
+                    <a href="{% url 'admin:inscripcion_estudiante_changelist' %}" class="btn btn-secondary" type="button">Documentacion</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

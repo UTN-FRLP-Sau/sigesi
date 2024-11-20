@@ -6,6 +6,8 @@
 
 # Django
 from django.urls import path
+from django.views.generic import TemplateView
+
 
 # Django Locales
 from .views import (#ConfirmacionInformacion,
@@ -22,7 +24,9 @@ from .views import (#ConfirmacionInformacion,
                     CursosView,
                     CreateInscripcionView,
                     SubirDoc,
-                    UpdateInscripcionView
+                    UpdateInscripcionView,
+                    EstudianteListView,
+                    aprobar_curso,
                     )
 from .ajax import get_provincias, get_partidos, get_localidades, get_escuelas
 
@@ -45,7 +49,7 @@ urlpatterns = [
     path('paso-2/documentacion/', SubirDoc.as_view(), name='subir_documentacion'),
     path('incribirse/', CreateInscripcionView.as_view(), name='crear_inscripcion'),
     path('actualizar/', UpdateInscripcionView.as_view(), name='actualizar_inscripcion'),
-    path('reenvio/correo', ReenvioLinkdocumentacion.as_view(), name='reenvio_correo'),
+    #path('reenvio/correo', ReenvioLinkdocumentacion.as_view(),name='inscripcion_info'),
     path('info', ReenvioLinkdocumentacion.as_view(), name='inscripcion_info'),
     #path('new/student/<int:persona_id>/', CrearEstudiante.as_view(), name='crear_estudiante'),
     #path('new/student/success/', CrearEstudiante.as_view(), name='crear_estudiante_success'),
@@ -55,4 +59,9 @@ urlpatterns = [
     path('ajax/new/person/get_partidos', get_partidos, name='get_partidos'),
     path('ajax/new/person/get_localidades', get_localidades, name='get_localidades'),
     path('ajax/new/person/get_escuelas', get_escuelas, name='get_escuelas'),
+    
+    #URL para la administracion
+    path('administracion', TemplateView.as_view(template_name = "admin/home.html"), name='home_administracion'),
+    path('administracion/estudiantes/', EstudianteListView.as_view(), name='admin-estudiantes_list'),
+    path('administracion/estudiantes/estado/ap',aprobar_curso, name='aprobar_curso')
 ]

@@ -944,6 +944,20 @@ class Turno(models.Model):
 
     def __str__(self):
         return '{}'.format(self.nombre.title())
+    
+
+class Especialidad(models.Model):
+    id = models.IntegerField(primary_key=True, editable=True)
+    nombre = models.CharField(max_length=50)
+    turno = models.ManyToManyField(Turno)
+
+    class Meta:
+        verbose_name = 'Especialidad'
+        verbose_name_plural = 'Especialidades'
+
+    def __str__(self):
+        return '{}'.format(self.nombre.title())
+
 
 
 class Curso(models.Model):
@@ -980,11 +994,11 @@ class Inscripcion(models.Model):
         'Estudiante', related_name='estudiante', on_delete=models.CASCADE)
     curso = models.ForeignKey(
         'Curso', related_name='curso', on_delete=models.CASCADE)
-    especialidad = models.IntegerField(
-        choices=ESPECIALIDAD_ESTUDIANTE_CHOICES, db_column='especialidad', default='31')
+    especialidad = models.ForeignKey(
+        'Especialidad', related_name='especialidad', on_delete=models.CASCADE)
     modalidad = models.ForeignKey(
-        'ModalidadCursado', related_name='modalidad', on_delete=models.CASCADE, default='l')
-    turno = models.ForeignKey('Turno', related_name='turno', on_delete=models.CASCADE, default='l')
+        'ModalidadCursado', related_name='modalidad', on_delete=models.CASCADE)
+    turno = models.ForeignKey('Turno', related_name='turno', on_delete=models.CASCADE)
     estado = models.CharField(max_length=11, choices=ESTADOS_CHOICES)
     
     def especialidad_display(self):

@@ -1,34 +1,29 @@
 {% extends 'base.html' %} {% load django_bootstrap5 %} {% block content %}
-<div class="container">
-  <div class="row gx-5 justify-content-center">
-    <div class="col-sm-8">
-      <div style="background: #eee; padding: 2.5rem">
-        <h2 style="text-align: center">Importante</h2>
+
+<div class="container-fluid">
+    <div class=" row justify-content-center align-items-center" style="height: 90vh;">
+        <div class="col-10 col-sm-6 col-lg-6" style="background: #EEE; border-radius: 2%; padding: 2.5rem; text-align: center">
+            <h2 style="text-align: center">Importante</h2>
 
         <p style="text-align: center; margin-top: 1rem">
-          Si al intentar inscribirse el formulario indica que el DNI ya existe,
-          esto significa que ya está registrado en nuestro sistema. Para
-          continuar, por favor seleccione la opción
-          <strong>"Reinscribirme"</strong> para actualizar sus datos o modificar
-          su inscripción.
+          Antes de continuar, debemos verificar que no te encuentres en nuestros sistemas. Por favor, ingrese su número de documento para continuar.
         </p>
 
-        <div style="padding-top: 2%; text-align: center">
-          <a
-            class="btn btn-primary"
-            href="{% url 'crear_persona' %}"
-            role="button"
-            >Inscribirme por Primera Vez</a
-          >
-          <a
-            class="btn btn-primary"
-            href="{% url 'reinscripcion' %}"
-            role="button"
-            >Reinscribirme</a
-          >
-        </div>
-      </div>
+        <form enctype="multipart/form-data" id="formulario" method="POST">
+                {% csrf_token %}
+                <div class="row conteiner-fluid">
+                    <div class="col-lg-6 mx-auto">
+                        {% bootstrap_form form layout="floating" %}
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2 mx-auto">
+                            {% bootstrap_button button_type="submit" content="Verificar" %}
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </form>
     </div>
-  </div>
 </div>
+
 {% endblock %}

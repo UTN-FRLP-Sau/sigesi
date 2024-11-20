@@ -29,13 +29,15 @@ from apps.inscripcion.models import (
                                     Documentacion,
                                     Curso,
                                     Inscripcion,
-                                    Turno
+                                    Turno,
+                                    Especialidad
 )
 
 # Register your models here.
 
 admin.site.register(PartidoPBA)
 admin.site.register(Curso)
+admin.site.register(Especialidad)
 admin.site.register(Turno)
 admin.site.register(Inscripcion)
 admin.site.register(ModalidadCursado)

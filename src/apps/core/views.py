@@ -6,6 +6,8 @@ from django.views.defaults import page_not_found, server_error
 
 
 def landing_page(request):
+    request.session['dni_verificado'] = False
+    request.session['credencial'] = None
     return render(request, 'landing/index.html')
 
 # Error 404

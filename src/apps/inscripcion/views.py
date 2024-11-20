@@ -12,8 +12,10 @@ from django.shortcuts import render, redirect
 import threading
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import EmailMultiAlternatives
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseNotAllowed, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.template.loader import get_template
@@ -120,22 +122,26 @@ class VerificacionInscripcion(View):
             id_estudiante = self.kwargs['id_estudiante']
             try:
                 estudiante = Estudiante.objects.get(credencial=id_estudiante)
-                usuario = Persona.objects.get(id=estudiante.persona.id)
-                if usuario.numero_documento == dni:
-                    # Verificación exitosa, guardamos en la sesión
-                    request.session['dni_verificado'] = True
-                    return HttpResponseRedirect(reverse('paso_2', kwargs={'pk': id_estudiante}))
-                else:
-                    form.add_error('dni', 'El DNI no coincide con el usuario')
-            except Persona.DoesNotExist:
-                print(Exception)
+                try:
+                    usuario = Persona.objects.get(id=estudiante.persona.id)
+                    if usuario.numero_documento == dni:
+                        # Verificación exitosa, guardamos en la sesión
+                        request.session['dni_verificado'] = True
+                        request.session['credencial'] = usuario.pk
+                        return HttpResponseRedirect(reverse('paso_2', kwargs={'pk': id_estudiante}))
+                    else:
+                        form.add_error('dni', 'El DNI no coincide con el usuario')
+                except Persona.DoesNotExist:
+                    form.add_error(None, 'El usuario no existe')
+            except Estudiante.DoesNotExist:
                 form.add_error(None, 'El usuario no existe')
         return render(request, self.template_name, {'form': form})
 
 
-class ReenvioLinkdocumentacion(View):
+class ReenvioLinkdocumentacion(FormView):
     form_class = VerificacionInscripcionForm
-    template_name = 'inscripcion/verificar_dni.html'
+    template_name = 'inscripcion/info.html'
+    
 
     def get(self, request, *args, **kwargs):
         form = self.form_class()
@@ -146,29 +152,42 @@ class ReenvioLinkdocumentacion(View):
         if form.is_valid():
             dni = form.cleaned_data['dni']
             try:
-                persona = Estudiante.objects.get(numero_documento=dni)
-                estudiante = Estudiante.objects.get(persona=persona)
-                email = create_email(
-                    user_mail=persona.correo,
-                    subject='Re-Confirmación de Inscripción',
-                    template_name='inscripcion/confirmacion_correo.html',
-                    context={
-                        'nombre': persona.nombres.title(),
-                        'apellido': persona.apellidos.upper(),
-                        'id_estudiante': estudiante.pk,
-                        'carrera': estudiante.get_especialidad_display(),
-                        'turno': estudiante.get_turno_display(),
-                        'modalidad': estudiante.get_modalidad_display()
-                    },
-                    request=request
-                )
-                thread = threading.Thread(target=email.send)
-                thread.start()
-                return render(self.request, 'inscripcion/success.html')
-            except Persona.DoesNotExist:
-                form.add_error(None, 'El usuario no existe')
-        return render(request, self.template_name, {'form': form})
+                persona = Persona.objects.get(numero_documento=dni)
+                try:
+                    estudiante = Estudiante.objects.get(persona=persona)
+                    # Crear el correo
+                    email = create_email(
+                        user_mail=persona.correo,
+                        subject='Re-Confirmación de Inscripción',
+                        template_name='inscripcion/reenvio_confirmacion_correo.html',
+                        context={
+                            'nombre': persona.nombres.title(),
+                            'apellido': persona.apellidos.upper(),
+                            'id_estudiante': estudiante.pk,
+                            'carrera': estudiante.get_especialidad_display(),
+                            'turno': estudiante.get_turno_display(),
+                            'modalidad': estudiante.get_modalidad_display()
+                        },
+                        request=request
+                    )
+                    # Enviar el correo en un hilo separado
+                    thread = threading.Thread(target=email.send)
+                    thread.start()
 
+                    # Renderizar la página de éxito
+                    return render(self.request, 'inscripcion/reenvio_success.html', context={'persona': persona})
+
+                except Estudiante.DoesNotExist:
+                    # Si no existe un estudiante asociado
+                    return HttpResponseRedirect(reverse('crear_persona'))
+
+            except Persona.DoesNotExist:
+                # Si no existe la persona
+                return HttpResponseRedirect(reverse('crear_persona'))
+
+        # Si el formulario no es válido, recargar el formulario con errores
+        return render(request, self.template_name, {'form': form})
+    
 
 class CursosView(ListView):
     model = Curso
@@ -185,7 +204,8 @@ class CursosView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         #Obtengo al Estudiante por su credencial en la url
-        estudiante = Estudiante.objects.get(pk=self.kwargs['pk'])
+        estudiante = Estudiante.objects.get(
+            pk=self.request.session.get('credencial'))
         hoy = date.today() #hoy
         cursos_disponibles = Curso.objects.filter(inscripcion_inicio__lte=hoy, inscripcion_cierre__gte=hoy)
         inscripciones_disponibles = Inscripcion.objects.filter(curso__inscripcion_inicio__lte=hoy, curso__inscripcion_cierre__gte=hoy)
@@ -247,7 +267,7 @@ class ActualizarInscripcionView(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         # Verificar si el usuario ha pasado por VerificarDniView
         if not request.session.get('dni_verificado'):
-            id_estudiante = self.kwargs['pk']
+            id_estudiante = request.session.get('credencial')
             return HttpResponseRedirect(reverse('verificar_dni', kwargs={'id_estudiante': id_estudiante}))
         #else:
             #request.session['dni_verificado']=False
@@ -374,11 +394,11 @@ class UpdateInscripcionView(FormView):
         inscripcion = Inscripcion.objects.get(pk=inscripcion_id)
 
         # Actualizar los datos de la inscripcion segun el formulario
-        turno = Turno.objects.get(pk=form.cleaned_data.get('curso'))
-        modalidad = ModalidadCursado.objects.get(pk=form.cleaned_data.get('modalidad'))
+        turno = Turno.objects.get(nombre=form.cleaned_data.get('turno'))
+        modalidad = ModalidadCursado.objects.get(nombre=form.cleaned_data.get('modalidad'))
         inscripcion.especialidad = form.cleaned_data.get('especialidad', inscripcion.estado)
         inscripcion.turno = turno
-        inscripcion.modalida = modalidad
+        inscripcion.modalidad = modalidad
         inscripcion.save()
 
         # Redirigir tras éxito
@@ -432,3 +452,73 @@ class SubirDoc(FormView):
     def form_invalid(self, form):
         # Manejo de errores en el formulario
         return self.render_to_response(self.get_context_data(form=form))
+    
+
+class EstudianteListView(LoginRequiredMixin, ListView):
+    model = Estudiante
+    template_name = 'estudiantes/list.html'  # Ruta al template
+    # Nombre para acceder a la lista de cursos en el template
+    context_object_name = 'estudiantes'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Todos los cursos para el selector
+        hoy = date.today()  # hoy
+        context['cursos'] = Curso.objects.filter(inscripcion_inicio__lte=hoy, inscripcion_cierre__gte=hoy)
+        # Obtener el curso seleccionado, si existe en los parámetros de la URL
+        curso_id = self.request.GET.get('curso_id')
+        if curso_id:
+            curso = Curso.objects.get(id=curso_id)
+            # Filtra las inscripciones y estudiantes basándose en el curso
+            inscripciones = Inscripcion.objects.filter(curso=curso)
+            context['inscripciones'] = inscripciones
+            context['inscripciones_botones'] = True
+            context['estudiantes'] = None
+            context['curso_version'] = curso
+        else:
+            # Si no se selecciona un curso, muestra estudiantes no inscritos
+            inscritos_ids = Inscripcion.objects.values_list(
+                'estudiante_id', flat=True)
+            context['estudiantes'] = Estudiante.objects.exclude(
+                credencial__in=inscritos_ids)
+            context['inscripciones'] = False
+        return context
+
+
+@login_required
+def aprobar_curso(request):
+    if request.method == 'POST':
+        inscripcion_id = request.POST.get('inscripcion_id')
+        inscripcion = Inscripcion.objects.get(pk=inscripcion_id)
+        if inscripcion.estado != 'aprobado': 
+            inscripcion.estado='aprobado'
+        else:
+            inscripcion.estado='inscripto'
+        inscripcion.save()
+        return JsonResponse({"success": True, "nuevo_estado": inscripcion.estado})
+    return JsonResponse({"success": False}, status=400)
+
+
+'''
+@login_required
+def inscribir_curso(request):
+    if request.method == 'POST':
+        curso_id = request.POST.get('curso_id')
+        documento = request.POST.get('documento')
+        estudiante = Persona.objects.get(numero_documento=documento)
+        estudiante = Estudiante.objects.get(persona=estudiante)
+        curso = Curso.objects.get(pk=curso_id)
+        
+        if not Inscripcion.objects.filter(curso=curso).filter(estudiante=estudiante).exists():
+            inscripcion = Inscripcion(
+                curso=curso,
+                estudiante= estudiante
+            )
+        if inscripcion.estado != 'aprobado':
+            inscripcion.estado = 'aprobado'
+        else:
+            inscripcion.estado = 'inscripto'
+        inscripcion.save()
+        return JsonResponse({"success": True, "nuevo_estado": inscripcion.estado})
+    return JsonResponse({"success": False}, status=400)
+'''
