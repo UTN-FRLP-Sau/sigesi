@@ -204,8 +204,7 @@ class CursosView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         #Obtengo al Estudiante por su credencial en la url
-        estudiante = Estudiante.objects.get(
-            pk=self.request.session.get('credencial'))
+        estudiante = Estudiante.objects.get(pk=self.kwargs['pk'])
         hoy = date.today() #hoy
         cursos_disponibles = Curso.objects.filter(inscripcion_inicio__lte=hoy, inscripcion_cierre__gte=hoy)
         inscripciones_disponibles = Inscripcion.objects.filter(curso__inscripcion_inicio__lte=hoy, curso__inscripcion_cierre__gte=hoy)
@@ -214,8 +213,8 @@ class CursosView(ListView):
         cursos_inscriptos = inscripciones_disponibles.filter(estudiante=estudiante)
 
         # Cursos en los que el usuario puede inscribirse (excluyendo los inscriptos)
-        cursos_habilitados = cursos_disponibles.exclude(
-            id__in=cursos_inscriptos.values('id'))
+        cursos_habilitados = inscripciones_disponibles.exclude(id__in=cursos_inscriptos.values('id'))
+
 
         # Documentacion
         archivos = Archivos.objects.filter(persona=estudiante.persona)
