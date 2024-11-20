@@ -40,7 +40,7 @@
                         <li class="nav-item"><a class="nav-link" href="#faq">Preguntas Frecuentes</a></li>
                         {% if request.user.is_authenticated %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Salir</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'inscriptor_home' %}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'home_administracion' %}">Home</a></li>
                         {% else %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
                         {% endif %}
@@ -240,7 +240,7 @@
                         </div>
                         <div class="row" style="margin:0; padding-top:1rem; padding-bottom:2rem; text-align:center">
                                 <p>
-                                    <a href="{% url 'crear_persona' %}" class="btn btn-primary">QUIERO INSCRIBIRME</a>
+                                    <a href="{% url 'inscripcion_info' %}" class="btn btn-primary">QUIERO INSCRIBIRME</a>
                                 </p>
                         </div>
                     </div>

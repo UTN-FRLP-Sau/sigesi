@@ -19,7 +19,8 @@ from .models import (Pais,
                      ESPECIALIDAD_ESTUDIANTE_CHOICES,
                      TURNO_INGRESO_CHOICES,
                      SEXO_ESTUDIANTE_CHOICES,
-                     Documentacion
+                     Documentacion,
+                     Inscripcion
                      )
 
 
@@ -324,3 +325,19 @@ class SubirCertificadoForm(forms.ModelForm):
         fields = ['path',]
         labels = {'path': 'PDF2: Certificado de Estudios Secundarios'}
         help_texts = {'path': 'Solo se acepta formato PDF'}
+        
+
+class InscripcionForm(forms.ModelForm):
+    class Meta:
+        model = Inscripcion
+        fields = ['modalidad', 'especialidad', 'turno']
+        labels = {'especialidad': 'Carrera',
+                  'modalidad': 'Modalidad',
+                  'turno': 'Turno'
+                  }
+        help_texts = {
+            'especialidad': 'Selecione la carrera en la que se quiere inscribir',
+            'modalidad': 'Selecione la modalidad en la que se quiere inscribir',
+            'turno': 'Selecione el turno en que prefiera realizar el Seminario'
+            }
+        

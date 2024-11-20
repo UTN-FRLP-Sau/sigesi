@@ -12,14 +12,14 @@
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 {% if request.user.is_authenticated %}
                 <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Salir</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'inscriptor_home' %}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'home_administracion' %}">Home</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="navbarDropdownBlog" href="#" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">Documentacion</a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownBlog">
-                        <li><a class="dropdown-item" href="{% url 'documentacion_listar' 'all' %}">Toda</a></li>
-                        <li><a class="dropdown-item" href="{% url 'documentacion_listar' 'True' %}">Procesada</a></li>
-                        <li><a class="dropdown-item" href="{% url 'documentacion_listar' 'False' %}">Pendientes</a></li>
+                        <li><a class="dropdown-item" href="#">Toda</a></li>
+                        <li><a class="dropdown-item" href="#">Procesada</a></li>
+                        <li><a class="dropdown-item" href="#">Pendientes</a></li>
                     </ul>
                 </li>
                 {% else %}

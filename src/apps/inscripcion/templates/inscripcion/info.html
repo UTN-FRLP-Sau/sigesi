@@ -1,223 +1,29 @@
-<<<<<<< HEAD
-{% extends 'base.html' %}
-{% load django_bootstrap5 %}
+{% extends 'base.html' %} {% load django_bootstrap5 %} {% block content %}
 
-{% block content %}
-<div class="container">
-    <div class="row gx-5 justify-content-center">
-        <div class="col-sm-8">
-            <div style="background: #EEE; padding-right: 2.5rem; padding-left: 2.5rem; padding-bottom: 2.5rem; ">
-                <h2 style="text-align: center;">Importante</h2>
-                <p>
-                    Antes de acceder al formulario, le pedimos que posea 2 archivos PDF con la siguiente documentación,
-                    tenga en cuenta que solo podrá subir un archivo por campo:
-                </p>
-                <div class="accordion mb-2" id="accordionExample">
-                    <div class="accordion-item">
-                        <h3 class="accordion-header" id="headingEighth"><button class="accordion-button collapsed"
-                                type="button" data-bs-toggle="collapse" data-bs-target="#collapseEighth"
-                                aria-expanded="false" aria-controls="collapseEighth">PDF 1: Identificacion, Documento o
-                                Passaporte</button>
-                        </h3>
-                        <div class="accordion-collapse collapse" id="collapseEighth" aria-labelledby="headingEighth"
-                            data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <ul>
-                                    <li><b>Si tenes DNI argentino:</b> Foto o escaneo del DNI en ambas caras.</li>
-                                    <li><b>Si no contas DNI argentino:</b> El documento de identidad de tu país y la
-                                        constancia de inicio de trámite de radicación.</br>
-                                        (La puedes iniciar en el siguiente <a
-                                            href="https://www.migraciones.gov.ar/radex/index.html">enlace</a>)</li>
-                                </ul>
-                            </div>
+<div class="container-fluid">
+    <div class=" row justify-content-center align-items-center" style="height: 90vh;">
+        <div class="col-10 col-sm-6 col-lg-6" style="background: #EEE; border-radius: 2%; padding: 2.5rem; text-align: center">
+            <h2 style="text-align: center">Importante</h2>
+
+        <p style="text-align: center; margin-top: 1rem">
+          Antes de continuar, debemos verificar que no te encuentres en nuestros sistemas. Por favor, ingrese su número de documento para continuar.
+        </p>
+
+        <form enctype="multipart/form-data" id="formulario" method="POST">
+                {% csrf_token %}
+                <div class="row conteiner-fluid">
+                    <div class="col-lg-6 mx-auto">
+                        {% bootstrap_form form layout="floating" %}
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2 mx-auto">
+                            {% bootstrap_button button_type="submit" content="Verificar" %}
                         </div>
                     </div>
-                    <div class="accordion-item">
-                        <h3 class="accordion-header" id="headingOne"><button class="accordion-button collapsed"
-                                type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-                                aria-expanded="false" aria-controls="collapseOne">PDF 2: Certificado de estudios
-                                secundarios:</button>
-                        </h3>
-                        <div class="accordion-collapse collapse" id="collapseOne" aria-labelledby="headingOne"
-                            data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <ul>
-                                    <li><b>Si finalizaste tus estudios en argentina o aún estas cursándolos:</b> Certificado del secundario,
-                                        puede ser:</li>
-                                    <ul>
-                                        <li>Título </li>
-                                        <li>Analítico</li>
-                                        <li>Certificado de título en trámite</li>
-                                        <li>Certificado de alumno regular</li>
-                                        <li>Certificado de materias adeudadas</li>
-                                    </ul>
-                                    <li><b>Si no finalizaste tus estudios en argentina o estás cursando en otro país:</b> Titulo secundario de tu
-                                        pais.
-                                        Recorda que debes tenerlo validado antes del 31 del proximo ciclo lectivo, podes
-                                        hacerlo en el siguiente
-                                        <a
-                                            href="https://www.argentina.gob.ar/tema/estudiar/guia-validez-titulos-estudios">enlace</a>
-                                        </p>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
                     </div>
                 </div>
-
-                <p><b>Ten en cuenta que los datos deben coincidir con los usados en el formulario de preinscripción</b>
-                </p>
-
-                <p>Le recomendamos que, antes de confirmar su inscripción, haya examinado minuciosamente la información
-                    presentada para las modalidades. </p>
-                <div class="row">
-                    <div class="col-md-6">
-                        <h4>Modalidad Presencial</h4>
-                        <ul>
-                            <li>Clases Presenciales <b>OBLIGATORIO</b></li>
-                            <li>Parciales Presenciales <b>OBLIGATORIO</b></li>
-                            <li>Encuentros IU <b>OBLIGATORIO</b></li>
-                            <li>Clases de Repaso <b>OPCIONAL</b></li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <h4>Modalidad Semi-Presencial</h4>
-                        <ul>
-                            <li>Clases Presenciales <b>OPCIONAL</b></li>
-                            <li>Parciales Presenciales <b>OBLIGATORIO</b></li>
-                            <li>Encuentros IU <b>OBLIGATORIO</b></li>
-                            <li>Clases de Repaso <b>OBLIGATORIO</b></li>
-                        </ul>
-                    </div>
-                    <div class="col-md-12">
-                        <p><b>Modalidad Libre/Virtual:</b> Es una modalidad de autogestion, y solo se debe presentar a
-                            rendir el examen final del seminario</p>
-                    </div>
-                </div>
-                De esta manera, podrás escoger con buen criterio una de ellas.
-                Desde el Área Ingreso a la UTN La Plata, responsable de la implementación del Seminario de Ingreso,
-                te alentamos a participar en la Modalidad Presencial.</p>
-                <p>Ante cualquier inquietud, no dudes en comunicarte a través de <a
-                        href="mailto:ingreso@frlp.utn.edu.ar">ingreso@frlp.utn.edu.ar</a>
-                    o bien acercarte a la oficina de Ingreso, de lunes a viernes de 17 a 20 horas.</p>
-                <div style="padding-top: 2%; text-align: center;">
-                    <a class="btn btn-primary" href="{% url 'documentacion_subir' %}" role="button"> Continuar con la
-                        inscripcion</a>
-                </div>
-            </div>
-        </div>
+            </form>
     </div>
 </div>
+
 {% endblock %}
-=======
-{% extends 'base.html' %}
-{% load django_bootstrap5 %}
-
-{% block content %}
-<div class="container">
-    <div class="row gx-5 justify-content-center">
-        <div class="col-sm-8">
-            <div style="background: #EEE; padding-right: 2.5rem; padding-left: 2.5rem; padding-bottom: 2.5rem; ">
-                <h2 style="text-align: center;">Importante</h2>
-                <p>
-                    Antes de acceder al formulario, le pedimos que posea 2 archivos PDF con la siguiente documentación,
-                    tenga en cuenta que solo podrá subir un archivo por campo:
-                </p>
-                <div class="accordion mb-2" id="accordionExample">
-                    <div class="accordion-item">
-                        <h3 class="accordion-header" id="headingEighth"><button class="accordion-button collapsed"
-                                type="button" data-bs-toggle="collapse" data-bs-target="#collapseEighth"
-                                aria-expanded="false" aria-controls="collapseEighth">PDF 1: Identificacion, Documento o
-                                Passaporte</button>
-                        </h3>
-                        <div class="accordion-collapse collapse" id="collapseEighth" aria-labelledby="headingEighth"
-                            data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <ul>
-                                    <li><b>Si tenes DNI argentino:</b> Foto o escaneo del DNI en ambas caras.</li>
-                                    <li><b>Si no contas DNI argentino:</b> El documento de identidad de tu país y la
-                                        constancia de inicio de trámite de radicación.</br>
-                                        (La puedes iniciar en el siguiente <a
-                                            href="https://www.migraciones.gov.ar/radex/index.html">enlace</a>)</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h3 class="accordion-header" id="headingOne"><button class="accordion-button collapsed"
-                                type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-                                aria-expanded="false" aria-controls="collapseOne">PDF 2: Certificado de estudios
-                                secundarios:</button>
-                        </h3>
-                        <div class="accordion-collapse collapse" id="collapseOne" aria-labelledby="headingOne"
-                            data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <ul>
-                                    <li><b>Si finalizaste tus estudios en argentina o aún estas cursándolos:</b> Certificado del secundario,
-                                        puede ser:</li>
-                                    <ul>
-                                        <li>Título </li>
-                                        <li>Analítico</li>
-                                        <li>Certificado de título en trámite</li>
-                                        <li>Certificado de alumno regular</li>
-                                        <li>Certificado de materias adeudadas</li>
-                                    </ul>
-                                    <li><b>Si no finalizaste tus estudios en argentina o estás cursando en otro país:</b> Titulo secundario de tu
-                                        pais.
-                                        Recorda que debes tenerlo validado antes del 31 del proximo ciclo lectivo, podes
-                                        hacerlo en el siguiente
-                                        <a
-                                            href="https://www.argentina.gob.ar/tema/estudiar/guia-validez-titulos-estudios">enlace</a>
-                                        </p>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <p><b>Ten en cuenta que los datos deben coincidir con los usados en el formulario de preinscripción</b>
-                </p>
-
-                <p>Le recomendamos que, antes de confirmar su inscripción, haya examinado minuciosamente la información
-                    presentada para las modalidades. </p>
-                <div class="row">
-                    <div class="col-md-6">
-                        <h4>Modalidad Presencial</h4>
-                        <ul>
-                            <li>Clases Presenciales <b>OBLIGATORIO</b></li>
-                            <li>Parciales Presenciales <b>OBLIGATORIO</b></li>
-                            <li>Encuentros IU <b>OBLIGATORIO</b></li>
-                            <li>Clases de Repaso <b>OPCIONAL</b></li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <h4>Modalidad Semi-Presencial</h4>
-                        <ul>
-                            <li>Clases Presenciales <b>OPCIONAL</b></li>
-                            <li>Parciales Presenciales <b>OBLIGATORIO</b></li>
-                            <li>Encuentros IU <b>OBLIGATORIO</b></li>
-                            <li>Clases de Repaso <b>OBLIGATORIO</b></li>
-                        </ul>
-                    </div>
-                    <div class="col-md-12">
-                        <p><b>Modalidad Libre/Virtual:</b> Es una modalidad de autogestion, y solo se debe presentar a
-                            rendir el examen final del seminario</p>
-                    </div>
-                </div>
-                De esta manera, podrás escoger con buen criterio una de ellas.
-                Desde el Área Ingreso a la UTN La Plata, responsable de la implementación del Seminario de Ingreso,
-                te alentamos a participar en la Modalidad Presencial.</p>
-                <p>Ante cualquier inquietud, no dudes en comunicarte a través de <a
-                        href="mailto:ingreso@frlp.utn.edu.ar">ingreso@frlp.utn.edu.ar</a>
-                    o bien acercarte a la oficina de Ingreso, de lunes a viernes de 17 a 20 horas.</p>
-                <div style="padding-top: 2%; text-align: center;">
-                    <a class="btn btn-primary" href="{% url 'documentacion_subir' %}" role="button"> Continuar con la
-                        inscripcion</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
->>>>>>> 95dc36e8cb94c2d2a2c0795044e8318ddf45e85b

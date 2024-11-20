@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load bootstrap_icons %}
+
+
+{% block content %}
+
+
+<div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>Listado de inscriptos en:</h1>
+                    <!-- Selector de curso -->
+                    <form class="row g-2" method="get" action="{% url 'admin-estudiantes_list' %}">
+                        <select class='form-select form-select-lg mb-3' name="curso_id" id="curso_id" onchange="this.form.submit()">
+                            <option value="">--Estudiantes sin curso--</option>
+                            {% for curso in cursos %}
+                                <option value="{{ curso.id }}" {% if curso.id|stringformat:"s" == request.GET.curso_id %}selected{% endif %}>
+                                    {{ curso.nombre }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+            </div>
+            {% comment %} <div style='display: flex; justify-content: center; align-items: center;'>
+                <div class="btn-group" role="group">
+                    <a class="btn btn-primary btn-sm" href="#" role="button" target="_blank">Nueva Actividad</a>
+                    <a class="btn btn-info btn-sm" href="#" role="button">Notificar Inscriptos</a>
+                    <form action="#" method="post" style="display: inline">
+                        {% csrf_token %}<button class="btn btn-success btn-sm" type="submit">Abrir Inscripcion</button>
+                    </form>
+                    <form action="#" method="post" style="display: inline">
+                        {% csrf_token %}<button class="btn btn-danger btn-sm" type="submit">Cerrar Inscripcion</button>
+                    </form>
+                </div>
+            </div> {% endcomment %}
+
+            <div class="col-md-12">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th><input type="text" id="filterNombre" class="form-control" placeholder="Nombre"></th>
+                            <th><input type="text" id="filterApellido" class="form-control" placeholder="Apellido"></th>
+                            <th><input type="text" id="filterCorreo" class="form-control" placeholder="Correo"></th>
+                            <th><input hidden type="text" id="filterCarrera" class="form-control" placeholder="Carrera"></th>
+                            <th><input hidden type="text" id="filterTurno" class="form-control" placeholder="Turno"></th>
+                            <th><input hidden type="text" id="filterModalidad" class="form-control" placeholder="Modalidad"></th>
+                            <th><input type="text" id="filterEstado" class="form-control" placeholder="Estado"></th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th>Apellido</th>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Carrera</th>
+                            <th>Turno</th>
+                            <th>Modalidad</th>
+                            <th>Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                        {% if inscripciones %}
+                        <form action="#" method="post">{% csrf_token %}
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td><input hidden type="text" name="curso_id" class="form-control" value='curso_version.id'></td>
+                            <td><input type="text" name="documento" class="form-control" placeholder="Documento"></td>
+                            <td class="text-center">
+                                {% bootstrap_button button_type="submit" content="Inscribir" %}
+                            </td>
+                        </tr>
+                        </form>
+                        {% endif %}
+                    </thead>
+                    <tbody id="inscriptosTableBody">
+                        {% if inscripciones %}
+                        {% for inscripcion in inscripciones %}
+                        <tr>
+                            <td>{{ inscripcion.estudiante.persona.apellidos.upper }}</td>
+                            <td>{{ inscripcion.estudiante.persona.nombres.title }}</td>
+                            <td>{{ inscripcion.estudiante.persona.correo }}</td>
+                            <td>{{ inscripcion.especialidad.nombre }}</td>
+                            <td>{{ inscripcion.turno.nombre }}</td>
+                            <td>{{ inscripcion.modalidad.nombre }}</td>
+                            <td>{{ inscripcion.estado.title }}</td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    {% comment %} <a class="btn btn-warning btn-sm" href="{% url 'ver_inscriptos' actividad.id %}" role="button">{% bs_icon 'eye' %}</a> {% endcomment %}
+                                
+                                    <!-- Editar inscripto -->
+                                    <a class="btn btn-warning btn-sm" target="_blanck" href="{% url 'admin:inscripcion_estudiante_change' inscripcion.estudiante.pk %}" role="button">{% bs_icon 'person-fill-gear' %}</a>
+                                    <a class="btn btn-warning btn-sm" target="_blanck" href="{% url 'admin:inscripcion_inscripcion_change' inscripcion.pk %}" role="button">{% bs_icon 'journal-text' %}</a>
+                                    <button class="cambiar-estado btn btn-success" data-id="{{ inscripcion.pk }}">{% bs_icon 'arrow-clockwise' %}</button>
+                                    
+                                    <!-- Eliminar inscripción -->
+
+
+                                    <!-- Enviar entrada-->
+
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        {% for estudiante in estudiantes %}
+                        <tr>
+                            <td>{{ estudiante.persona.nombres }}</td>
+                            <td>{{ estudiante.persona.apellidos }}</td>
+                            <td>{{ estudiante.persona.correo }}</td>
+                            <td>{{ estudiante.get_especialidad_display }}</td>
+                            <td>{{ estudiante.get_turno_display }}</td>
+                            <td>{{ estudiante.get_modalidad_display }}</td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    {% comment %} <a class="btn btn-warning btn-sm" href="{% url 'ver_inscriptos' actividad.id %}" role="button">{% bs_icon 'eye' %}</a> {% endcomment %}
+                                
+                                    <!-- Editar inscripto -->
+                                    <a class="btn btn-warning btn-sm" target="_blanck" href="{% url 'admin:inscripcion_estudiante_change' estudiante.credencial %}" role="button">{% bs_icon 'person-fill-gear' %}</a>
+                                    
+                                    <!-- Eliminar inscripción -->
+
+
+                                    <!-- Enviar entrada-->
+
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block content_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input[id^="filter"]');
+            const tableBody = document.getElementById('inscriptosTableBody');
+            const rows = tableBody.getElementsByTagName('tr');
+
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    const filterValues = Array.from(inputs).map(input => input.value.toLowerCase());
+                    
+                    for (let i = 0; i < rows.length; i++) {
+                        let shouldHide = false;
+                        const cells = rows[i].getElementsByTagName('td');
+                        
+                        for (let j = 0; j < filterValues.length; j++) {
+                            const cell = cells[j];
+                            if (cell) {
+                                const cellText = cell.textContent.toLowerCase();
+                                if (!cellText.includes(filterValues[j])) {
+                                    shouldHide = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        rows[i].style.display = shouldHide ? 'none' : '';
+                    }
+                });
+            });
+        });
+        
+        function setDeleteFormAction(url) {
+            document.getElementById('deleteForm').action = url;
+        }
+
+    $(document).ready(function() {
+        $(".cambiar-estado").click(function() {
+            var boton = $(this);
+            var registroId = boton.data("id");
+
+            $.ajax({
+                url: `{% url 'aprobar_curso' %}`,
+                type: "POST",
+                data: {"inscripcion_id": registroId,},
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                success: function(response) {
+                    if (response.success) {
+                        //alert("El estado ha sido cambiado a: " + response.nuevo_estado);
+                        // Opcional: actualizar la interfaz
+                        boton.parent().find("p").text("Estado: " + response.nuevo_estado);
+                    } else {
+                        alert("No se pudo cambiar el estado.");
+                    }
+                },
+                error: function() {
+                    alert("Error al intentar cambiar el estado.");
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

@@ -168,7 +168,7 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Login y Logout
 LOGIN_URL = reverse_lazy('login')
-LOGIN_REDIRECT_URL = reverse_lazy('inscriptor_home')
+LOGIN_REDIRECT_URL = reverse_lazy('home_administracion')
 LOGOUT_URL = reverse_lazy('home')
 
 # Default primary key field type

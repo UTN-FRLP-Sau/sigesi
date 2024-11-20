@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load bootstrap_icons %}
+{% load fecha_filters %}
+{% load static %}
+{% block content %}
+
+
+<div class="container py-4 content-foreground">
+      <h1 class='text-center'>Hola {{estudiante.persona.apellidos.upper}}, {{estudiante.persona.nombres.title}} </h1>
+        <div class="row center-block">
+            {% if documento_info %}
+                {% if documento_info == 'si' %}
+                    <div class="col-6 alert alert-succes"> PDF1 Identificación: Se encuentra aprobada </div>
+                {% else %}
+                    <div class="col-6 alert alert-info">PDF1 Identificación: Se encuentra en revisión</div>
+                {% endif %}
+            {% endif %}
+            {% if certificado_info %}
+                {% if certificado_info == 'si' %}
+                    <div class="col-6 alert alert-succes">PDF2 Certificado: Se encuentra aprobada</div>
+                {% else %}
+                    <div class="col-6 alert alert-info">PDF2 Certificado: Se encuentra en revisión</div>
+                {% endif %}
+            {% endif%}
+            {% if certificado_form or documento_form %}
+            <form enctype="multipart/form-data" id="formulario" method="POST" action="{% url 'subir_documentacion' %}">
+                {% csrf_token %}
+                <div class="row">
+                     <input type="hidden" name="estudiante_id" value="{{ estudiante.pk }}">
+                     {% if documento_form %}
+                        <div class="col-lg-6 col-12 mb-3">
+                            {% bootstrap_form documento_form layout="floating" %}
+                        </div>
+                    {% endif %}
+                    {% if certificado_form %}
+                        <div class="col-lg-6 col-12 mb-3">
+                            {% bootstrap_form certificado_form layout="floating" %}
+                        </div>
+                    {% endif %}
+                        {% bootstrap_button button_type="submit" content="Enviar" %}
+                </div>
+            </form>
+            {% endif %}
+            {% if messages %}
+    <div class="alert alert-danger">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+  <div class="row justify-content-center">
+    {% if documentacion %}
+    {% if cursos_inscriptos %}
+      <h3 class='text-center'>Cursos en los que estas inscripto</h1>
+      <div class="table-responsive">
+        <table class="table table-cover">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Cursado</th>
+              <th>Especialidad</th>
+              <th>Modalidad</th>
+              <th>Turno</th>
+              <th>Estado</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for inscripcion in cursos_inscriptos %}
+              <tr>
+                <td style="vertical-align: middle;">{{ inscripcion.curso.nombre.title}}</td>
+                <td style="vertical-align: middle;">{{ inscripcion.curso.periodo_inicio|formatear_fecha }} - {{ inscripcion.curso.periodo_cierre|formatear_fecha }}</td>
+                <td style="vertical-align: middle;">{{ inscripcion.especialidad.nombre }}</td>
+                <td style="vertical-align: middle;">{{ inscripcion.modalidad }}</td>
+                <td style="vertical-align: middle;">{{ inscripcion.turno }}</td>
+                <td style="vertical-align: middle;">{{ inscripcion.estado }}</td>
+                <td style="vertical-align: middle;">
+                <!-- Botón que expande el formulario -->
+                <button class="btn btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#formularioInscripcion{{ inscripcion.pk }}" aria-expanded="false" aria-controls="formularioCurso{{ curso.pk }}">
+                    Editar
+                </button>
+            </td>
+        </tr>
+        <!-- Fila colapsable con el formulario -->
+        <tr class="collapse" id="formularioInscripcion{{ inscripcion.pk }}">
+            <td colspan="4">
+                <form action="{% url 'actualizar_inscripcion' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="estudiante_id" value="{{ estudiante.pk }}">
+                    <input type="hidden" name="inscripcion_id" value="{{ inscripcion.pk }}">
+                    
+                    <!-- Campo para elegir especialidad -->
+                    <label for="especialidad{{ inscripcion.pk }}">Especialidad:</label>
+                    <select name="especialidad" id="especialidad{{ curso.pk }}" required>
+                        {% for valor, nombre in ESPECIALIDAD_ESTUDIANTE_CHOICES %}
+                        <option value="{{ valor }}">{{ nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <!-- Campo para elegir modalidad -->
+                    <label for="modalidad{{ inscripcion.pk }}">Modalidad:</label>
+                    <select name="modalidad" id="modalidad{{ curso.pk }}" required>
+                        {% for modalidad in inscripcion.curso.modalidad.all %}
+                        <option value="{{ modalidad.id }}">{{ modalidad.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <!-- Campo para elegir turno -->
+                    <label for="turno{{ inscripcion.pk }}">Turno:</label>
+                    <select name="turno" id="turno{{ curso.pk }}" required>
+                        {% for turno in inscripcion.curso.turno.all %}
+                        <option value="{{ turno.id }}">{{ turno.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <button type="submit" class="btn btn-success mt-2">Confirmar Cambios</button>
+                </form>
+            </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+    {% if cursos_disponibles %}
+      <h3 class='text-center'>Cursos en los que te puedes inscribir</h1>
+      <div class="table-responsive">
+        <table class="table table-cover">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>inscripcion</th>
+              <th>Cursado</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for curso in cursos_disponibles %}
+        <tr>
+            <td style="vertical-align: middle;">{{ curso.nombre.title }}</td>
+            <td style="vertical-align: middle;">{{ curso.inscripcion_inicio }} - {{ curso.inscripcion_cierre }}</td>
+            <td style="vertical-align: middle;">{{ curso.periodo_inicio }} - {{ curso.periodo_cierre }}</td>
+            <td style="vertical-align: middle;">
+                <!-- Botón que expande el formulario -->
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#formularioCurso{{ curso.pk }}" aria-expanded="false" aria-controls="formularioCurso{{ curso.pk }}">
+                    Inscribirme
+                </button>
+            </td>
+        </tr>
+        <!-- Fila colapsable con el formulario -->
+        <tr class="collapse" id="formularioCurso{{ curso.pk }}">
+            <td colspan="4">
+                <form action="{% url 'crear_inscripcion' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="estudiante_id" value="{{ estudiante.pk }}">
+                    <input type="hidden" name="curso_id" value="{{ curso.pk }}">
+                    
+                    <!-- Campo para elegir especialidad -->
+                    <label for="especialidad{{ curso.pk }}">Especialidad:</label>
+                    <select name="especialidad" id="especialidad{{ curso.pk }}" required>
+                        {% for valor, nombre in ESPECIALIDAD_ESTUDIANTE_CHOICES %}
+                        <option value="{{ valor }}">{{ nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <!-- Campo para elegir modalidad -->
+                    <label for="modalidad{{ curso.pk }}">Modalidad:</label>
+                    <select name="modalidad" id="modalidad{{ curso.pk }}" required>
+                        {% for modalidad in curso.modalidad.all %}
+                        <option value="{{ modalidad.id }}">{{ modalidad.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <!-- Campo para elegir turno -->
+                    <label for="turno{{ curso.pk }}">Turno:</label>
+                    <select name="turno" id="turno{{ curso.pk }}" required>
+                        {% for turno in curso.turno.all %}
+                        <option value="{{ turno.id }}">{{ turno.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <button type="submit" class="btn btn-success mt-2">Confirmar Inscripción</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+
+    {% if not cursos_inscriptos and not cursos_disponibles %}
+      <h3 class='text-center'>En este sitio se mostrarán los cursos disponibles en los que te puedas inscribir</h1>
+      <h5 class='text-center'>Actualmente no hay habilitado ningun periodo de inscripcion. Proxima apertura es el //Fecha//.</h5>
+    {% endif %}
+    {% endif %}
+    {% if not documentacion %}
+    <h3 class='text-center'>Antes de poder inscribirse, debera presentar la documentacion</h1>
+    {% endif %}
+    <a class="btn btn-danger" href="{% url 'home' %}" role="button"> Salir </a>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block content_js %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#id_especialidad').on("change", turno);
+        turno();
+    });
+    function turno(){
+        var especialidad = $('#id_especialidad').val();
+        var turnoSelect = $('#id_turno');
+        // Restaurar todas las opciones de turno
+        turnoSelect.find('option').hide();
+        turnoSelect.find('option[value=""]').show();
+        // Si se selecciona Ing. Civil, ocultar Turno Tarde y Turno Mañana
+        if (especialidad === '31') {
+            turnoSelect.find('option[value="m"]').show();
+            turnoSelect.find('option[value="n"]').show();
+            }
+        // Si se selecciona Ing. en Sistemas de Informacion, ocultar Turno Tarde
+        else if (especialidad === '5') {
+            turnoSelect.find('option[value="m"]').show();
+            turnoSelect.find('option[value="n"]').show();
+            }
+        // Si se selecciona Ing. en Energia Electrica, ocultar Turno Tarde y Mañana
+        else if (especialidad === '7') {
+            turnoSelect.find('option[value="n"]').show();
+            }
+        // Si se selecciona Ing. Mecanica, ocultar Turno Tarde
+        else if (especialidad === '17') {
+            turnoSelect.find('option[value="m"]').show();
+            turnoSelect.find('option[value="n"]').show();
+            }
+        // Si se selecciona Ing. Quimica, ocultar Turno Tarde y Mañana
+        else if (especialidad === '27') {
+            turnoSelect.find('option[value="n"]').show();
+            }
+        // Si se selecciona Ing. Industrial, ocultar Turno Tarde y Mañana
+        else if (especialidad === '24') {
+            turnoSelect.find('option[value="m"]').show();
+            turnoSelect.find('option[value="n"]').show();
+            }
+        // Asegúrate de que se ejecute la función cuando se cargue la página
+        filtrarTurnos();
+        // Agrega un evento change para el campo de especialidad
+        $('#id_especialidad').change(filtrarTurnos);
+        };
+</script>
+{% endblock %}
