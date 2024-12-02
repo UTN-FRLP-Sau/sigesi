@@ -4,6 +4,7 @@
 from datetime import date
 
 # Librerias de Terceros
+import openpyxl
 
 # Django
 from .forms import InscripcionForm, SubirDocumentoForm, SubirCertificadoForm
@@ -15,7 +16,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import EmailMultiAlternatives
-from django.http import HttpResponseRedirect, HttpResponseNotAllowed, JsonResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.template.loader import get_template
@@ -498,6 +499,74 @@ def aprobar_curso(request):
         inscripcion.save()
         return JsonResponse({"success": True, "nuevo_estado": inscripcion.estado})
     return JsonResponse({"success": False}, status=400)
+
+
+def export_user_asistentes_to_excel(request):
+    """Exports UserAsistente data to an Excel file."""
+
+    # Create a new workbook and worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+
+    # Set column headers
+    headers = [
+        'Apellido',
+        'Nombre',
+        'Documento',
+        'Correo',
+        'Carrera',
+        'Turno',
+        'Modalidad',
+        'Curso',
+    ]
+    for col, header in enumerate(headers, 1):
+        worksheet.cell(row=1, column=col, value=header)
+
+    # Fetch UserAsistente data
+    user_asistentes = Estudiante.objects.all()
+
+    # Populate worksheet with data
+    row = 2
+    for asistente in user_asistentes:
+        worksheet.cell(row=row, column=1,
+                       value=asistente.persona.apellidos.upper())  # Apellido
+        worksheet.cell(row=row, column=2,
+                       value=asistente.persona.nombres.title())  # Nombre
+        worksheet.cell(row=row, column=3,
+                       value=asistente.persona.numero_documento)  # Documento
+        worksheet.cell(row=row, column=4,
+                       value=asistente.persona.correo)  # Correo
+        if Inscripcion.objects.filter(estudiante=asistente).order_by('id').last():
+            inscripcion = Inscripcion.objects.filter(
+                estudiante=asistente).order_by('id').last()
+            worksheet.cell(row=row, column=5,
+                           value=inscripcion.especialidad.nombre.title())
+            worksheet.cell(row=row, column=6,
+                           value=inscripcion.turno.nombre.title())
+            worksheet.cell(row=row, column=7,
+                           value=inscripcion.modalidad.nombre.title())
+            worksheet.cell(row=row, column=8, value='{} - ({})'.format(
+                inscripcion.curso.nombre.title(), inscripcion.curso.año))
+        else:
+            worksheet.cell(row=row, column=5,
+                           value=asistente.get_especialidad_display())
+            worksheet.cell(row=row, column=6,
+                           value=asistente.get_turno_display())
+            worksheet.cell(row=row, column=7,
+                           value=asistente.get_modalidad_display())
+            worksheet.cell(row=row, column=8, value='---')
+        row += 1
+
+    # Crear una respuesta HTTP con tipo de contenido de Excel
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="inscriptos.xlsx"'
+    # Guardar el archivo Excel en la respuesta
+    workbook.save(response)
+
+    return response
+
+
+
 
 
 '''

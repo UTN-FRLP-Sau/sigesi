@@ -5,7 +5,6 @@
 
 {% block content %}
 
-
 <div class="container">
         <div class="row">
             <div class="col-md-12 text-center">
@@ -39,8 +38,8 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th><input type="text" id="filterNombre" class="form-control" placeholder="Nombre"></th>
                             <th><input type="text" id="filterApellido" class="form-control" placeholder="Apellido"></th>
+                            <th><input type="text" id="filterNombre" class="form-control" placeholder="Nombre"></th>
                             <th><input type="text" id="filterCorreo" class="form-control" placeholder="Correo"></th>
                             <th><input hidden type="text" id="filterCarrera" class="form-control" placeholder="Carrera"></th>
                             <th><input hidden type="text" id="filterTurno" class="form-control" placeholder="Turno"></th>
@@ -112,6 +111,7 @@
                             <td>{{ estudiante.get_especialidad_display }}</td>
                             <td>{{ estudiante.get_turno_display }}</td>
                             <td>{{ estudiante.get_modalidad_display }}</td>
+                            <td> - </td>
                             <td class="text-center">
                                 <div class="btn-group" role="group">
                                     {% comment %} <a class="btn btn-warning btn-sm" href="{% url 'ver_inscriptos' actividad.id %}" role="button">{% bs_icon 'eye' %}</a> {% endcomment %}
