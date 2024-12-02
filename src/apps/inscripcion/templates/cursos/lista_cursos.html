@@ -13,14 +13,14 @@
                 {% if documento_info == 'si' %}
                     <div class="col-6 alert alert-succes"> PDF1 Identificación: Se encuentra aprobada </div>
                 {% else %}
-                    <div class="col-6 alert alert-info">PDF1 Identificación: Se encuentra en revisión</div>
+                    <div class="col-6 alert alert-info">PDF1 Identificación: Presentada</div>
                 {% endif %}
             {% endif %}
             {% if certificado_info %}
                 {% if certificado_info == 'si' %}
                     <div class="col-6 alert alert-succes">PDF2 Certificado: Se encuentra aprobada</div>
                 {% else %}
-                    <div class="col-6 alert alert-info">PDF2 Certificado: Se encuentra en revisión</div>
+                    <div class="col-6 alert alert-info">PDF2 Certificado: Presentada</div>
                 {% endif %}
             {% endif%}
             {% if certificado_form or documento_form %}
