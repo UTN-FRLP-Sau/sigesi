@@ -26,7 +26,7 @@ from django.views.generic import View, TemplateView, ListView
 
 # Django Locales
 from .forms import CreatePersonaForm, CreateStudentForm, VerificacionInscripcionForm, SubirDocumentoForm, SubirCertificadoForm, ActualizarInscripcionForm, InscripcionForm
-from .models import Persona, Estudiante, Archivos, Curso, ESPECIALIDAD_ESTUDIANTE_CHOICES, Turno, ModalidadCursado
+from .models import Persona, Estudiante, Archivos, Curso, ESPECIALIDAD_ESTUDIANTE_CHOICES, Turno, ModalidadCursado, Especialidad
 
 # Funciones generales
 
@@ -210,14 +210,18 @@ class CursosView(ListView):
         cursos_disponibles = Curso.objects.filter(inscripcion_inicio__lte=hoy, inscripcion_cierre__gte=hoy)
         inscripciones_disponibles = Inscripcion.objects.filter(curso__inscripcion_inicio__lte=hoy, curso__inscripcion_cierre__gte=hoy)
 
+        # Última fecha de cierre (antes o igual a hoy)
+        ultima_fecha_cierre = Curso.objects.filter(inscripcion_cierre__lte=hoy).order_by('-inscripcion_cierre').first()
+        # Próxima fecha de apertura (posterior a hoy)
+        proxima_fecha_apertura = Curso.objects.filter(inscripcion_inicio__gte=hoy).order_by('inscripcion_inicio').first()
+        
         # Cursos en los que el usuario ya está inscrito
-        cursos_inscriptos = inscripciones_disponibles.filter(estudiante=estudiante)
+        cursos_inscriptos = Inscripcion.objects.filter(estudiante=estudiante).filter(curso__fecha_finalizacion__gte=hoy)
         cursos_inscriptos_idlist = inscripciones_disponibles.filter(estudiante=estudiante).values_list('curso', flat=True)
 
         # Cursos en los que el usuario puede inscribirse (excluyendo los inscriptos)
         cursos_habilitados = cursos_disponibles.exclude(
             id__in=cursos_inscriptos_idlist)
-
 
         # Documentacion
         archivos = Archivos.objects.filter(persona=estudiante.persona)
@@ -257,8 +261,9 @@ class CursosView(ListView):
         context['estudiante'] = estudiante
         context['ESPECIALIDAD_ESTUDIANTE_CHOICES'] = ESPECIALIDAD_ESTUDIANTE_CHOICES
         context['cursos_disponibles'] = cursos_habilitados
+        context["ultima_fecha_cierre"] = ultima_fecha_cierre if ultima_fecha_cierre else False,
+        context["proxima_fecha_apertura"] = proxima_fecha_apertura if proxima_fecha_apertura else False,
         return context
-
 
 
 class ActualizarInscripcionView(UpdateView):
@@ -372,6 +377,24 @@ class CreateInscripcionView(FormView):
         inscripcion.curso = curso
         inscripcion.estado = 'inscripto'  # Estado inicial por defecto
         inscripcion.save()
+        
+        email = create_email(
+            user_mail=estudiante.persona.correo,
+            subject='Confirmacion de la Inscripción',
+            template_name='correos/inscripcion/create.html',
+            context={
+                'nombre': estudiante.persona.nombres.title(),
+                'apellido': estudiante.persona.apellidos.upper(),
+                'carrera': inscripcion.especialidad.nombre.title(),
+                'turno': inscripcion.turno.nombre.title(),
+                'modalidad': inscripcion.modalidad.nombre.title(),
+                'seminario': inscripcion.curso.nombre.title(),
+                'id_estudiante': estudiante.pk,
+            },
+            request=self.request
+        )
+        thread = threading.Thread(target=email.send)
+        thread.start()
 
         # Redirigir tras éxito
         # Define la URL o vista correspondiente
@@ -392,17 +415,35 @@ class UpdateInscripcionView(FormView):
         estudiante_id = self.request.POST.get('estudiante_id')
         inscripcion_id = self.request.POST.get('inscripcion_id')
 
-        # Obtener la inscripcion
+        # Obtener la inscripcion y al estudiante
         inscripcion = Inscripcion.objects.get(pk=inscripcion_id)
+        estudiante = Estudiante.objects.get(pk=estudiante_id)
 
         # Actualizar los datos de la inscripcion segun el formulario
         turno = Turno.objects.get(nombre=form.cleaned_data.get('turno'))
         modalidad = ModalidadCursado.objects.get(nombre=form.cleaned_data.get('modalidad'))
-        inscripcion.especialidad = form.cleaned_data.get('especialidad', inscripcion.estado)
+        especialidad = form.cleaned_data.get('especialidad', inscripcion.estado)
+        inscripcion.especialidad = especialidad
         inscripcion.turno = turno
         inscripcion.modalidad = modalidad
         inscripcion.save()
 
+        email = create_email(
+            user_mail=estudiante.persona.correo,
+            subject='Actualizacion de la Inscripción',
+            template_name='correos/inscripcion/update.html',
+            context={
+                'nombre': estudiante.persona.nombres.title(),
+                'apellido': estudiante.persona.apellidos.upper(),
+                'carrera': especialidad.nombre.title(),
+                'turno': turno.nombre.title(),
+                'modalidad': modalidad.nombre.title(),
+                'seminario': inscripcion.curso.nombre.title(),
+            },
+            request=self.request
+        )
+        thread = threading.Thread(target=email.send)
+        thread.start()
         # Redirigir tras éxito
         # Define la URL o vista correspondiente
         return HttpResponseRedirect(reverse('paso_2', kwargs={'pk': estudiante_id}))
@@ -466,17 +507,29 @@ class EstudianteListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         # Todos los cursos para el selector
         hoy = date.today()  # hoy
-        context['cursos'] = Curso.objects.filter(inscripcion_inicio__lte=hoy, inscripcion_cierre__gte=hoy)
+        cursos = Curso.objects.all()
+        context['anios'] = list(set(cursos.values_list('año', flat=True)))
         # Obtener el curso seleccionado, si existe en los parámetros de la URL
-        curso_id = self.request.GET.get('curso_id')
+        curso_id = self.request.GET.get('curso_id') 
+        curso_anio = self.request.GET.get('curso_anio')
+        letra = self.request.GET.get('letter')
+        if curso_anio:
+            context['cursos'] = Curso.objects.filter(año=curso_anio)
+        else:
+            context['cursos'] = Curso.objects.filter(inscripcion_inicio__lte=hoy, inscripcion_cierre__gte=hoy)
         if curso_id:
             curso = Curso.objects.get(id=curso_id)
-            # Filtra las inscripciones y estudiantes basándose en el curso
             inscripciones = Inscripcion.objects.filter(curso=curso)
-            context['inscripciones'] = inscripciones
+            if letra:
+                inscripciones = inscripciones.filter(estudiante__persona__apellidos__istartswith=letra)
+                context['inscripciones'] = inscripciones
+            else:
+                context['inscripciones'] = inscripciones[:25]
+            # Filtra las inscripciones y estudiantes basándose en el curso
             context['inscripciones_botones'] = True
             context['estudiantes'] = None
             context['curso_version'] = curso
+            context['inscripcion_form'] = True
         else:
             # Si no se selecciona un curso, muestra estudiantes no inscritos
             inscritos_ids = Inscripcion.objects.values_list(
@@ -565,30 +618,106 @@ def export_user_asistentes_to_excel(request):
 
     return response
 
-
-
-
-
-'''
 @login_required
 def inscribir_curso(request):
     if request.method == 'POST':
         curso_id = request.POST.get('curso_id')
         documento = request.POST.get('documento')
-        estudiante = Persona.objects.get(numero_documento=documento)
-        estudiante = Estudiante.objects.get(persona=estudiante)
+        aprobacion = request.POST.get('aprobacion')
         curso = Curso.objects.get(pk=curso_id)
-        
-        if not Inscripcion.objects.filter(curso=curso).filter(estudiante=estudiante).exists():
-            inscripcion = Inscripcion(
-                curso=curso,
-                estudiante= estudiante
-            )
-        if inscripcion.estado != 'aprobado':
-            inscripcion.estado = 'aprobado'
-        else:
-            inscripcion.estado = 'inscripto'
-        inscripcion.save()
-        return JsonResponse({"success": True, "nuevo_estado": inscripcion.estado})
+        docu_list = str(documento).split(";")
+        mensajes =[]
+        for docu in docu_list:
+            try:
+                persona = Persona.objects.get(numero_documento=docu)
+                try:
+                    estudiante = Estudiante.objects.get(persona=persona)
+                    if not Inscripcion.objects.filter(curso=curso).filter(estudiante=estudiante).exists():
+
+                        if str(estudiante.turno) in ['t','m','n']:
+                            turno_dic ={'t':2,'m':1,'n':3}
+                            turno = turno_dic[str(estudiante.turno)]
+                        else:
+                            turno = estudiante.turno.pk
+                        
+                        if str(estudiante.modalidad) in ['p','l','s']:
+                            modalidad_dic ={'p':1,'s':2,'l':3}
+                            modalidad = modalidad_dic[str(estudiante.modalidad)]
+                        else:
+                            modalidad = estudiante.modalidad.pk
+                        
+                        if str(estudiante.especialidad).isdigit():
+                            especialidad =Especialidad.objects.get(pk=estudiante.especialidad)
+                        else:
+                            especialidad = estudiante.especialidad
+
+                        if aprobacion:
+                            inscripcion = Inscripcion(
+                                curso=curso,
+                                estudiante= estudiante,
+                                especialidad = especialidad,
+                                modalidad = ModalidadCursado.objects.get(pk = modalidad),
+                                turno = Turno.objects.get(pk = turno),
+                                estado = 'aprobado'
+                                )
+                        else:
+                            inscripcion = Inscripcion(
+                                curso=curso,
+                                estudiante= estudiante,
+                                especialidad = especialidad,
+                                modalidad = ModalidadCursado.objects.get(pk = modalidad),
+                                turno = Turno.objects.get(pk = turno),
+                                estado = 'inscripto'
+                                )
+                        inscripcion.save()
+                        mensajes.append('El documento {}, perteneciente a {}, {}, fue inscripto en {} exitosamente'.format(
+                            docu,
+                            persona.apellidos.upper(),
+                            persona.nombres.title(),
+                            curso
+                            ))
+
+                        email = create_email(
+                            user_mail=estudiante.persona.correo,
+                            subject='Confirmacion de la Inscripción',
+                            template_name='correos/inscripcion/create.html',
+                            context={
+                                'nombre': estudiante.persona.nombres.title(),
+                                'apellido': estudiante.persona.apellidos.upper(),
+                                'carrera': inscripcion.especialidad.nombre.title(),
+                                'turno': inscripcion.turno.nombre.title(),
+                                'modalidad': inscripcion.modalidad.nombre.title(),
+                                'seminario': inscripcion.curso.nombre.title(),
+                                'id_estudiante': estudiante.pk,
+                            },
+                            request=request
+                        )
+                        thread = threading.Thread(target=email.send)
+                        thread.start()
+                    else:
+                        inscripcion = Inscripcion.objects.filter(curso=curso).get(estudiante=estudiante)
+                        if aprobacion:
+                            inscripcion.estado = 'aprobado'
+                        else:
+                            inscripcion.estado='inscripto'
+                        mensajes.append('El documento {}, perteneciente a {}, {}, ya se encontraba inscripto, su estado a sido actualizado a {}'.format(
+                            docu,
+                            persona.apellidos.upper(),
+                            persona.nombres.title(),
+                            inscripcion.estado.title(),
+                        ))
+                        inscripcion.save()
+                            
+                except Estudiante.DoesNotExist:
+                    persona.delete()
+                    mensajes.append('El documento {}, perteneciente a {}, {}, no cuenta con un estudiante, a sido borrado y debera completar la inscripcion nuevamente'.format(
+                        docu,
+                        persona.apellidos.upper(),
+                        persona.nombres.title(),
+                    ))
+            except Persona.DoesNotExist:
+                    mensajes.append('El documento {}, no existe'.format(
+                        docu,
+                    ))
+        return JsonResponse({"success": True, "mensajes": mensajes})
     return JsonResponse({"success": False}, status=400)
-'''

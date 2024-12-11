@@ -11,28 +11,38 @@
                 <h1>Listado de inscriptos en:</h1>
                     <!-- Selector de curso -->
                     <form class="row g-2" method="get" action="{% url 'admin-estudiantes_list' %}">
-                        <select class='form-select form-select-lg mb-3' name="curso_id" id="curso_id" onchange="this.form.submit()">
-                            <option value="">--Estudiantes sin curso--</option>
-                            {% for curso in cursos %}
-                                <option value="{{ curso.id }}" {% if curso.id|stringformat:"s" == request.GET.curso_id %}selected{% endif %}>
-                                    {{ curso.nombre }}
-                                </option>
-                            {% endfor %}
-                        </select>
+                        <div class="col-md-6">
+                            <select class='form-select form-select-lg mb-3' name="curso_anio" id="curso_anio" onchange="this.form.submit()">
+                                <option value="">--Año de cursado--</option>
+                                {% for anio in anios %}
+                                    <option value="{{ anio }}" {% if anio|stringformat:"s" == request.GET.curso_anio %}selected{% endif %}>
+                                        {{ anio }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <select class='form-select form-select-lg mb-3' name="curso_id" id="curso_id" onchange="this.form.submit()">
+                                <option value="">--Estudiantes sin curso--</option>
+                                {% for curso in cursos %}
+                                    <option value="{{ curso.id }}" {% if curso.id|stringformat:"s" == request.GET.curso_id %}selected{% endif %}>
+                                        {{ curso.nombre }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                        <h4>Inicial del apellido:</h4>
+                            <div class="btn-group" role="group" aria-label="Alphabet Buttons">
+                                {% for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
+                                    <button type="submit" class="btn {% if letter == request.GET.letter %}btn-success{% else %}btn-primary{% endif %}" name="letter" value="{{ letter }}">
+                                        {{ letter }}
+                                    </button>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </form>
             </div>
-            {% comment %} <div style='display: flex; justify-content: center; align-items: center;'>
-                <div class="btn-group" role="group">
-                    <a class="btn btn-primary btn-sm" href="#" role="button" target="_blank">Nueva Actividad</a>
-                    <a class="btn btn-info btn-sm" href="#" role="button">Notificar Inscriptos</a>
-                    <form action="#" method="post" style="display: inline">
-                        {% csrf_token %}<button class="btn btn-success btn-sm" type="submit">Abrir Inscripcion</button>
-                    </form>
-                    <form action="#" method="post" style="display: inline">
-                        {% csrf_token %}<button class="btn btn-danger btn-sm" type="submit">Cerrar Inscripcion</button>
-                    </form>
-                </div>
-            </div> {% endcomment %}
 
             <div class="col-md-12">
                 <table class="table table-hover">
@@ -54,18 +64,20 @@
                             <th>Carrera</th>
                             <th>Turno</th>
                             <th>Modalidad</th>
-                            <th>Estado</th>
+                            {% if inscripciones %}<th>Estado</th>{% else %}  {% endif %}
                             <th class="text-center">Acciones</th>
                         </tr>
-                        {% if inscripciones %}
-                        <form action="#" method="post">{% csrf_token %}
+                        {% if inscripcion_form %}
+                        <form action="{% url 'inscribir_en_curso' %}" id="inscribirCursoForm" method="post">{% csrf_token %}
                         <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td><input hidden type="text" name="curso_id" class="form-control" value='curso_version.id'></td>
-                            <td><input type="text" name="documento" class="form-control" placeholder="Documento"></td>
+                            <input hidden type="text" name="curso_id" class="form-control" value='{{curso_version.id}}'>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="True" name="aprobacion" id="defaultCheck1">
+                                    <label class="form-check-label" for="defaultCheck1">Aprobacion</label>
+                                </div>
+                            </td>
+                            <td colspan="6"><input type="text" name="documento" class="form-control" placeholder="Se puede inscribir a un Documento o un listado de Documentos separados por ;"></td>
                             <td class="text-center">
                                 {% bootstrap_button button_type="submit" content="Inscribir" %}
                             </td>
@@ -80,24 +92,16 @@
                             <td>{{ inscripcion.estudiante.persona.apellidos.upper }}</td>
                             <td>{{ inscripcion.estudiante.persona.nombres.title }}</td>
                             <td>{{ inscripcion.estudiante.persona.correo }}</td>
-                            <td>{{ inscripcion.especialidad.nombre }}</td>
+                            <td>{{ inscripcion.especialidad.nombre.title }}</td>
                             <td>{{ inscripcion.turno.nombre }}</td>
                             <td>{{ inscripcion.modalidad.nombre }}</td>
                             <td>{{ inscripcion.estado.title }}</td>
                             <td class="text-center">
                                 <div class="btn-group" role="group">
-                                    {% comment %} <a class="btn btn-warning btn-sm" href="{% url 'ver_inscriptos' actividad.id %}" role="button">{% bs_icon 'eye' %}</a> {% endcomment %}
-                                
                                     <!-- Editar inscripto -->
                                     <a class="btn btn-warning btn-sm" target="_blanck" href="{% url 'admin:inscripcion_estudiante_change' inscripcion.estudiante.pk %}" role="button">{% bs_icon 'person-fill-gear' %}</a>
                                     <a class="btn btn-warning btn-sm" target="_blanck" href="{% url 'admin:inscripcion_inscripcion_change' inscripcion.pk %}" role="button">{% bs_icon 'journal-text' %}</a>
-                                    <button class="cambiar-estado btn btn-success" data-id="{{ inscripcion.pk }}">{% bs_icon 'arrow-clockwise' %}</button>
-                                    
-                                    <!-- Eliminar inscripción -->
-
-
-                                    <!-- Enviar entrada-->
-
+                                    {% comment %} <button class="cambiar-estado btn btn-success" data-id="{{ inscripcion.pk }}">{% bs_icon 'arrow-clockwise' %}</button> {% endcomment %}
                                 </div>
                             </td>
                         </tr>
@@ -111,19 +115,9 @@
                             <td>{{ estudiante.get_especialidad_display }}</td>
                             <td>{{ estudiante.get_turno_display }}</td>
                             <td>{{ estudiante.get_modalidad_display }}</td>
-                            <td> - </td>
                             <td class="text-center">
                                 <div class="btn-group" role="group">
-                                    {% comment %} <a class="btn btn-warning btn-sm" href="{% url 'ver_inscriptos' actividad.id %}" role="button">{% bs_icon 'eye' %}</a> {% endcomment %}
-                                
-                                    <!-- Editar inscripto -->
                                     <a class="btn btn-warning btn-sm" target="_blanck" href="{% url 'admin:inscripcion_estudiante_change' estudiante.credencial %}" role="button">{% bs_icon 'person-fill-gear' %}</a>
-                                    
-                                    <!-- Eliminar inscripción -->
-
-
-                                    <!-- Enviar entrada-->
-
                                 </div>
                             </td>
                         </tr>
@@ -134,6 +128,28 @@
             </div>
         </div>
     </div>
+
+
+<!-- modal.html -->
+<div id="inscripcionModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Inscripción al Curso</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul id="mensajes-lista"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 {% endblock %}
 
@@ -200,6 +216,57 @@
             });
         });
     });
+
+const myModal = document.getElementById('inscripcionModal');
+    myModal.addEventListener('hidden.bs.modal', function () {
+        location.reload(); // Recargar la página al cerrar el modal
+        });
+
+document.getElementById('inscribirCursoForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    var formData = new FormData(this);
+
+    fetch('{% url 'inscribir_en_curso' %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            var mensajesLista = document.getElementById('mensajes-lista');
+            mensajesLista.innerHTML = '';
+            data.mensajes.forEach(function(mensaje) {
+                var li = document.createElement('li');
+                li.textContent = mensaje;
+                mensajesLista.appendChild(li);
+            });
+            $('#inscripcionModal').modal('show');
+        } else {
+            alert('Error en la inscripción');
+        }
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 </script>
 
 {% endblock %}
+
+
+

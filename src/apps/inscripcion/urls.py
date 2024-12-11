@@ -28,6 +28,7 @@ from .views import (#ConfirmacionInformacion,
                     EstudianteListView,
                     aprobar_curso,
                     export_user_asistentes_to_excel,
+                    inscribir_curso
                     )
 from .ajax import get_provincias, get_partidos, get_localidades, get_escuelas
 
@@ -66,4 +67,5 @@ urlpatterns = [
     path('administracion/estudiantes/', EstudianteListView.as_view(), name='admin-estudiantes_list'),
     path('administracion/estudiantes/estado/ap',aprobar_curso, name='aprobar_curso'),
     path('exportar-inscriptos/', export_user_asistentes_to_excel, name='exportar_inscriptos'),
+    path('inscribir_en_curso/', inscribir_curso, name='inscribir_en_curso'),
 ]

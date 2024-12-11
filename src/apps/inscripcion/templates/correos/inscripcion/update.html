@@ -1,0 +1,36 @@
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+<div class="container-fluid">
+    <div class=" row justify-content-center align-items-center">
+        <div class="col-10 col-sm-6 col-lg-6" style="background: #EEE; border-radius: 2%; padding: 2.5rem">
+
+        <p>Estimado/a {{ apellido }}, {{ nombre }}:</p>
+
+        <p>Se ha actualizado su inscripcion en el Seminario {{ seminario }}, con la siguiente informacion:
+
+        <ul>
+            <li>Carrera: <b>{{ carrera }}</b></li>
+            <li>Turno: <b>{{ turno }}</b></li>
+            <li>Modalidad: <b>{{ modalidad }}</b></li>
+        </ul>
+
+        <p>Por favor, ten en cuenta que este es un correo electrónico automático generado por nuestro sistema.</p>
+
+        <p>Nos comunicaremos con usted via correo electronico para mas informacion. Tenga en cuenta que esta comunicacion
+        sera realizada antes del incio del curso.</p>
+
+        <p>Saludos cordiales,</p>
+        <p style="text-align: right">
+            <strong>
+            Inscripciones <br>
+            Seminario de Ingreso <br>
+            Regional La Plata - UTN <br>
+            ingreso@frlp.utn.edu.ar
+            </strong>
+        </p>
+        </div>
+    </div>
+</div>

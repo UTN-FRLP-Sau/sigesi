@@ -122,6 +122,8 @@
           </tbody>
         </table>
       </div>
+    {% else %}
+      <h3 class='text-center'>Usted, actualmente, no esta inscripto en nigun curso</h3>
     {% endif %}
     {% if cursos_disponibles %}
       <h3 class='text-center'>Cursos en los que te puedes inscribir</h1>
@@ -191,8 +193,14 @@
     {% endif %}
 
     {% if not cursos_inscriptos and not cursos_disponibles %}
-      <h3 class='text-center'>En este sitio se mostrarán los cursos disponibles en los que te puedas inscribir</h1>
-      <h5 class='text-center'>Actualmente no hay habilitado ningun periodo de inscripcion. Proxima apertura es el //Fecha//.</h5>
+      <h3 class='text-center'>En este sitio se mostrarán los cursos disponibles en los que te puedas inscribir</h3>
+      <h4 class='text-center'>Actualmente no hay habilitado ningun periodo de inscripcion.</h5>
+      <ul>
+      <li>Finalizacion de la inscripcion: {% for fecha in ultima_fecha_cierre %} {{ fecha.inscripcion_cierre }} {% endfor %} </li>
+      <li>Inicio de la proxima inscripcion:{% for fecha in proxima_fecha_apertura %} {% if fecha %} {{ fecha.inscripcion_inicio }} {% else %} No hay fechas de apertura proximas {% endif %}  {% endfor %}</li>
+      </ul>
+
+      <p class='text-center'>Consultas, solo por medio electronico al correo <a href='mailto:ingreso@frlp.utn.edu.ar'>ingreso@frlp.utn.edu.ar</a>.</p>
     {% endif %}
     {% endif %}
     {% if not documentacion %}

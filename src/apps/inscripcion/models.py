@@ -1006,7 +1006,7 @@ class Inscripcion(models.Model):
     
     def estado_display(self):
         return dict(self.ESTADOS_CHOICES).get(self.estado, "")
-
+    
     class Meta:
         verbose_name = 'Inscripcion'
         verbose_name_plural = 'Inscripciones'
