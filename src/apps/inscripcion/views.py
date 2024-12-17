@@ -61,6 +61,14 @@ class ConfirmacionInformacion(TemplateView):
 
 class CreatePersonaAndEstudent(View):
     template_name = 'inscripcion/create_student.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        hoy = date.today()  # hoy
+        cursos = Curso.objects.filter(inscripcion_inicio__lte=hoy, inscripcion_cierre__gte=hoy)
+        if cursos.count()==0:
+            return HttpResponseRedirect(reverse('preinscripcion_cerrado'))
+        else:
+            return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
         contexto = {
@@ -495,7 +503,7 @@ class SubirDoc(FormView):
     def form_invalid(self, form):
         # Manejo de errores en el formulario
         return self.render_to_response(self.get_context_data(form=form))
-    
+
 
 class EstudianteListView(LoginRequiredMixin, ListView):
     model = Estudiante
@@ -721,3 +729,12 @@ def inscribir_curso(request):
                     ))
         return JsonResponse({"success": True, "mensajes": mensajes})
     return JsonResponse({"success": False}, status=400)
+
+
+class AdminHome(TemplateView, LoginRequiredMixin):
+    template_name = "admin/home.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+

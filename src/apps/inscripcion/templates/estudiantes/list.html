@@ -109,9 +109,9 @@
                         {% else %}
                         {% for estudiante in estudiantes %}
                         <tr>
-                            <td>{{ estudiante.persona.nombres }}</td>
-                            <td>{{ estudiante.persona.apellidos }}</td>
-                            <td>{{ estudiante.persona.correo }}</td>
+                            <td>{{ estudiante.persona.apellidos.upper }}</td>
+                            <td>{{ estudiante.persona.nombres.title }}</td>
+                            <td>{{ estudiante.persona.correo.lower }}</td>
                             <td>{{ estudiante.get_especialidad_display }}</td>
                             <td>{{ estudiante.get_turno_display }}</td>
                             <td>{{ estudiante.get_modalidad_display }}</td>

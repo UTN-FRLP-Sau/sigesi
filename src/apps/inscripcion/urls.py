@@ -28,7 +28,8 @@ from .views import (#ConfirmacionInformacion,
                     EstudianteListView,
                     aprobar_curso,
                     export_user_asistentes_to_excel,
-                    inscribir_curso
+                    inscribir_curso,
+                    AdminHome
                     )
 from .ajax import get_provincias, get_partidos, get_localidades, get_escuelas
 
@@ -44,7 +45,7 @@ urlpatterns = [
 
     #De aqui en mas es el nuevo sistema
     path('nueva/preinscripcion/', CreatePersonaAndEstudent.as_view(), name='crear_persona'),
-    #path('nueva/preinscripcion/', InscripcionCerrada.as_view(), name='crear_persona'),
+    path('nueva/preinscripcion/cerrada', InscripcionCerrada.as_view(), name='preinscripcion_cerrado'),
     path('verificar-doc/<int:id_estudiante>/', VerificacionInscripcion.as_view(), name='verificar_doc'),
     path('verificar-dni/<int:id_estudiante>/', VerificacionInscripcion.as_view(), name='verificar_dni'),
     path('paso-2/<int:pk>/', CursosView.as_view(), name='paso_2'),
@@ -63,7 +64,7 @@ urlpatterns = [
     path('ajax/new/person/get_escuelas', get_escuelas, name='get_escuelas'),
     
     #URL para la administracion
-    path('administracion', TemplateView.as_view(template_name = "admin/home.html"), name='home_administracion'),
+    path('administracion', AdminHome.as_view(), name='home_administracion'),
     path('administracion/estudiantes/', EstudianteListView.as_view(), name='admin-estudiantes_list'),
     path('administracion/estudiantes/estado/ap',aprobar_curso, name='aprobar_curso'),
     path('exportar-inscriptos/', export_user_asistentes_to_excel, name='exportar_inscriptos'),
