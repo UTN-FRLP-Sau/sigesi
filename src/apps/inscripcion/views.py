@@ -628,13 +628,22 @@ def export_user_asistentes_to_excel(request):
             worksheet.cell(row=row, column=9, value=asistente.escuela.nombre)
         except:
             worksheet.cell(row=row, column=9, value="---")
-        worksheet.cell(row=row, column=10, value=asistente.escuela.cue)
+        try:
+            worksheet.cell(row=row, column=10, value=asistente.escuela.cue)
+        except:
+            worksheet.cell(row=row, column=10, value="---")
         worksheet.cell(row=row, column=11, value=asistente.anio_egreso)
         worksheet.cell(row=row, column=12, value=asistente.titulo_secundario)
         worksheet.cell(row=row, column=13, value=asistente.persona.fecha_nacimiento)
         worksheet.cell(row=row, column=14, value=asistente.persona.pais_nacimiento.nombre)
-        worksheet.cell(row=row, column=15, value=asistente.persona.domicilio_pais.nombre)
-        worksheet.cell(row=row, column=16, value=asistente.persona.domicilio_localidad.nombre)
+        try:
+            worksheet.cell(row=row, column=15, value=asistente.persona.domicilio_pais.nombre)
+        except:
+            worksheet.cell(row=row, column=15, value="---")
+        try:
+            worksheet.cell(row=row, column=16, value=asistente.persona.domicilio_localidad.nombre)
+        except:
+            worksheet.cell(row=row, column=16, value="---")
         row += 1
 
     # Crear una respuesta HTTP con tipo de contenido de Excel
