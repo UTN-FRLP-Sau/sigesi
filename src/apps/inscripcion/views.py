@@ -571,14 +571,22 @@ def export_user_asistentes_to_excel(request):
 
     # Set column headers
     headers = [
-        'Apellido',
-        'Nombre',
-        'Documento',
-        'Correo',
-        'Carrera',
-        'Turno',
-        'Modalidad',
-        'Curso',
+        'Apellido',                 #1
+        'Nombre',                   #2
+        'Documento',                #3
+        'Correo',                   #4
+        'Carrera',                  #5
+        'Turno',                    #6
+        'Modalidad',                #7
+        'Curso',                    #8
+        'Escuela',                  #9
+        'CUE',                      #10
+        'Egreso',                   #11
+        'Titulo Secundario',        #12
+        'Fecha de Nacimiento',      #13
+        'Pais Nacimiento',          #14
+        'Pais de Domicilio',        #15
+        'Localidad de Nacimiento',  #16
     ]
     for col, header in enumerate(headers, 1):
         worksheet.cell(row=1, column=col, value=header)
@@ -616,6 +624,14 @@ def export_user_asistentes_to_excel(request):
             worksheet.cell(row=row, column=7,
                            value=asistente.get_modalidad_display())
             worksheet.cell(row=row, column=8, value='---')
+        worksheet.cell(row=row, column=9, value=asistente.escuela.nombre)
+        worksheet.cell(row=row, column=10, value=asistente.escuela.cue)
+        worksheet.cell(row=row, column=11, value=asistente.anio_egreso)
+        worksheet.cell(row=row, column=12, value=asistente.titulo_secundario)
+        worksheet.cell(row=row, column=13, value=asistente.persona.fecha_nacimiento)
+        worksheet.cell(row=row, column=14, value=asistente.persona.pais_nacimiento.nombre)
+        worksheet.cell(row=row, column=15, value=asistente.persona.domicilio_pais.nombre)
+        worksheet.cell(row=row, column=16, value=asistente.persona.domicilio_localidad.nombre)
         row += 1
 
     # Crear una respuesta HTTP con tipo de contenido de Excel
