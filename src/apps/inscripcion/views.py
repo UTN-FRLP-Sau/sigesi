@@ -573,22 +573,35 @@ def export_user_asistentes_to_excel(request):
     headers = [
         'Apellido',                 #1
         'Nombre',                   #2
-        'Documento',                #3
-        'Correo',                   #4
-        'Carrera',                  #5
-        'Turno',                    #6
-        'Modalidad',                #7
-        'Curso',                    #8
-        'Escuela',                  #9
-        'CUE',                      #10
-        'Egreso',                   #11
-        'Titulo Secundario',        #12
-        'Fecha de Nacimiento',      #13
-        'Pais Nacimiento',          #14
-        'Pais de Domicilio',        #15
-        'Provincia de Domicilio',   #16
-        'Partido de Domicilio',     #17
-        'Localidad de Domicilio',   #18
+        'Nombre autopercibido',     #3
+        'Fecha de Nacimiento',      #4
+        'Sexo',                     #5
+        'Genero',                   #6
+        'Genero comentario',        #7
+        'Pais Nacimiento',          #8
+        'Nacionalidad',             #9
+        'Tipo de Documento',        #10
+        'Numero de Documento',      #11
+        'Cuil/Cuit',                #12
+        'Pais del Documento',       #13
+        'Domicilio Pais',           #14
+        'Domicilio Provincia',      #15
+        'Domicilio Partido',        #16
+        'Domicilio Localidad',      #17
+        'Domicilio Calle',          #18
+        'Domicilio Calle Numero',   #19
+        'Correo',                   #20
+        'Telefono',                 #21
+        'Año de Egreso',            #22
+        'Titulo Secundario',        #23
+        'Contacto de emergencia',   #24
+        'Nombre de contacto',       #25
+        'Carrera',                  #26
+        'Turno',                    #27
+        'Modalidad',                #28
+        'Curso',                    #29
+        'Escuela',                  #30
+        'CUE',                      #31
     ]
     for col, header in enumerate(headers, 1):
         worksheet.cell(row=1, column=col, value=header)
@@ -599,61 +612,89 @@ def export_user_asistentes_to_excel(request):
     # Populate worksheet with data
     row = 2
     for asistente in user_asistentes:
-        worksheet.cell(row=row, column=1,
-                       value=asistente.persona.apellidos.upper())  # Apellido
-        worksheet.cell(row=row, column=2,
-                       value=asistente.persona.nombres.title())  # Nombre
-        worksheet.cell(row=row, column=3,
-                       value=asistente.persona.numero_documento)  # Documento
-        worksheet.cell(row=row, column=4,
-                       value=asistente.persona.correo)  # Correo
+        worksheet.cell(row=row, column=1,value=asistente.persona.apellidos.upper())  # Apellido
+        worksheet.cell(row=row, column=2,value=asistente.persona.nombres.title())  # Nombre
+        worksheet.cell(row=row, column=4,value=asistente.persona.fecha_nacimiento)# Fecha de Nacimiento
+        worksheet.cell(row=row, column=5,value=asistente.persona.sexo)  # Sexo
+        worksheet.cell(row=row, column=6,value=asistente.persona.genero.nombre.title())  # Genero
+        worksheet.cell(row=row, column=8,value=asistente.persona.pais_nacimiento.nombre.title())  # Pais Nacimiento
+        worksheet.cell(row=row, column=9,value=asistente.persona.nacionalidad.nombre.title())  # Nacionalidad
+        # Tipo de Documento
+        worksheet.cell(row=row, column=10,
+                       value=asistente.persona.documento_tipo.tipo.title())
+        # Numero de Documento
+        worksheet.cell(row=row, column=11,
+                       value=asistente.persona.numero_documento)
+        worksheet.cell(row=row, column=12,value=asistente.persona.cuil)  # Cuil/Cuit
+        worksheet.cell(row=row, column=13,value=asistente.persona.pais_documento.nombre.title())  # Pais del Documento
+        worksheet.cell(row=row, column=20,value=asistente.persona.correo)  # Correo
+        worksheet.cell(row=row, column=21,value=asistente.persona.telefono)  # Telefono
+        worksheet.cell(row=row, column=22,value=asistente.anio_egreso)  # Año de Egreso
+        worksheet.cell(row=row, column=23,value=asistente.titulo_secundario)  # Titulo Secundario
+        # Contacto de emergencia
+        worksheet.cell(row=row, column=24, value=asistente.emergencia_telefono)
+        # Nombre de contacto
+        worksheet.cell(row=row, column=25, value=asistente.emergencia_contacto)
         if Inscripcion.objects.filter(estudiante=asistente).order_by('id').last():
             inscripcion = Inscripcion.objects.filter(
                 estudiante=asistente).order_by('id').last()
-            worksheet.cell(row=row, column=5,
+            worksheet.cell(row=row, column=26,
                            value=inscripcion.especialidad.nombre.title())
-            worksheet.cell(row=row, column=6,
+            worksheet.cell(row=row, column=27,
                            value=inscripcion.turno.nombre.title())
-            worksheet.cell(row=row, column=7,
+            worksheet.cell(row=row, column=28,
                            value=inscripcion.modalidad.nombre.title())
-            worksheet.cell(row=row, column=8, value='{} - ({})'.format(
+            worksheet.cell(row=row, column=29, value='{} - ({})'.format(
                 inscripcion.curso.nombre.title(), inscripcion.curso.año))
         else:
-            worksheet.cell(row=row, column=5,
+            worksheet.cell(row=row, column=26,
                            value=asistente.get_especialidad_display())
-            worksheet.cell(row=row, column=6,
+            worksheet.cell(row=row, column=27,
                            value=asistente.get_turno_display())
-            worksheet.cell(row=row, column=7,
+            worksheet.cell(row=row, column=28,
                            value=asistente.get_modalidad_display())
-            worksheet.cell(row=row, column=8, value='---')
+            worksheet.cell(row=row, column=29, value='---')
         try:
-            worksheet.cell(row=row, column=9, value=asistente.escuela.nombre)
+            worksheet.cell(row=row, column=30, value=asistente.escuela.nombre)
         except:
-            worksheet.cell(row=row, column=9, value="---")
+            worksheet.cell(row=row, column=30, value="---")
         try:
-            worksheet.cell(row=row, column=10, value=asistente.escuela.cue)
+            worksheet.cell(row=row, column=31, value=asistente.escuela.cue)
         except:
-            worksheet.cell(row=row, column=10, value="---")
-        worksheet.cell(row=row, column=11, value=asistente.anio_egreso)
-        worksheet.cell(row=row, column=12, value=asistente.titulo_secundario)
-        worksheet.cell(row=row, column=13, value=asistente.persona.fecha_nacimiento)
-        worksheet.cell(row=row, column=14, value=asistente.persona.pais_nacimiento.nombre)
+            worksheet.cell(row=row, column=31, value="---")
+
         try:
-            worksheet.cell(row=row, column=15, value=asistente.persona.domicilio_pais.nombre)
+            worksheet.cell(row=row, column=14, value=asistente.persona.domicilio_pais.nombre)
+        except:
+            worksheet.cell(row=row, column=14, value="---")
+        try:
+            worksheet.cell(row=row, column=15, value=asistente.persona.domicilio_localidad.provincia.nombre)
         except:
             worksheet.cell(row=row, column=15, value="---")
         try:
-            worksheet.cell(row=row, column=16, value=asistente.persona.domicilio_localidad.provincia.nombre)
+            worksheet.cell(row=row, column=16, value=asistente.persona.domicilio_localidad.partido.nombre)
         except:
             worksheet.cell(row=row, column=16, value="---")
         try:
-            worksheet.cell(row=row, column=17, value=asistente.persona.domicilio_localidad.partido.nombre)
+            worksheet.cell(row=row, column=17, value=asistente.persona.domicilio_localidad.nombre)
         except:
             worksheet.cell(row=row, column=17, value="---")
         try:
-            worksheet.cell(row=row, column=18, value=asistente.persona.domicilio_localidad.nombre)
+            worksheet.cell(row=row, column=18, value=asistente.persona.domicilio_calle.title())
         except:
             worksheet.cell(row=row, column=18, value="---")
+        try:
+            worksheet.cell(row=row, column=19,value=asistente.persona.domicilio_altura)
+        except:
+            worksheet.cell(row=row, column=19, value="---")
+        try:
+            worksheet.cell(row=row, column=3,value=asistente.persona.nombre_autopercibido.title() )# Nombre autopercibido
+        except:
+            worksheet.cell(row=row, column=3, value="---")
+        try:
+            worksheet.cell(row=row, column=7, value=asistente.persona.genero_otro.title()) # Genero comentario
+        except:
+            worksheet.cell(row=row, column=7, value="---")
         row += 1
 
     # Crear una respuesta HTTP con tipo de contenido de Excel
