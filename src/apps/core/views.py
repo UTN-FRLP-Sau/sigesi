@@ -6,6 +6,7 @@ from django.views.defaults import page_not_found, server_error
 #from django.template import RequestContext
 
 from apps.inscripcion.models import Curso
+from apps.core.models import ConfigLandingPage
 
 # Create your views here.
 
@@ -19,6 +20,10 @@ def landing_page(request):
     ultimo_curso = Curso.objects.filter(
         inscripcion_cierre__lte=hoy).order_by('inscripcion_cierre').last()
     context={}
+    if ConfigLandingPage.objects.exists():
+        context['config'] = ConfigLandingPage.objects.first()
+    else:
+        context['config'] = None
     if proximo_curso:
         context['inicio_inscripcion'] = proximo_curso.inscripcion_inicio
         context['final_inscripcion'] = proximo_curso.inscripcion_cierre

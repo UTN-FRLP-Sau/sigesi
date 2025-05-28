@@ -259,11 +259,13 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="text-center my-4" hidden>
-                            <a href="{% static 'landing/doc/mas_informacion.pdf' %}" class="btn btn-info" download>
+                        {% if config.inscripcion_masinfo %}
+                        <div class="text-center my-4">
+                            <a href="{{ config.inscripcion_masinfo.url }}" class="btn btn-info" download="informacion_inscripcion_utnfrlp.pdf">
                                 Descargar más información
                             </a>
                         </div>
+                        {% endif %}
                         <div class="bg-info bg-opacity-10 p-4 rounded p-4 my-4">
                             <h3>Importante:</h3>
                             <p>Te recomendamos que, previo a confirmar tu inscripción, hayas revisado detalladamente la información presentada para las modalidades. De esta manera, podrás escoger con buen criterio una de ellas. Desde la Dirección de Ingreso, responsable de la implementación del Seminario de Ingreso, te alentamos a participar en la Modalidad Presencial. ¿Por qué? Porque creemos que es importantísimo que te entrenes en las exigencias de una carrera universitaria.</p>
